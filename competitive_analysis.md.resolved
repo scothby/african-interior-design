@@ -1,0 +1,92 @@
+# 🌍 Opportunités de Différenciation — African Interior Design
+
+## Le marché en 2025
+
+Les concurrents principaux (RoomGPT, Interior AI, Homestyler, Spacely AI, DecorAI) se battent tous sur les **mêmes fonctionnalités génériques** : styles occidentaux, AR, plans 2D/3D, rendu photoréaliste. **Aucun ne couvre le design africain authentique** — c'est ta fenêtre d'opportunité.
+
+---
+
+## 🥇 Fonctionnalités à fort impact (fais-les AVANT les concurrents)
+
+### 1. 🛋️ Catalogue de meubles africains achetables
+**Ce que les concurrents font** : liens Amazon, IKEA, Wayfair (produits occidentaux).  
+**Ce que tu peux faire** : intégrer des liens vers des artisans et boutiques africaines authentiques (sculptures, textiles Kente, paniers Nongo, meubles en bois de teck/acajou africain).  
+**Impact** : unique sur le marché, forte valeur culturelle + potentiel e-commerce.  
+**Effort** : moyen — enrichir les styles avec des champs `shopLink` + affichage dans la galerie.
+
+---
+
+### 2. 💬 Chatbot IA spécialisé "Conseiller Déco Africain"
+**Ce que les concurrents font** : génération silencieuse ou chatbot généraliste.  
+**Ce que tu peux faire** : un assistant conversationnel qui explique l'histoire et la culture derrière chaque style, propose des associations de couleurs/matériaux, répond aux questions (ex: "Quel style pour une petite chambre en Côte d'Ivoire ?").  
+**Impact** : très différenciant — aucun concurrent n'a ce niveau de spécialisation culturelle.  
+**Effort** : moyen — API Gemini déjà intégrée, ajout d'un prompt système spécialisé.
+
+---
+
+### 3. 🎨 Générateur de palette de couleurs africaines
+**Ce que les concurrents font** : palettes génériques.  
+**Ce que tu peux faire** : palettes authentiques par région (couleurs Ndebele, pigments ocre du Sahel, bleus Touareg, verts de la forêt équatoriale) avec noms culturels et explications.  
+**Impact** : outil léger mais très viral (partage sur Pinterest/Instagram).  
+**Effort** : faible — données dans les styles déjà existants, nouveau composant UI.
+
+---
+
+### 4. 📸 Mode "Afrofuturisme"
+**Ce que les concurrents font** : styles modernes ou traditionnels, jamais les deux.  
+**Ce que tu peux faire** : un style hybride qui fusionne l'esthétique africaine traditionnelle avec le design contemporain (minimalisme + Kente, géométrie Ndebele + béton, ...).  
+**Impact** : très tendance, fort potentiel sur les réseaux sociaux.  
+**Effort** : faible — ajouter une catégorie de styles dédiée.
+
+---
+
+### 5. 📐 Estimation de budget locale
+**Ce que les concurrents font** : aucune estimation de coût, ou seulement en USD/EUR.  
+**Ce que tu peux faire** : donner une fourchette de prix pour recréer le style généré, avec des équivalences en marchés locaux africains (artisans locaux vs importation).  
+**Impact** : très pratique, aucun concurrent ne le fait pour l'Afrique.  
+**Effort** : moyen — base de données de prix par région.
+
+---
+
+### 6. 🤝 Espace communautaire & partage
+**Ce que les concurrents font** : galerie privée uniquement.  
+**Ce que tu peux faire** : galerie publique optionnelle où les utilisateurs partagent leurs créations, votent, commentent. Un "feed" d'inspiration 100% africain.  
+**Impact** : génère de la rétention et du trafic organique (SEO + réseaux sociaux).  
+**Effort** : moyen-élevé — backend Supabase recommandé.
+
+---
+
+## 🟡 Fonctionnalités importantes (font déjà les concurrents — à implémenter quand même)
+
+| Fonctionnalité | Concurrent qui l'a | Effort |
+|---|---|---|
+| **Édition d'éléments individuels** (changer un meuble sans tout regénérer) | Spacely AI, Xona.ai | Élevé |
+| **Visite vidéo générée par IA** (walkthrough animé) | Interior AI, Homestyler | Élevé |
+| **Plan 2D → 3D** (dessiner son plan et générer la pièce) | Planner 5D, Foyr Neo | Très élevé |
+| **AR mobile** (visualiser dans sa vraie pièce) | DecorMatters, Homestyler | Très élevé |
+| **Partage en PDF / planche d'inspiration** | Collov AI | Faible |
+
+---
+
+## 💡 Recommandation : feuille de route par priorité
+
+```
+Court terme (1-2 semaines)
+├── 🎨 Palette de couleurs africaines        ← Quick win, viral
+├── 📄 Export PDF du design généré           ← Très demandé
+└── 💬 Chatbot conseiller déco (basique)     ← Différenciant
+
+Moyen terme (1-2 mois)
+├── 🛋️ Liens vers artisans/boutiques africaines
+├── 📸 Mode Afrofuturisme
+└── 🤝 Galerie publique communautaire
+
+Long terme (3+ mois)
+├── 📐 Estimation de budget locale
+├── 🎬 Vidéo walkthrough IA
+└── 📱 App mobile avec AR
+```
+
+---
+
+> **Ton avantage concurrentiel unique** : tu es **le seul** à couvrir spécifiquement le design africain avec une profondeur culturelle authentique. Tous les autres sont des outils généralistes. Renforce cet axe avant tout.

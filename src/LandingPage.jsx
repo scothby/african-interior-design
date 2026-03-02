@@ -276,6 +276,8 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                             const count = DB.styles.filter(s => s.family === family).length;
                             const isHovered = hoveredFamily === family;
 
+                            const imageName = family.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "").replace(/&/g, "");
+
                             return (
                                 <div
                                     key={family}
@@ -283,13 +285,62 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                     onClick={onEnterDatabase}
                                     onMouseEnter={() => setHoveredFamily(family)}
                                     onMouseLeave={() => setHoveredFamily(null)}
-                                    style={{ padding: "24px 20px", background: isHovered ? `${color}18` : "#120B05", border: `1px solid ${isHovered ? color : "#1E1208"}`, borderRadius: "10px", cursor: "pointer", transition: "all 0.25s" }}
+                                    style={{
+                                        padding: "0",
+                                        background: isHovered ? `${color}18` : "#120B05",
+                                        border: `1px solid ${isHovered ? color : "#1E1208"}`,
+                                        borderRadius: "10px",
+                                        cursor: "pointer",
+                                        transition: "all 0.25s",
+                                        overflow: "hidden"
+                                    }}
                                 >
-                                    {/* Bande couleur */}
-                                    <div style={{ height: "4px", borderRadius: "2px", background: color, marginBottom: "16px", width: isHovered ? "100%" : "40%", transition: "width 0.3s" }} />
-                                    <div style={{ fontSize: "28px", marginBottom: "10px" }}>{icon}</div>
-                                    <div style={{ fontSize: "14px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" }}>{family}</div>
-                                    <div style={{ fontSize: "11px", color: color, fontWeight: "bold" }}>{count} style{count > 1 ? "s" : ""}</div>
+                                    {/* Cover Image */}
+                                    <div style={{
+                                        height: "140px",
+                                        background: "#0A0603",
+                                        position: "relative",
+                                        overflow: "hidden"
+                                    }}>
+                                        <img
+                                            src={`/families/${imageName}.png`}
+                                            alt={`Style ${family}`}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                                filter: isHovered ? "brightness(1) contrast(1.1)" : "brightness(0.8) contrast(1)",
+                                                transition: "all 0.4s",
+                                                transform: isHovered ? "scale(1.05)" : "scale(1)"
+                                            }}
+                                            onError={(e) => { e.target.style.display = 'none'; }}
+                                        />
+                                        <div style={{
+                                            position: "absolute",
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            height: "50%",
+                                            background: "linear-gradient(to top, #120B05 0%, transparent 100%)"
+                                        }} />
+                                        <div style={{
+                                            position: "absolute",
+                                            top: "12px",
+                                            right: "12px",
+                                            fontSize: "20px",
+                                            filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))"
+                                        }}>
+                                            {icon}
+                                        </div>
+                                    </div>
+
+                                    {/* Text Content */}
+                                    <div style={{ padding: "16px 20px" }}>
+                                        {/* Bande couleur */}
+                                        <div style={{ height: "3px", borderRadius: "1.5px", background: color, marginBottom: "12px", width: isHovered ? "100%" : "40%", transition: "width 0.3s" }} />
+                                        <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" }}>{family}</div>
+                                        <div style={{ fontSize: "11px", color: color, fontWeight: "bold" }}>{count} style{count > 1 ? "s" : ""}</div>
+                                    </div>
                                 </div>
                             );
                         })}
