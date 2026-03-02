@@ -175,8 +175,8 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
     setError(null);
     try {
       await exportCollage(
-        `${API_BASE_URL}${uploadedImage}`,
-        `${API_BASE_URL}${generatedImage}`,
+        uploadedImage.startsWith('http') ? uploadedImage : `${API_BASE_URL}${uploadedImage}`,
+        generatedImage.startsWith('http') ? generatedImage : `${API_BASE_URL}${generatedImage}`,
         selectedStyle.name
       );
     } catch (err) {
@@ -193,8 +193,8 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
     setIsPdfGenerating(true);
     try {
       await exportDesignPDF({
-        beforeSrc: `${API_BASE_URL}${uploadedImage}`,
-        afterSrc: `${API_BASE_URL}${generatedImage}`,
+        beforeSrc: uploadedImage.startsWith('http') ? uploadedImage : `${API_BASE_URL}${uploadedImage}`,
+        afterSrc: generatedImage.startsWith('http') ? generatedImage : `${API_BASE_URL}${generatedImage}`,
         style: selectedStyle,
         customPrompt: customPrompt || null,
       });
@@ -585,8 +585,8 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
       {comparisonMode === 'slider' && (
         <div style={{ marginBottom: '32px' }}>
           <ComparisonSlider
-            beforeImage={`${API_BASE_URL}${uploadedImage}`}
-            afterImage={`${API_BASE_URL}${generatedImage}`}
+            beforeImage={uploadedImage.startsWith('http') ? uploadedImage : `${API_BASE_URL}${uploadedImage}`}
+            afterImage={generatedImage.startsWith('http') ? generatedImage : `${API_BASE_URL}${generatedImage}`}
             height={450}
           />
         </div>
@@ -597,9 +597,9 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
         <div style={styles.comparisonContainer}>
           <div style={styles.comparisonItem}>
             <div style={styles.comparisonLabel}>Avant</div>
-            <div style={styles.imageWrapper} onClick={() => openZoom(`${API_BASE_URL}${uploadedImage}`, 'Original')}>
+            <div style={styles.imageWrapper} onClick={() => openZoom(uploadedImage.startsWith('http') ? uploadedImage : `${API_BASE_URL}${uploadedImage}`, 'Original')}>
               <img
-                src={`${API_BASE_URL}${uploadedImage}`}
+                src={uploadedImage.startsWith('http') ? uploadedImage : `${API_BASE_URL}${uploadedImage}`}
                 alt="Original"
                 style={styles.comparisonImage}
               />
@@ -611,9 +611,9 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
 
           <div style={styles.comparisonItem}>
             <div style={styles.comparisonLabel}>Après</div>
-            <div style={styles.imageWrapper} onClick={() => openZoom(`${API_BASE_URL}${generatedImage}`, 'Généré')}>
+            <div style={styles.imageWrapper} onClick={() => openZoom(generatedImage.startsWith('http') ? generatedImage : `${API_BASE_URL}${generatedImage}`, 'Généré')}>
               <img
-                src={`${API_BASE_URL}${generatedImage}`}
+                src={generatedImage.startsWith('http') ? generatedImage : `${API_BASE_URL}${generatedImage}`}
                 alt="Generated"
                 style={styles.comparisonImage}
               />
