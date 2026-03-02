@@ -1,0 +1,31 @@
+{
+  "name": "african-styles-database",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "kill-ports": "npx kill-port 3000 5000",
+    "dev": "npm run kill-ports && concurrently --kill-others-on-fail --names \"BACKEND,FRONTEND\" --prefix-colors \"yellow,cyan\" \"cd backend && node server.js\" \"react-scripts start\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

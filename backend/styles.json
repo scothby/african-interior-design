@@ -1,0 +1,3571 @@
+{
+  "version": "1.0",
+  "total": 186,
+  "families": [
+    "Terres & Banco",
+    "Textiles Royaux",
+    "Côtier Swahili",
+    "Géométrique Peint",
+    "Sauvage & Nomade",
+    "Islamique Africain",
+    "Tropical Équatorial",
+    "Urbain Contemporain"
+  ],
+  "regions": [
+    "Afrique du Nord",
+    "Afrique de l'Ouest",
+    "Afrique Centrale",
+    "Afrique de l'Est",
+    "Afrique Australe"
+  ],
+  "styles": [
+    {
+      "id": "ma-riad",
+      "name": "Riad Traditionnel",
+      "country": "Maroc",
+      "flag": "🇲🇦",
+      "region": "Afrique du Nord",
+      "family": "Islamique Africain",
+      "colors": [
+        "#C17D3C",
+        "#1A5276",
+        "#F9F6EE",
+        "#2E86C1",
+        "#922B21"
+      ],
+      "colorNames": [
+        "Cuivre zellige",
+        "Bleu majorelle",
+        "Blanc chaux",
+        "Faïence",
+        "Rouge géranium"
+      ],
+      "materials": [
+        "zellige",
+        "stuc ciselé",
+        "bois de cèdre",
+        "fontaine en marbre",
+        "mosaïque"
+      ],
+      "patterns": [
+        "géométrique étoile",
+        "arabesques",
+        "calligraphie arabe",
+        "floral entrelacé"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle de bain",
+        "entrée",
+        "terrasse"
+      ],
+      "prompt": "traditional Moroccan riad interior design, zellige tile floors, carved cedar wood ceiling, ornate stucco walls, central courtyard fountain, Moorish arches, blue and gold color palette, warm candlelight, luxury photography",
+      "description": "Cours intérieures, zellige coloré, fontaines murmurantes et stuc ciselé — l'art de vivre andalou-berbère"
+    },
+    {
+      "id": "ma-berbere",
+      "name": "Berbère Moderne",
+      "country": "Maroc",
+      "flag": "🇲🇦",
+      "region": "Afrique du Nord",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#F5F0E8",
+        "#8B7355",
+        "#D4A853",
+        "#2C2C2C",
+        "#C4956A"
+      ],
+      "colorNames": [
+        "Laine naturelle",
+        "Sable Atlas",
+        "Or berbère",
+        "Charbon",
+        "Terre cuite"
+      ],
+      "materials": [
+        "tapis Beni Ouarain",
+        "laine naturelle",
+        "cuir tanné",
+        "bois d'argan",
+        "poterie berbère"
+      ],
+      "patterns": [
+        "losanges géométriques",
+        "symboles Amazigh",
+        "lignes brisées",
+        "Tifinagh"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "bureau"
+      ],
+      "prompt": "Berber modern interior design, Beni Ouarain wool rug, natural linen, geometric diamond patterns, Atlas mountains inspiration, neutral palette with warm accents, minimalist organic, studio photography",
+      "description": "Tapis Beni Ouarain à losanges, laine brute et symboles Amazigh dans un écrin épuré et chaleureux"
+    },
+    {
+      "id": "ma-gnaoua",
+      "name": "Gnaoua Soul",
+      "country": "Maroc",
+      "flag": "🇲🇦",
+      "region": "Afrique du Nord",
+      "family": "Islamique Africain",
+      "colors": [
+        "#1A237E",
+        "#B71C1C",
+        "#F57F17",
+        "#1B5E20",
+        "#212121"
+      ],
+      "colorNames": [
+        "Indigo profond",
+        "Rouge sacrifice",
+        "Safran",
+        "Vert rituel",
+        "Nuit noire"
+      ],
+      "materials": [
+        "cuivre gravé",
+        "cuir tanné",
+        "indigo de Marrakech",
+        "bois de thuya",
+        "crotales en métal"
+      ],
+      "patterns": [
+        "étoiles à 8 branches",
+        "triangles imbriqués",
+        "entrelacs",
+        "croissants"
+      ],
+      "rooms": [
+        "salon",
+        "salle de musique",
+        "bar",
+        "cave"
+      ],
+      "prompt": "Gnaoua Moroccan interior, deep indigo and copper accents, ritual atmosphere, carved brass lanterns, dark wood, ceremonial textiles, moody dramatic lighting, rich saturated colors",
+      "description": "Indigo profond, cuivre martelé et rituels de guérison Gnaoua — une âme africaine au cœur du Maghreb"
+    },
+    {
+      "id": "ma-atlas-nomade",
+      "name": "Atlas Nomade",
+      "country": "Maroc",
+      "flag": "🇲🇦",
+      "region": "Afrique du Nord",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#8B0000",
+        "#D4AC0D",
+        "#4A235A",
+        "#F5CBA7",
+        "#2C3E50"
+      ],
+      "colorNames": [
+        "Rouge tente",
+        "Or broderie",
+        "Violet altitude",
+        "Peau chameau",
+        "Nuit montagne"
+      ],
+      "materials": [
+        "laine de tente caïdale",
+        "lanières de cuir",
+        "broderies de soie",
+        "tapis de selle",
+        "osier"
+      ],
+      "patterns": [
+        "bandes horizontales",
+        "franges",
+        "pompons",
+        "broderies florales"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "terrasse"
+      ],
+      "prompt": "Moroccan Atlas nomadic tent interior, tribal wool textiles, leather poufs, caidal tent poles, rich burgundy and gold, mountain camping luxury, warm firelight, bohemian nomadic style",
+      "description": "Tentes caïdales, lanières de cuir et broderies de haute montagne — le luxe nomade de l'Atlas"
+    },
+    {
+      "id": "tn-sidibousaid",
+      "name": "Sidi Bou Saïd",
+      "country": "Tunisie",
+      "flag": "🇹🇳",
+      "region": "Afrique du Nord",
+      "family": "Islamique Africain",
+      "colors": [
+        "#FFFFFF",
+        "#1565C0",
+        "#F5F5DC",
+        "#FFD700",
+        "#87CEEB"
+      ],
+      "colorNames": [
+        "Blanc chaulé",
+        "Bleu cobalt",
+        "Beige sable",
+        "Or soleil",
+        "Ciel méditerranéen"
+      ],
+      "materials": [
+        "fer forgé peint en bleu",
+        "carrelage blanc",
+        "bois peint",
+        "faïence tunisienne",
+        "marbre"
+      ],
+      "patterns": [
+        "treilles en bois",
+        "motifs de mashrabiya",
+        "étoiles à 6 branches",
+        "fleurs stylisées"
+      ],
+      "rooms": [
+        "salon",
+        "terrasse",
+        "salle à manger",
+        "chambre"
+      ],
+      "prompt": "Sidi Bou Said Tunisian interior, cobalt blue and white, ornate iron grille windows, white washed walls, Mediterranean terrace, ceramic tiles, bougainvillea, bright daylight photography",
+      "description": "Bleu cobalt et blanc éclatant, treilles en fer forgé et céramiques — la Méditerranée africaine dans toute sa pureté"
+    },
+    {
+      "id": "eg-pharaon",
+      "name": "Pharaonique Revisité",
+      "country": "Égypte",
+      "flag": "🇪🇬",
+      "region": "Afrique du Nord",
+      "family": "Islamique Africain",
+      "colors": [
+        "#D4AF37",
+        "#000080",
+        "#C41E3A",
+        "#F5F5DC",
+        "#2F4F4F"
+      ],
+      "colorNames": [
+        "Or pharaonique",
+        "Lapis-lazuli",
+        "Rouge royal",
+        "Lin crème",
+        "Basalte"
+      ],
+      "materials": [
+        "or",
+        "lapis-lazuli",
+        "lin naturel",
+        "granit noir",
+        "albâtre"
+      ],
+      "patterns": [
+        "hiéroglyphes",
+        "scarabées",
+        "œil d'Horus",
+        "lotus",
+        "djed"
+      ],
+      "rooms": [
+        "bureau",
+        "bibliothèque",
+        "salon",
+        "entrée"
+      ],
+      "prompt": "Egyptian pharaonic inspired interior design, gold hieroglyphics on dark walls, lapis lazuli accents, linen textiles, black granite floors, alabaster lighting, museum-quality artifacts display, dramatic shadows",
+      "description": "Hiéroglyphes en or sur fond sombre, lin naturel et lapis-lazuli — l'Égypte ancienne réinterprétée pour le luxe contemporain"
+    },
+    {
+      "id": "eg-nubie",
+      "name": "Nubie Colorée",
+      "country": "Égypte",
+      "flag": "🇪🇬",
+      "region": "Afrique du Nord",
+      "family": "Géométrique Peint",
+      "colors": [
+        "#FF6B35",
+        "#004E89",
+        "#F7C59F",
+        "#1A936F",
+        "#FFD166"
+      ],
+      "colorNames": [
+        "Orange Nil",
+        "Bleu Nubie",
+        "Sable chaud",
+        "Vert palme",
+        "Jaune soleil"
+      ],
+      "materials": [
+        "argile peinte",
+        "palmier doum",
+        "nattes tressées",
+        "tissu coton peint",
+        "poteries"
+      ],
+      "patterns": [
+        "scènes de vie peintes",
+        "crocodiles stylisés",
+        "oiseaux du Nil",
+        "géométrie colorée"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle à manger",
+        "cuisine"
+      ],
+      "prompt": "Nubian colorful interior design, hand painted walls with vibrant scenes, turquoise and orange color scheme, palm wood furniture, woven mats, Upper Egypt village style, warm bright photography",
+      "description": "Façades peintes de scènes de vie, bleu turquoise et orange vif — la joie de vivre nubienne du Haut-Nil"
+    },
+    {
+      "id": "sn-teranga",
+      "name": "Dakar Teranga",
+      "country": "Sénégal",
+      "flag": "🇸🇳",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#FF8C00",
+        "#228B22",
+        "#FFD700",
+        "#8B0000",
+        "#F5DEB3"
+      ],
+      "colorNames": [
+        "Orange festif",
+        "Vert espoir",
+        "Or dakar",
+        "Rouge teranga",
+        "Sable atlantique"
+      ],
+      "materials": [
+        "tissu thiéboudienne",
+        "raphia",
+        "bois de vène",
+        "fer forgé coloré",
+        "coton wax local"
+      ],
+      "patterns": [
+        "Manjak tissé",
+        "broderies wolof",
+        "motifs de pêche",
+        "géométrie colorée"
+      ],
+      "rooms": [
+        "salon",
+        "salle à manger",
+        "chambre",
+        "terrasse"
+      ],
+      "prompt": "Dakar Senegalese teranga interior design, vibrant Manjak woven textiles, warm African hospitality atmosphere, colorful fabrics, vene wood furniture, Atlantic coast inspiration, festive warm tones",
+      "description": "Tissus Manjak vibrants, hospitalité légendaire et couleurs de l'Atlantique — l'art de vivre sénégalais"
+    },
+    {
+      "id": "sn-casamance",
+      "name": "Casamance Diola",
+      "country": "Sénégal",
+      "flag": "🇸🇳",
+      "region": "Afrique de l'Ouest",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#2D5016",
+        "#8B4513",
+        "#F5DEB3",
+        "#4682B4",
+        "#228B22"
+      ],
+      "colorNames": [
+        "Vert forêt",
+        "Bois de vène",
+        "Sable",
+        "Bleu fleuve",
+        "Vert rizière"
+      ],
+      "materials": [
+        "bois de vène",
+        "chaume",
+        "bambou de Casamance",
+        "raphia",
+        "argile locale"
+      ],
+      "patterns": [
+        "nattes Diola",
+        "tressage de bambou",
+        "motifs de calebasse",
+        "formes organiques"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle de bain",
+        "cuisine"
+      ],
+      "prompt": "Casamance Diola interior design, impluvium house architecture, natural vene wood, bamboo, thatch roof elements, lush green tropical, river blue accents, organic natural materials, soft dappled light",
+      "description": "Cases à impluvium, bois de vène et bambou de forêt — la Casamance verte et mystérieuse"
+    },
+    {
+      "id": "ml-bogolan",
+      "name": "Bogolan Authentique",
+      "country": "Mali",
+      "flag": "🇲🇱",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#1C0A00",
+        "#8B4513",
+        "#D2691E",
+        "#F5DEB3",
+        "#FAEBD7"
+      ],
+      "colorNames": [
+        "Nuit de boue",
+        "Sienne brûlée",
+        "Argile vive",
+        "Sable doré",
+        "Lin brut"
+      ],
+      "materials": [
+        "tissu Bogolan teint à la boue",
+        "coton filé main",
+        "bois de karité",
+        "argile du Niger",
+        "cuir tanné"
+      ],
+      "patterns": [
+        "géométrie Bogolan",
+        "carrés imbriqués",
+        "losanges",
+        "triangles répétitifs",
+        "croix symboliques"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "bureau",
+        "bibliothèque"
+      ],
+      "prompt": "Mali Bogolan mudcloth interior design, authentic mud dyed fabric wall art, geometric white patterns on dark brown, natural clay walls, handwoven cotton textiles, Niger river inspiration, earthy warm tones, editorial photography",
+      "description": "Tissu sacré teint à la boue du Niger, géométrie blanche sur fond brun — l'âme profonde du Mali"
+    },
+    {
+      "id": "ml-dogon",
+      "name": "Dogon Falaise",
+      "country": "Mali",
+      "flag": "🇲🇱",
+      "region": "Afrique de l'Ouest",
+      "family": "Terres & Banco",
+      "colors": [
+        "#8B6914",
+        "#D2691E",
+        "#2C1810",
+        "#F4A460",
+        "#696969"
+      ],
+      "colorNames": [
+        "Or grenier",
+        "Argile falaise",
+        "Nuit Dogon",
+        "Sable Bandiagara",
+        "Pierre grise"
+      ],
+      "materials": [
+        "banco",
+        "bois de doum",
+        "pierre de falaise",
+        "échelles sculptées",
+        "portes gravées"
+      ],
+      "patterns": [
+        "sculptures de greniers",
+        "motifs cosmogoniques Dogon",
+        "figures Nommo",
+        "escaliers rituels"
+      ],
+      "rooms": [
+        "salon",
+        "bibliothèque",
+        "bureau",
+        "entrée"
+      ],
+      "prompt": "Dogon cliff interior design, Mali Bandiagara escarpment architecture, sculpted wooden doors with mythological motifs, banco clay walls, granary shapes, ancient sacred aesthetic, dramatic stone and earth tones",
+      "description": "Greniers sculptés de falaise, portes gravées de cosmogonie et banco millénaire — l'univers sacré Dogon"
+    },
+    {
+      "id": "ml-djenne",
+      "name": "Djenné Soudano-Sahélien",
+      "country": "Mali",
+      "flag": "🇲🇱",
+      "region": "Afrique de l'Ouest",
+      "family": "Terres & Banco",
+      "colors": [
+        "#C4A882",
+        "#8B6914",
+        "#DEB887",
+        "#5C4033",
+        "#F5F5DC"
+      ],
+      "colorNames": [
+        "Banco ocre",
+        "Or soudanais",
+        "Sable du désert",
+        "Acajou",
+        "Lin naturel"
+      ],
+      "materials": [
+        "banco",
+        "poutres en bois de rônier",
+        "poteries de Djenné",
+        "nattes de palmier",
+        "tissu de coton"
+      ],
+      "patterns": [
+        "tours coniques banco",
+        "niches décoratives",
+        "bandes verticales",
+        "arcs brisés"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "cuisine",
+        "salle à manger"
+      ],
+      "prompt": "Djenne Sudano-Sahelian interior design, banco mud architecture, wooden rondavel poles, Malian earthen aesthetic, warm beige and brown, handmade pottery, West African traditional home, natural light through small windows",
+      "description": "Architecture en banco, poutres de rônier et poteries — la grandeur de Djenné la bâtisseuse"
+    },
+    {
+      "id": "gh-kente",
+      "name": "Kente Royal",
+      "country": "Ghana",
+      "flag": "🇬🇭",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#FFD700",
+        "#228B22",
+        "#8B0000",
+        "#1A2744",
+        "#FF8C00"
+      ],
+      "colorNames": [
+        "Or royal",
+        "Vert forêt",
+        "Rouge sang",
+        "Indigo nuit",
+        "Orangé"
+      ],
+      "materials": [
+        "soie Kente tissée",
+        "fils d'or",
+        "bois de wengé",
+        "velours",
+        "bronze Ashanti"
+      ],
+      "patterns": [
+        "bandes Kente entrelacées",
+        "symboles Adinkra",
+        "losanges d'or",
+        "chevrons royaux"
+      ],
+      "rooms": [
+        "salon",
+        "salle à manger",
+        "chambre royale",
+        "bureau"
+      ],
+      "prompt": "Kente royal Ghanaian interior design, gold and green Kente cloth wall installation, Ashanti throne inspired furniture, Adinkra symbols, rich jewel tones, wenge wood, bronze accents, luxury editorial photography",
+      "description": "Soie Kente tissée en bandes dorées, symboles Adinkra et bronze Ashanti — la royauté du Ghana"
+    },
+    {
+      "id": "gh-ashanti",
+      "name": "Ashanti Symbolique",
+      "country": "Ghana",
+      "flag": "🇬🇭",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#8B6914",
+        "#000000",
+        "#C8A951",
+        "#F5F5DC",
+        "#8B0000"
+      ],
+      "colorNames": [
+        "Or Ashanti",
+        "Encre d'Adinkra",
+        "Cuivre royal",
+        "Ivoire",
+        "Rouge sang"
+      ],
+      "materials": [
+        "tabourets en bois Ashanti",
+        "estampilles Adinkra",
+        "poids en bronze",
+        "tissu Kente",
+        "or fondu"
+      ],
+      "patterns": [
+        "Adinkra: Gye Nyame",
+        "Adinkra: Sankofa",
+        "Adinkra: Dwennimmen",
+        "spirales",
+        "croissants"
+      ],
+      "rooms": [
+        "salon",
+        "bureau",
+        "bibliothèque",
+        "entrée"
+      ],
+      "prompt": "Ashanti symbolic interior design, Ghana Adinkra symbol prints on walls, traditional wooden stool as coffee table, Kente textile accents, black and gold palette, museum-like sacred objects display",
+      "description": "Tabourets sacrés, symboles Adinkra imprimés et poids en bronze — le langage symbolique Ashanti"
+    },
+    {
+      "id": "ci-wax",
+      "name": "Ankara Wax Maximalist",
+      "country": "Côte d'Ivoire",
+      "flag": "🇨🇮",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#FF4500",
+        "#FFD700",
+        "#006400",
+        "#1E90FF",
+        "#FF69B4"
+      ],
+      "colorNames": [
+        "Rouge Ankara",
+        "Or Wax",
+        "Vert Abidjan",
+        "Bleu électrique",
+        "Rose tropical"
+      ],
+      "materials": [
+        "imprimés Wax hollandais",
+        "tissu Ankara",
+        "velours africain",
+        "fil d'or",
+        "bois de zingana"
+      ],
+      "patterns": [
+        "motifs Wax répétitifs",
+        "imprimés floraux géants",
+        "géométrie colorée",
+        "motifs de vie quotidienne"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle à manger",
+        "boutique"
+      ],
+      "prompt": "Ankara wax print maximalist interior, bold colorful African wax fabric on walls and furniture, Abidjan contemporary African luxury, clashing vibrant prints, gold accents, maximalist joyful aesthetic, professional photography",
+      "description": "Imprimés Wax explosifs en rouge, or et bleu — le maximalisme joyeux d'Abidjan"
+    },
+    {
+      "id": "ci-baoule",
+      "name": "Baoulé Sculpté",
+      "country": "Côte d'Ivoire",
+      "flag": "🇨🇮",
+      "region": "Afrique de l'Ouest",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#3D1C02",
+        "#C4863A",
+        "#F5DEB3",
+        "#8B4513",
+        "#2F4F4F"
+      ],
+      "colorNames": [
+        "Bois sombre",
+        "Bronze Baoulé",
+        "Paille",
+        "Bois de caïlcédrat",
+        "Vert forêt"
+      ],
+      "materials": [
+        "masques Baoulé sculptés",
+        "sièges sculptés",
+        "bronze fondu",
+        "bois de caïlcédrat",
+        "raphia"
+      ],
+      "patterns": [
+        "visages sculptés",
+        "motifs de scarifications",
+        "spirales de fertilité",
+        "entrelacs"
+      ],
+      "rooms": [
+        "salon",
+        "bureau",
+        "galerie",
+        "entrée"
+      ],
+      "prompt": "Baule Ivory Coast sculpted interior, wooden mask wall display, carved fertility figures, dark polished wood, bronze casting accents, gallery-like sacred object arrangement, museum lighting, forest spirit atmosphere",
+      "description": "Masques sculptés encadrés, sièges à caryatide et bronze Baoulé — l'art sacré de la forêt ivoirienne"
+    },
+    {
+      "id": "ng-yoruba",
+      "name": "Yoruba Aso-Oke",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#4B0082",
+        "#FF8C00",
+        "#C0C0C0",
+        "#FFD700",
+        "#F5F5DC"
+      ],
+      "colorNames": [
+        "Indigo Aso-Oke",
+        "Orange Gele",
+        "Argent fil",
+        "Or tissé",
+        "Lin naturel"
+      ],
+      "materials": [
+        "tissu Aso-Oke tissé",
+        "velours Yoruba",
+        "perles Yoruba",
+        "bronzes d'Ife",
+        "bois Iroko"
+      ],
+      "patterns": [
+        "bandes Aso-Oke",
+        "motifs Aso-Oke Alaari",
+        "Sanyan naturel",
+        "Etu indigo",
+        "broderies"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle de fête",
+        "bureau"
+      ],
+      "prompt": "Yoruba Aso-Oke interior design, deep indigo handwoven textile, silver thread strips, Ife bronze heads display, Nigerian royalty aesthetic, purple and gold palette, traditional elevated luxury",
+      "description": "Tissu Aso-Oke à fils d'argent, Gele décoratif et bronzes d'Ife — la noblesse Yoruba du Nigeria"
+    },
+    {
+      "id": "ng-benin-bronze",
+      "name": "Benin Bronze",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#8B6914",
+        "#2C1810",
+        "#C4A882",
+        "#B87333",
+        "#F5DEB3"
+      ],
+      "colorNames": [
+        "Bronze Benin",
+        "Noir royal",
+        "Ivoire",
+        "Cuivre",
+        "Crème"
+      ],
+      "materials": [
+        "bronzes du Bénin",
+        "ivoire sculpté",
+        "tissu corail rouge",
+        "bois d'iroko",
+        "cuir royal"
+      ],
+      "patterns": [
+        "plaques narratives en bronze",
+        "têtes royales d'Oba",
+        "guerriers sculptés",
+        "motifs de cour"
+      ],
+      "rooms": [
+        "salon",
+        "galerie",
+        "bureau",
+        "salle à manger"
+      ],
+      "prompt": "Benin Kingdom bronze interior design Nigeria, royal bronze plaques displayed on walls, Oba court aesthetic, deep mahogany wood, red coral accents, museum quality display lighting, powerful regal atmosphere",
+      "description": "Plaques en bronze narrant la cour royale, ivoire et corail rouge — la puissance du Royaume du Bénin"
+    },
+    {
+      "id": "ng-igbo-uli",
+      "name": "Igbo Uli",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Géométrique Peint",
+      "colors": [
+        "#FFFFFF",
+        "#000000",
+        "#D2691E",
+        "#8B0000",
+        "#F5DEB3"
+      ],
+      "colorNames": [
+        "Blanc kaolin",
+        "Encre uli",
+        "Argile",
+        "Rouge ukara",
+        "Lin naturel"
+      ],
+      "materials": [
+        "kaolin blanc",
+        "encre noire naturelle",
+        "tissu Ukara",
+        "bambou",
+        "argile"
+      ],
+      "patterns": [
+        "spirales Uli",
+        "feuilles stylisées",
+        "corps féminins abstraits",
+        "lignes ondulées"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle de bain",
+        "galerie"
+      ],
+      "prompt": "Igbo Uli body art inspired interior design, black curvilinear patterns on white walls, feminine abstract motifs, Ukara cloth displays, southeastern Nigeria aesthetic, monochrome with clay accents, artisan gallery feel",
+      "description": "Spirales Uli peintes sur fond blanc, peintures corporelles Igbo transposées en art mural graphique"
+    },
+    {
+      "id": "ng-lagos",
+      "name": "Lagos Afrobeat",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Urbain Contemporain",
+      "colors": [
+        "#FF4500",
+        "#006400",
+        "#FFFFFF",
+        "#000000",
+        "#FFD700"
+      ],
+      "colorNames": [
+        "Énergie Lagos",
+        "Vert naira",
+        "Béton blanc",
+        "Asphalte",
+        "Or Afrobeat"
+      ],
+      "materials": [
+        "béton poli",
+        "tissu Wax encadré",
+        "métal découpé",
+        "bois recyclé",
+        "néons colorés"
+      ],
+      "patterns": [
+        "street art Lagos",
+        "Adire teinture indigo",
+        "motifs Okrika",
+        "typographie africaine"
+      ],
+      "rooms": [
+        "salon",
+        "bureau créatif",
+        "restaurant",
+        "bar",
+        "studio"
+      ],
+      "prompt": "Lagos Afrobeat contemporary interior design, Nigerian urban creative energy, concrete walls with vibrant Ankara textile art, neon accents, industrial African design, Victoria Island studio apartment aesthetic, moody editorial",
+      "description": "Béton poli, tissu Wax encadré et néons colorés — l'énergie créative de Lagos Afrobeat"
+    },
+    {
+      "id": "ng-hausa-sahel",
+      "name": "Hausa Sahelian",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Islamique Africain",
+      "colors": [
+        "#8B4513",
+        "#F5F5DC",
+        "#1A237E",
+        "#FFD700",
+        "#FFFFFF"
+      ],
+      "colorNames": [
+        "Terre Sahel",
+        "Lin",
+        "Indigo Kano",
+        "Or",
+        "Blanc"
+      ],
+      "materials": [
+        "terre crue",
+        "bois de acacia",
+        "tissu indigo",
+        "cuir",
+        "paille"
+      ],
+      "patterns": [
+        "arches en fer à cheval",
+        "géométrie mudukare",
+        "calligraphie arabe",
+        "treillis"
+      ],
+      "rooms": [
+        "salon",
+        "cour",
+        "salle de prière",
+        "entrée"
+      ],
+      "prompt": "Hausa Sahelian interior design Nigeria, traditional mud brick architecture with modern touch, indigo dyed textiles from Kano, leather poufs, horseshoe arches, Sahel earth tones, Islamic geometric patterns, Northern Nigeria palace aesthetic",
+      "description": "Architecture en terre, indigo de Kano et arches en fer à cheval — l'élégance islamique du Nord-Nigeria"
+    },
+    {
+      "id": "ng-ibibio-ekpo",
+      "name": "Ibibio Ekpo Masquerade",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#000000",
+        "#FFFFFF",
+        "#FF4500",
+        "#FFD700",
+        "#228B22"
+      ],
+      "colorNames": [
+        "Noir masque",
+        "Blanc craie",
+        "Orange feu",
+        "Or",
+        "Vert forêt"
+      ],
+      "materials": [
+        "rafia tressé",
+        "bois sculpté",
+        "craie blanche",
+        "feuilles",
+        "terre"
+      ],
+      "patterns": [
+        "masques Ekpo",
+        "motifs rafia",
+        "scarifications",
+        "tressages"
+      ],
+      "rooms": [
+        "salon",
+        "galerie",
+        "espace rituel",
+        "cour"
+      ],
+      "prompt": "Ibibio Ekpo masquerade inspired interior Nigeria, dramatic black and white mask motifs, raffia palm wall coverings, tropical rainforest atmosphere, Akwa Ibom cultural heritage, organic natural materials, bold ceremonial aesthetic",
+      "description": "Masques Ekpo, rafia tressé et noir/blanc dramatique — la tradition masquée Ibibio du Sud-Est nigérian"
+    },
+    {
+      "id": "ng-tiv-terracotta",
+      "name": "Tiv Terracotta",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Terres & Banco",
+      "colors": [
+        "#A0522D",
+        "#D2691E",
+        "#F5DEB3",
+        "#8B4513",
+        "#CD853F"
+      ],
+      "colorNames": [
+        "Terre Tiv",
+        "Argile brûlée",
+        "Sable",
+        "Bois",
+        "Ocre"
+      ],
+      "materials": [
+        "terre cuite",
+        "banco",
+        "bois",
+        "paille",
+        "argile"
+      ],
+      "patterns": [
+        "motifs Kwagh-hir",
+        "géométrie Tiv",
+        "sculptures",
+        "zigzags"
+      ],
+      "rooms": [
+        "salon",
+        "cour",
+        "chambre",
+        "salle à manger"
+      ],
+      "prompt": "Tiv terracotta interior design Nigeria, Middle Belt earth architecture, warm burnt orange clay walls, traditional mud house aesthetic, Benue Valley inspiration, woven thatch elements, natural earth materials, rural Nigerian luxury",
+      "description": "Terre cuite orange, architecture en banco et paille — la chaleur terreuse des Tiv du Moyen-Bénue"
+    },
+    {
+      "id": "ng-nupe-wood",
+      "name": "Nupe Wood Carving",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Géométrique Peint",
+      "colors": [
+        "#8B4513",
+        "#000000",
+        "#F5DEB3",
+        "#B8860B",
+        "#DEB887"
+      ],
+      "colorNames": [
+        "Bois",
+        "Noir",
+        "Beige",
+        "Or",
+        "Sable"
+      ],
+      "materials": [
+        "bois sculpté Nupe",
+        "terre cuite",
+        "paille",
+        "cuir",
+        "osier"
+      ],
+      "patterns": [
+        "sculptures murales Nupe",
+        "motifs géométriques",
+        "tressages",
+        "formes abstraites"
+      ],
+      "rooms": [
+        "salon",
+        "bureau",
+        "galerie",
+        "entrée"
+      ],
+      "prompt": "Nupe wood carving interior Nigeria, intricate wooden wall panels with geometric patterns, Bida glass accents, dark carved wood furniture, Niger River region aesthetic, traditional Nigerian craftsmanship, warm wood tones",
+      "description": "Sculptures murales en bois Nupe, verre de Bida et bois sombre — l'art du Moyen-Niger"
+    },
+    {
+      "id": "ng-ijaw-riverine",
+      "name": "Ijaw Riverine",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Côtier Swahili",
+      "colors": [
+        "#4682B4",
+        "#8B4513",
+        "#F5F5DC",
+        "#228B22",
+        "#FFD700"
+      ],
+      "colorNames": [
+        "Bleu Niger",
+        "Bois",
+        "Lin",
+        "Vert mangrove",
+        "Or"
+      ],
+      "materials": [
+        "bois flotté",
+        "paille",
+        "nattes",
+        "coquillages",
+        "bambou"
+      ],
+      "patterns": [
+        "vagues du Niger",
+        "motifs aquatiques",
+        "tressages",
+        "poissons stylisés"
+      ],
+      "rooms": [
+        "salon",
+        "terrasse",
+        "chambre",
+        "véranda"
+      ],
+      "prompt": "Ijaw riverine interior Nigeria, Niger Delta water-based dwelling aesthetic, driftwood furniture, woven palm mats, blue river and green mangrove palette, stilt house inspiration, coastal Nigerian atmosphere, natural aquatic elements",
+      "description": "Bois flotté, nattes de palmier et bleu du Niger — la vie fluviale Ijaw dans le Delta"
+    },
+    {
+      "id": "ng-kanuri-sahara",
+      "name": "Kanuri Sahara Edge",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#E2703A",
+        "#DEB887",
+        "#2C1810",
+        "#8B4513",
+        "#FFFFFF"
+      ],
+      "colorNames": [
+        "Ocre Borno",
+        "Sable",
+        "Nuit",
+        "Terre",
+        "Blanc"
+      ],
+      "materials": [
+        "cuir",
+        "peau",
+        "tissu",
+        "paille",
+        "bois"
+      ],
+      "patterns": [
+        "motifs Kanuri",
+        "broderies",
+        "tressages",
+        "géométrie nomade"
+      ],
+      "rooms": [
+        "salon",
+        "tente",
+        "cour",
+        "chambre"
+      ],
+      "prompt": "Kanuri Sahara edge interior Nigeria, Lake Chad basin nomadic heritage, leather and hide elements, warm sand and ochre tones, woven straw mats, Sahelian desert atmosphere, Borno region aesthetic, traditional tent dwelling",
+      "description": "Cuir du Sahel, paille du bassin du Lac Tchad et ocres — l'héritage nomade Kanuri du Nord-Est"
+    },
+    {
+      "id": "ng-calabar-colonial",
+      "name": "Calabar Colonial Tropical",
+      "country": "Nigeria",
+      "flag": "🇳🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Urbain Contemporain",
+      "colors": [
+        "#228B22",
+        "#FFFFFF",
+        "#8B4513",
+        "#FFD700",
+        "#FF6347"
+      ],
+      "colorNames": [
+        "Vert tropical",
+        "Blanc colonial",
+        "Bois",
+        "Or",
+        "Corail"
+      ],
+      "materials": [
+        "bois colonial",
+        "ventilateurs vintage",
+        "tissu Wax",
+        "rotin",
+        "pierre"
+      ],
+      "patterns": [
+        "verandas coloniales",
+        "treillis",
+        "plantes tropicales",
+        "motifs mixtes"
+      ],
+      "rooms": [
+        "salon",
+        "véranda",
+        "bureau",
+        "salle à manger"
+      ],
+      "prompt": "Calabar colonial tropical interior Nigeria, Cross River historic merchant house, British colonial architecture with tropical vegetation, high ceilings with vintage fans, white veranda, wooden shutters, lush garden views, historic port city atmosphere",
+      "description": "Architecture coloniale britannique, véranda blanche et végétation tropicale luxuriante — l'élégance de Calabar"
+    },
+    {
+      "id": "cm-bamileke",
+      "name": "Bamileke Prestige",
+      "country": "Cameroun",
+      "flag": "🇨🇲",
+      "region": "Afrique Centrale",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#4B0082",
+        "#FFD700",
+        "#FFFFFF",
+        "#000000",
+        "#C0392B"
+      ],
+      "colorNames": [
+        "Violet royal",
+        "Or perles",
+        "Blanc craie",
+        "Noir ébène",
+        "Rouge panthère"
+      ],
+      "materials": [
+        "perles royales Bamileke",
+        "trônes sculptés",
+        "plumes de pangolin",
+        "tissu ndop",
+        "bois d'ébène"
+      ],
+      "patterns": [
+        "araignées symboliques",
+        "grenouilles de fertilité",
+        "double cloche",
+        "éléphant royal"
+      ],
+      "rooms": [
+        "salon",
+        "salle du trône",
+        "bureau",
+        "galerie"
+      ],
+      "prompt": "Bamileke prestige interior design Cameroon, royal beaded throne as centerpiece, purple and gold ndop textile, ceremonial mask display, carved wooden pillars with spider motifs, grasslands kingdom luxury",
+      "description": "Trônes couverts de perles, plumes et tissu Ndop violet — le prestige des chefferies Bamileke"
+    },
+    {
+      "id": "cm-douala",
+      "name": "Douala Sawa Littoral",
+      "country": "Cameroun",
+      "flag": "🇨🇲",
+      "region": "Afrique Centrale",
+      "family": "Côtier Swahili",
+      "colors": [
+        "#1E90FF",
+        "#FFFFFF",
+        "#FFD700",
+        "#8B4513",
+        "#228B22"
+      ],
+      "colorNames": [
+        "Bleu Wouri",
+        "Blanc",
+        "Or Douala",
+        "Bois",
+        "Vert mangrove"
+      ],
+      "materials": [
+        "bois de mangrove",
+        "pagne Wax",
+        "perles",
+        "corail",
+        "rotin"
+      ],
+      "patterns": [
+        "vagues du Wouri",
+        "motifs de pêche",
+        "coquillages",
+        "tressages"
+      ],
+      "rooms": [
+        "salon",
+        "terrasse",
+        "véranda",
+        "chambre"
+      ],
+      "prompt": "Douala Sawa coastal interior Cameroon, mangrove wood furniture, vibrant Wax fabric panels, Wouri River inspired blue and white palette, coral and shell decorations, breezy veranda, Atlantic coast atmosphere, tropical modernity",
+      "description": "Bois de mangrove, Wax coloré et brise du Wouri — l'âme maritime Sawa de Douala"
+    },
+    {
+      "id": "cm-beti",
+      "name": "Beti Forêt",
+      "country": "Cameroun",
+      "flag": "🇨🇲",
+      "region": "Afrique Centrale",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#228B22",
+        "#8B4513",
+        "#F5DEB3",
+        "#B8860B",
+        "#2F4F4F"
+      ],
+      "colorNames": [
+        "Vert forêt",
+        "Terre",
+        "Paille",
+        "Or",
+        "Pierre"
+      ],
+      "materials": [
+        "bois d'ébène",
+        "feuilles de raphia",
+        "écorce",
+        "terre",
+        "osier"
+      ],
+      "patterns": [
+        "masques Ngil",
+        "motifs de forêt",
+        "tressages",
+        "sculptures"
+      ],
+      "rooms": [
+        "salon",
+        "espace rituel",
+        "terrasse",
+        "chambre"
+      ],
+      "prompt": "Beti forest interior Cameroon, equatorial rainforest dwelling, dark ebony wood, raphia palm elements, Ngil mask display, organic curved forms, deep forest green and earth tones, traditional Fang-Beti architecture, dappled jungle light",
+      "description": "Ébène sombre, feuilles de raphia et masques Ngil — la tradition forestière Beti du Centre-Cameroun"
+    },
+    {
+      "id": "cm-bamoun",
+      "name": "Bamoun Royal",
+      "country": "Cameroun",
+      "flag": "🇨🇲",
+      "region": "Afrique Centrale",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#FFD700",
+        "#8B0000",
+        "#000000",
+        "#FFFFFF",
+        "#006400"
+      ],
+      "colorNames": [
+        "Or royal",
+        "Rouge Bamoun",
+        "Noir",
+        "Blanc",
+        "Vert"
+      ],
+      "materials": [
+        "perles",
+        "tissu ndop",
+        "bronze",
+        "bois sculpté",
+        "ivoire"
+      ],
+      "patterns": [
+        "araignées Bamoun",
+        "double gong",
+        "scarabées",
+        "léopards",
+        "masques"
+      ],
+      "rooms": [
+        "salon",
+        "salle du trône",
+        "bureau",
+        "galerie"
+      ],
+      "prompt": "Bamoun royal interior Cameroon, Foumban palace heritage, golden throne room, royal beadwork and ndop textiles, bronze sculptures, spider and leopard motifs, museum-quality display, West Cameroon grasslands kingdom",
+      "description": "Trône d'or, perles royales et bronzes — la majesté du Sultanat Bamoun de Foumban"
+    },
+    {
+      "id": "cm-fulani",
+      "name": "Fulani Nordique",
+      "country": "Cameroun",
+      "flag": "🇨🇲",
+      "region": "Afrique Centrale",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#1A237E",
+        "#FFFFFF",
+        "#8B4513",
+        "#F5F5DC",
+        "#D2691E"
+      ],
+      "colorNames": [
+        "Indigo",
+        "Blanc",
+        "Cuir",
+        "Lin",
+        "Ocre"
+      ],
+      "materials": [
+        "cuir",
+        "tissu indigo",
+        "bois",
+        "laine",
+        "peau"
+      ],
+      "patterns": [
+        "broderies Fulani",
+        "motifs géométriques",
+        "franges",
+        "tressages"
+      ],
+      "rooms": [
+        "salon",
+        "tente",
+        "terrasse",
+        "chambre"
+      ],
+      "prompt": "Fulani northern Cameroon interior, Sahelian nomadic elegance, indigo dyed fabrics, leather poufs and cushions, white and blue palette, Adamawa plateau inspiration, traditional Peul herder aesthetic, warm earthy accents",
+      "description": "Élégance nomade Peul, indigo profond et broderies — les bergers du Nord-Cameroun"
+    },
+    {
+      "id": "cm-bassa",
+      "name": "Bassa Littoral",
+      "country": "Cameroun",
+      "flag": "🇨🇲",
+      "region": "Afrique Centrale",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#2E8B57",
+        "#8B4513",
+        "#F5DEB3",
+        "#1E90FF",
+        "#B8860B"
+      ],
+      "colorNames": [
+        "Vert forêt",
+        "Terre",
+        "Sable",
+        "Rivière",
+        "Or"
+      ],
+      "materials": [
+        "bois",
+        "nattes",
+        "pierre",
+        "coquillages",
+        "tissu"
+      ],
+      "patterns": [
+        "motifs de poissons",
+        "vagues",
+        "tressages",
+        "géométrie"
+      ],
+      "rooms": [
+        "salon",
+        "terrasse",
+        "salle à manger",
+        "chambre"
+      ],
+      "prompt": "Bassa coastal interior Cameroon, Sanaga River inspired, lush forest and riverine atmosphere, woven mat panels, wooden fish sculptures, green and blue palette, traditional Littoral region house, natural materials, tropical serenity",
+      "description": "Forêt et Sanaga, nattes tressées et bois flotté — l'âme Bassa du Littoral"
+    },
+    {
+      "id": "cd-kuba",
+      "name": "Kuba Royaume",
+      "country": "RD Congo",
+      "flag": "🇨🇩",
+      "region": "Afrique Centrale",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#8B4513",
+        "#000000",
+        "#DEB887",
+        "#8B6914",
+        "#F5DEB3"
+      ],
+      "colorNames": [
+        "Raphia brun",
+        "Noir velours",
+        "Beige tressé",
+        "Or Kuba",
+        "Crème naturelle"
+      ],
+      "materials": [
+        "velours de raphia Kuba",
+        "tissu coupé et ciselé",
+        "bois sculpté",
+        "cauris",
+        "cuivre"
+      ],
+      "patterns": [
+        "entrelacs géométriques Kuba",
+        "motifs Mikope",
+        "damiers complexes",
+        "spirales imbriquées"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle à manger",
+        "bureau"
+      ],
+      "prompt": "Kuba Kingdom Congo interior design, cut velvet raphia textiles with intricate geometric patterns, royal Kuba cloth upholstery, carved wooden objects, warm brown and black geometric rhythm, contemporary African luxury",
+      "description": "Velours de raphia coupé en damiers complexes, entrelacs géométriques — le génie textile du Royaume Kuba"
+    },
+    {
+      "id": "rw-imigongo",
+      "name": "Imigongo Géométrique",
+      "country": "Rwanda",
+      "flag": "🇷🇼",
+      "region": "Afrique de l'Est",
+      "family": "Géométrique Peint",
+      "colors": [
+        "#000000",
+        "#FFFFFF",
+        "#8B4513",
+        "#DEB887",
+        "#A0522D"
+      ],
+      "colorNames": [
+        "Noir charbon",
+        "Blanc kaolin",
+        "Brun bouse",
+        "Beige terre",
+        "Ocre Rwanda"
+      ],
+      "materials": [
+        "bouse de vache séchée",
+        "kaolin blanc",
+        "charbon végétal",
+        "bois local",
+        "argile"
+      ],
+      "patterns": [
+        "spirales concentriques Imigongo",
+        "croix symétriques",
+        "losanges imbriqués",
+        "chevrons noirs et blancs"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "bureau",
+        "galerie"
+      ],
+      "prompt": "Rwanda Imigongo geometric art interior, black and white cow dung relief wall art panels, bold spiral and chevron patterns, Rwandan thousand hills inspiration, monochrome graphic design, minimalist African art gallery",
+      "description": "Art en bouse de vache, spirales noires et blanches en relief — l'art géométrique unique du Rwanda"
+    },
+    {
+      "id": "rw-agaseke",
+      "name": "Agaseke Tressé",
+      "country": "Rwanda",
+      "flag": "🇷🇼",
+      "region": "Afrique de l'Est",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#DEB887",
+        "#8B6914",
+        "#F5DEB3",
+        "#2E8B57",
+        "#FAEBD7"
+      ],
+      "colorNames": [
+        "Sisal naturel",
+        "Or tressé",
+        "Paille claire",
+        "Vert eucalyptus",
+        "Ivoire"
+      ],
+      "materials": [
+        "paniers Agaseke en sisal",
+        "raphia tressé",
+        "bambou du Rwanda",
+        "lin",
+        "bois d'eucalyptus"
+      ],
+      "patterns": [
+        "spirales de paix",
+        "motifs en V imbriqués",
+        "rayures géométriques tressées",
+        "losanges"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "cuisine",
+        "salle à manger"
+      ],
+      "prompt": "Rwanda Agaseke peace basket interior, coiled sisal baskets as wall art and decor, natural woven textures, green hills inspiration, neutral warm palette, handcraft artisan aesthetic, UNESCO heritage feel",
+      "description": "Paniers de paix en sisal tressé, motifs en spirale — l'artisanat Rwandais classé au patrimoine UNESCO"
+    },
+    {
+      "id": "ke-maasai",
+      "name": "Maasaï Warrior",
+      "country": "Kenya",
+      "flag": "🇰🇪",
+      "region": "Afrique de l'Est",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#CC0000",
+        "#1565C0",
+        "#F5F5DC",
+        "#000000",
+        "#FF8C00"
+      ],
+      "colorNames": [
+        "Rouge Shuka",
+        "Bleu guerrier",
+        "Crème ivoire",
+        "Noir charbon",
+        "Orange savane"
+      ],
+      "materials": [
+        "tissu Shuka à carreaux",
+        "perles Maasaï colorées",
+        "cuir de chèvre",
+        "bois d'acacia",
+        "coton rouge"
+      ],
+      "patterns": [
+        "carreaux Shuka rouge/bleu",
+        "colliers de perles répétés",
+        "motifs guerriers linéaires",
+        "zigzags"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "terrasse",
+        "salle à manger"
+      ],
+      "prompt": "Maasai warrior interior design Kenya, red checkered Shuka throw blankets, colorful beaded jewelry displayed as wall art, acacia wood furniture, savanna grassland inspiration, bold red and blue, African plains luxury lodge",
+      "description": "Tissu Shuka rouge à carreaux, colliers de perles colorées et bois d'acacia — l'esprit guerrier Maasaï"
+    },
+    {
+      "id": "ke-swahili-lamu",
+      "name": "Swahili Lamu",
+      "country": "Kenya",
+      "flag": "🇰🇪",
+      "region": "Afrique de l'Est",
+      "family": "Côtier Swahili",
+      "colors": [
+        "#DEB887",
+        "#FFFFFF",
+        "#1565C0",
+        "#8B4513",
+        "#F5DEB3"
+      ],
+      "colorNames": [
+        "Bois de mangrove",
+        "Blanc corail",
+        "Bleu Inde",
+        "Teck",
+        "Sable blanc"
+      ],
+      "materials": [
+        "bois de mangrove sculpté",
+        "nattes de feuilles de palmier",
+        "tissu Kanga",
+        "corail blanc",
+        "laiton"
+      ],
+      "patterns": [
+        "portes Lamu sculptées",
+        "treillis géométriques",
+        "niches cintrées",
+        "banquettes basses en plâtre"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle de bain",
+        "terrasse"
+      ],
+      "prompt": "Swahili Lamu island interior design Kenya, intricately carved mangrove wood doors, white coral walls, Kanga fabric cushions, Indian Ocean trade route influence, brass oil lamps, daybed with carved legs, airy coastal luxury",
+      "description": "Portes en mangrove sculpté, corail blanc et Kanga coloré — le raffinement swahili de l'île de Lamu"
+    },
+    {
+      "id": "tz-zanzibar",
+      "name": "Zanzibar Luxe",
+      "country": "Tanzanie",
+      "flag": "🇹🇿",
+      "region": "Afrique de l'Est",
+      "family": "Côtier Swahili",
+      "colors": [
+        "#DEB887",
+        "#FFFFFF",
+        "#1B4F72",
+        "#2E8B57",
+        "#C4A35A"
+      ],
+      "colorNames": [
+        "Bois de rose",
+        "Blanc chaulé",
+        "Bleu océan",
+        "Vert épice",
+        "Or Zanzibar"
+      ],
+      "materials": [
+        "bois de rose sculpté",
+        "tissu Kanga coloré",
+        "perles de Zanzibar",
+        "cuivre",
+        "dentelle de Zanzibari"
+      ],
+      "patterns": [
+        "portes Zanzibari sculptées à clous de laiton",
+        "dentelle de fenêtres",
+        "motifs d'épices",
+        "arabesques"
+      ],
+      "rooms": [
+        "chambre",
+        "salon",
+        "salle de bain",
+        "terrasse"
+      ],
+      "prompt": "Zanzibar luxury interior design, ornate carved wooden bed with brass studs, Kanga textile draping, white lime walls, Indian Ocean breeze, spice trade history, turquoise and gold accents, boutique hotel photography",
+      "description": "Portes sculptées à clous de laiton, lit en bois de rose et Kanga — le luxe swahili de l'île aux épices"
+    },
+    {
+      "id": "tz-tinga",
+      "name": "Tinga Tinga Art",
+      "country": "Tanzanie",
+      "flag": "🇹🇿",
+      "region": "Afrique de l'Est",
+      "family": "Urbain Contemporain",
+      "colors": [
+        "#FF4500",
+        "#FFD700",
+        "#32CD32",
+        "#1E90FF",
+        "#FF1493"
+      ],
+      "colorNames": [
+        "Rouge safari",
+        "Jaune soleil",
+        "Vert savane",
+        "Bleu ciel",
+        "Rose tropical"
+      ],
+      "materials": [
+        "peintures Tinga Tinga",
+        "tissu batik",
+        "bois peint",
+        "métal coloré",
+        "plastique recyclé"
+      ],
+      "patterns": [
+        "animaux naïfs colorés",
+        "poissons géométriques",
+        "oiseaux répétitifs",
+        "spirales animales"
+      ],
+      "rooms": [
+        "chambre enfant",
+        "salon",
+        "restaurant",
+        "café"
+      ],
+      "prompt": "Tinga Tinga painting inspired interior design Tanzania, naive colorful animal paintings as wall art, electric enamel paint colors, whimsical safari animals, Dar es Salaam street art energy, playful maximalist African pop art",
+      "description": "Peintures naïves d'animaux aux couleurs pop électriques — l'art de rue Tinga Tinga de Dar es Salaam"
+    },
+    {
+      "id": "et-axoumite",
+      "name": "Axoumite Antique",
+      "country": "Éthiopie",
+      "flag": "🇪🇹",
+      "region": "Afrique de l'Est",
+      "family": "Islamique Africain",
+      "colors": [
+        "#C9A84C",
+        "#2C1810",
+        "#FFFFFF",
+        "#C41E3A",
+        "#006400"
+      ],
+      "colorNames": [
+        "Or Axoum",
+        "Nuit d'Éthiopie",
+        "Lin blanc",
+        "Rouge sang",
+        "Vert croix"
+      ],
+      "materials": [
+        "pierre basaltique",
+        "lin éthiopien Habesha",
+        "bijoux en argent Harari",
+        "croix coptes",
+        "bois d'olivier"
+      ],
+      "patterns": [
+        "croix éthiopiennes",
+        "arc Axoumite en gradins",
+        "motifs Lalibela",
+        "tissu Tibeb brodé"
+      ],
+      "rooms": [
+        "salon",
+        "bibliothèque",
+        "chambre",
+        "chapelle privée"
+      ],
+      "prompt": "Ancient Axum Ethiopian interior design, basalt stone walls, Coptic cross motifs, white Habesha linen textiles, golden Lalibela rock church inspiration, ancient Christian African art, candlelit sacred atmosphere",
+      "description": "Pierre basaltique, croix coptes en or et lin Habesha — la grandeur antique du Royaume d'Axoum"
+    },
+    {
+      "id": "et-harar",
+      "name": "Harar Coloré",
+      "country": "Éthiopie",
+      "flag": "🇪🇹",
+      "region": "Afrique de l'Est",
+      "family": "Géométrique Peint",
+      "colors": [
+        "#32CD32",
+        "#FFD700",
+        "#FF4500",
+        "#9400D3",
+        "#FFFFFF"
+      ],
+      "colorNames": [
+        "Vert Harar",
+        "Jaune curcuma",
+        "Orange piment",
+        "Violet Harar",
+        "Blanc chaux"
+      ],
+      "materials": [
+        "murs peints en vert et jaune",
+        "paniers Harari tissés",
+        "Khat séché",
+        "bois d'eucalyptus",
+        "nattes"
+      ],
+      "patterns": [
+        "paniers Harari à motifs",
+        "façades peintes colorées",
+        "niches à paniers",
+        "tressage géométrique"
+      ],
+      "rooms": [
+        "salon",
+        "cuisine",
+        "salle à manger",
+        "couloir"
+      ],
+      "prompt": "Harar Ethiopia colorful interior design, green and yellow painted walls, traditional Harari woven baskets as wall art, Ethiopian spice market colors, cozy intimate merchant house, warm lamp light, artisan craft aesthetic",
+      "description": "Murs peints en vert et jaune vif, paniers Harari en cascade — la cité aux 99 mosquées"
+    },
+    {
+      "id": "za-ndebele",
+      "name": "Ndebele Bold",
+      "country": "Afrique du Sud",
+      "flag": "🇿🇦",
+      "region": "Afrique Australe",
+      "family": "Géométrique Peint",
+      "colors": [
+        "#FFFFFF",
+        "#000000",
+        "#FF0000",
+        "#0000FF",
+        "#FFFF00"
+      ],
+      "colorNames": [
+        "Blanc kaolin",
+        "Noir contour",
+        "Rouge vif",
+        "Bleu ciel",
+        "Jaune soleil"
+      ],
+      "materials": [
+        "peinture acrylique sur mur",
+        "perles Ndebele",
+        "tissu apron",
+        "métal coloré",
+        "béton"
+      ],
+      "patterns": [
+        "triangles imbriqués",
+        "rectangles concentriques",
+        "formes géométriques primaires",
+        "contours noirs épais"
+      ],
+      "rooms": [
+        "façade",
+        "salon",
+        "chambre",
+        "salle de bain"
+      ],
+      "prompt": "Ndebele geometric art interior South Africa, bold painted geometric triangles in red blue yellow on white walls, thick black outlines, Esther Mahlangu inspired wall mural, graphic primary colors, contemporary African statement interior",
+      "description": "Triangles et rectangles imbriqués en primaires — l'art mural Ndebele, de Esther Mahlangu aux musées du monde"
+    },
+    {
+      "id": "za-zulu",
+      "name": "Zulu Prestige",
+      "country": "Afrique du Sud",
+      "flag": "🇿🇦",
+      "region": "Afrique Australe",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#000000",
+        "#FF0000",
+        "#FFFFFF",
+        "#FFFF00",
+        "#228B22"
+      ],
+      "colorNames": [
+        "Noir bouclier",
+        "Rouge royal",
+        "Blanc ivoire",
+        "Jaune Zulu",
+        "Vert savane"
+      ],
+      "materials": [
+        "boucliers Zulu en peau de bœuf",
+        "perles colorées",
+        "corne sculptée",
+        "peau de léopard",
+        "bois d'acacia"
+      ],
+      "patterns": [
+        "motifs de boucliers Zulu",
+        "codes de couleurs de perles",
+        "triangles isométriques",
+        "zigzags"
+      ],
+      "rooms": [
+        "salon",
+        "bureau",
+        "entrée",
+        "chambre"
+      ],
+      "prompt": "Zulu prestige interior design South Africa, cowhide shield wall display, Zulu beadwork panels, black and red palette, leopard textile accents, warrior ceremonial objects, KwaZulu-Natal lodge luxury",
+      "description": "Boucliers en peau, perles aux codes de couleurs symboliques — la puissance cérémonielle Zulu"
+    },
+    {
+      "id": "za-cape-malay",
+      "name": "Cape Malay",
+      "country": "Afrique du Sud",
+      "flag": "🇿🇦",
+      "region": "Afrique Australe",
+      "family": "Islamique Africain",
+      "colors": [
+        "#FF69B4",
+        "#FFD700",
+        "#00CED1",
+        "#FF6347",
+        "#98FB98"
+      ],
+      "colorNames": [
+        "Rose Bo-Kaap",
+        "Jaune épice",
+        "Turquoise",
+        "Orange tamarin",
+        "Vert fenugrec"
+      ],
+      "materials": [
+        "façades colorées peintes",
+        "carrelage Cape Malay",
+        "bois peint",
+        "tissu batik malais",
+        "aromates décoratifs"
+      ],
+      "patterns": [
+        "façades pastel colorées",
+        "ornements islamiques",
+        "motifs batik malais",
+        "treillis de fenêtres"
+      ],
+      "rooms": [
+        "salon",
+        "cuisine",
+        "salle à manger",
+        "entrée"
+      ],
+      "prompt": "Cape Malay Bo-Kaap interior design South Africa, pastel painted walls pink and yellow, Malay-Islamic decorative patterns, spice trade history, colorful Cape Town neighborhood, cheerful multicultural aesthetic, bright daylight",
+      "description": "Façades en rose, jaune et turquoise, carrelage et épices — le quartier Bo-Kaap et l'héritage malais du Cap"
+    },
+    {
+      "id": "na-himba",
+      "name": "Himba Rouge",
+      "country": "Namibie",
+      "flag": "🇳🇦",
+      "region": "Afrique Australe",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#8B2500",
+        "#D2691E",
+        "#000000",
+        "#F4A460",
+        "#DEB887"
+      ],
+      "colorNames": [
+        "Ocre Himba",
+        "Terre rouge",
+        "Nuit Namibie",
+        "Sable doré",
+        "Peau naturelle"
+      ],
+      "materials": [
+        "ocre rouge Otjize",
+        "peau de chèvre",
+        "bois de mopane",
+        "ornements en métal",
+        "corne de bœuf"
+      ],
+      "patterns": [
+        "motifs d'ocre sur surfaces",
+        "silhouettes Himba sculptées",
+        "cercles concentriques",
+        "frises de chèvres"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle de bain",
+        "spa"
+      ],
+      "prompt": "Himba red ochre interior design Namibia, deep red earthy tones inspired by Otjize body paint, mopane wood, goat leather, desert minimalism, raw organic materials, Kunene River inspiration, dramatic desert light",
+      "description": "Ocre rouge Otjize sur murs bruts, peau de chèvre et bois de mopane — la beauté primitive Himba"
+    },
+    {
+      "id": "na-desert",
+      "name": "Désert Namib",
+      "country": "Namibie",
+      "flag": "🇳🇦",
+      "region": "Afrique Australe",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#E2703A",
+        "#2C1810",
+        "#F5DEB3",
+        "#87CEEB",
+        "#696969"
+      ],
+      "colorNames": [
+        "Orange dune",
+        "Brun nuit",
+        "Sable chaud",
+        "Ciel bleu",
+        "Pierre grise"
+      ],
+      "materials": [
+        "quartzite",
+        "bois pétrifié",
+        "sable de dune",
+        "métal rouillé",
+        "verre soufflé"
+      ],
+      "patterns": [
+        "ondes de dunes",
+        "craquelures de désert",
+        "minimalisme extrême",
+        "horizons"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "bureau",
+        "salle de bain"
+      ],
+      "prompt": "Namib desert interior design, ochre orange sand dune textures, petrified wood, rust and sand color palette, extreme minimalism, vast horizon views, raw natural Namibian minerals, desert luxury lodge, golden hour photography",
+      "description": "Orange de dune, bois pétrifié et minimalisme du désert le plus vieux du monde — le Namib"
+    },
+    {
+      "id": "mg-merina",
+      "name": "Merina des Hautes Terres",
+      "country": "Madagascar",
+      "flag": "🇲🇬",
+      "region": "Afrique Australe",
+      "family": "Terres & Banco",
+      "colors": [
+        "#8B0000",
+        "#DEB887",
+        "#F5F5DC",
+        "#228B22",
+        "#8B4513"
+      ],
+      "colorNames": [
+        "Rouge brique",
+        "Bois de rose",
+        "Lin malgache",
+        "Vert rizière",
+        "Palissandre"
+      ],
+      "materials": [
+        "brique rouge des hauts plateaux",
+        "bois de palissandre",
+        "soie Lamba",
+        "raphia malgache",
+        "poterie Merina"
+      ],
+      "patterns": [
+        "sculptures de portes Merina",
+        "motifs Lamba tissés",
+        "tressage en éventail",
+        "broderies de soie"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle à manger",
+        "bureau"
+      ],
+      "prompt": "Merina Madagascar highlands interior design, red brick walls, rosewood furniture, Lamba silk textiles, Antananarivo historic house architecture, terracotta roof tile elements, cool misty highland atmosphere",
+      "description": "Brique rouge des hauts plateaux, palissandre et soie Lamba — l'élégance royale Merina d'Antananarivo"
+    },
+    {
+      "id": "bj-vodoun",
+      "name": "Vodoun Sacré",
+      "country": "Bénin",
+      "flag": "🇧🇯",
+      "region": "Afrique de l'Ouest",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#8B0000",
+        "#000000",
+        "#FFFFFF",
+        "#FF8C00",
+        "#4B0082"
+      ],
+      "colorNames": [
+        "Rouge sang",
+        "Nuit sacrée",
+        "Blanc kaolin",
+        "Orange feu",
+        "Violet mystère"
+      ],
+      "materials": [
+        "fer forgé d'Ogoun",
+        "tissu rouge Vodoun",
+        "kaolin",
+        "plumes",
+        "récipients rituels"
+      ],
+      "patterns": [
+        "vévés Vodoun en fer forgé",
+        "autels à figures",
+        "motifs de serpents Dan",
+        "étoiles rituelles"
+      ],
+      "rooms": [
+        "salon",
+        "bureau",
+        "galerie",
+        "espace méditation"
+      ],
+      "prompt": "Voodoo sacred interior design Benin, Ogun iron sculptures, white kaolin ritual objects, deep red and black palette, spiritual ceremony atmosphere, forged metal wall art, sacred ancestral objects as decor, dark moody photography",
+      "description": "Sculptures en fer d'Ogoun, kaolin blanc et tissus rouges rituels — l'univers sacré du Vodoun de Ouidah"
+    },
+    {
+      "id": "bj-fon",
+      "name": "Fon Appliqué",
+      "country": "Bénin",
+      "flag": "🇧🇯",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#FFD700",
+        "#8B0000",
+        "#006400",
+        "#000000",
+        "#F5DEB3"
+      ],
+      "colorNames": [
+        "Or Dahomey",
+        "Rouge royal",
+        "Vert savane",
+        "Noir contour",
+        "Beige tissu"
+      ],
+      "materials": [
+        "appliqués textiles Fon",
+        "velours découpé",
+        "tissu de coton",
+        "fil d'or",
+        "bois d'iroko"
+      ],
+      "patterns": [
+        "roi d'Abomey en tissu appliqué",
+        "guerriers cousus",
+        "animaux héraldiques",
+        "scènes historiques"
+      ],
+      "rooms": [
+        "salon",
+        "galerie",
+        "bibliothèque",
+        "bureau"
+      ],
+      "prompt": "Fon Kingdom Dahomey applique interior design Benin, royal textile wall hangings with sewn battle scenes and historical motifs, Abomey palace inspiration, gold and crimson, tapestry storytelling, African heritage museum aesthetic",
+      "description": "Tapisseries d'appliqués cousus racontant les batailles du Dahomey — l'art textile royal des Fon"
+    },
+    {
+      "id": "ne-touareg",
+      "name": "Touareg Aïr",
+      "country": "Niger",
+      "flag": "🇳🇪",
+      "region": "Afrique de l'Ouest",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#1A237E",
+        "#000000",
+        "#C9A84C",
+        "#F5F5DC",
+        "#4A4A4A"
+      ],
+      "colorNames": [
+        "Indigo nuit",
+        "Nuit bleue",
+        "Or Sahara",
+        "Sable",
+        "Pierre d'Aïr"
+      ],
+      "materials": [
+        "cuir chameau",
+        "argent ciselé",
+        "tissu indigo",
+        "tente en peau",
+        "bois d'ébène"
+      ],
+      "patterns": [
+        "croix d'Agadez en argent",
+        "motifs de selle",
+        "inscriptions Tifinagh",
+        "géométrie nomade"
+      ],
+      "rooms": [
+        "salon",
+        "bureau",
+        "chambre",
+        "bibliothèque"
+      ],
+      "prompt": "Tuareg Air Niger interior design, deep indigo leather tent atmosphere, silver Agadez cross jewelry displayed, Saharan desert nomadic luxury, camel leather poufs, night blue palette, starry desert sky inspiration, elegant minimal",
+      "description": "Indigo profond, argent ciselé de la croix d'Agadez et cuir chameau — les Hommes Bleus du Sahara"
+    },
+    {
+      "id": "bf-kasena",
+      "name": "Kasena Mural",
+      "country": "Burkina Faso",
+      "flag": "🇧🇫",
+      "region": "Afrique de l'Ouest",
+      "family": "Géométrique Peint",
+      "colors": [
+        "#000000",
+        "#FFFFFF",
+        "#D2691E",
+        "#8B0000",
+        "#F5DEB3"
+      ],
+      "colorNames": [
+        "Noir charbon",
+        "Blanc kaolin",
+        "Terre rouge",
+        "Rouge latérite",
+        "Sable"
+      ],
+      "materials": [
+        "enduit de banco",
+        "kaolin blanc",
+        "charbon végétal",
+        "paille tressée",
+        "bois de néré"
+      ],
+      "patterns": [
+        "motifs géométriques Kasena",
+        "réseau de triangles",
+        "bandes horizontales bicolores",
+        "croix symétriques"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle à manger",
+        "entrée"
+      ],
+      "prompt": "Kasena mural art interior design Burkina Faso, black and white geometric patterns on mud walls, triangular interlocking motifs, Tiebele village architecture, Sahel earthy aesthetic, minimalist African geometry, natural materials",
+      "description": "Triangles et géométries bicolores peints sur banco — l'art mural féminin Kasena du village de Tiébélé"
+    },
+    {
+      "id": "so-nomade",
+      "name": "Nomade Somali",
+      "country": "Somalie",
+      "flag": "🇸🇴",
+      "region": "Afrique de l'Est",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#DEB887",
+        "#8B4513",
+        "#87CEEB",
+        "#F5DEB3",
+        "#228B22"
+      ],
+      "colorNames": [
+        "Sable Ogaden",
+        "Acacia brun",
+        "Bleu ciel corne",
+        "Beige nattes",
+        "Vert oasis"
+      ],
+      "materials": [
+        "tente Aqal",
+        "nattes tressées",
+        "tissu Dirac coloré",
+        "cuir de chameau",
+        "bambou"
+      ],
+      "patterns": [
+        "tressage géométrique de nattes",
+        "motifs de Dirac brodé",
+        "arabesques somalies",
+        "zigzags nomades"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "terrasse"
+      ],
+      "prompt": "Somali nomadic aqal tent interior design, woven grass mat walls and floor, camel leather poufs, colorful Dirac fabric draping, Horn of Africa dry landscape inspiration, portable cozy nomadic aesthetic, warm desert colors",
+      "description": "Tente Aqal de nattes tressées, Dirac coloré et cuir de chameau — la vie nomade de la Corne de l'Afrique"
+    },
+    {
+      "id": "ug-buganda",
+      "name": "Buganda Barkcloth",
+      "country": "Ouganda",
+      "flag": "🇺🇬",
+      "region": "Afrique de l'Est",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#8B4513",
+        "#D2691E",
+        "#F5DEB3",
+        "#8B6914",
+        "#2C1810"
+      ],
+      "colorNames": [
+        "Brun Barkcloth",
+        "Sienna Ficus",
+        "Beige naturel",
+        "Or royal",
+        "Noir ébène"
+      ],
+      "materials": [
+        "barkcloth Mutuba en écorce de figuier",
+        "tambours royaux encadrés",
+        "bois d'ébène",
+        "raphia",
+        "tissu d'écorce battue"
+      ],
+      "patterns": [
+        "texture d'écorce battue",
+        "motifs royaux Buganda",
+        "symboles de clan",
+        "frises de tambours"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "bureau",
+        "galerie"
+      ],
+      "prompt": "Buganda Uganda barkcloth interior, Mutuba fig tree bark fabric wall covering and upholstery, royal drum display, warm earthy brown tones, UNESCO heritage material, organic texture, Kampala traditional house, gentle museum light",
+      "description": "Tissu d'écorce de figuier Mutuba, tambours royaux et bois d'ébène — le patrimoine immatériel Buganda"
+    },
+    {
+      "id": "zw-shona",
+      "name": "Shona Sculpture",
+      "country": "Zimbabwe",
+      "flag": "🇿🇼",
+      "region": "Afrique Australe",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#708090",
+        "#2F4F4F",
+        "#C4A35A",
+        "#F5F5DC",
+        "#556B2F"
+      ],
+      "colorNames": [
+        "Gris verdite",
+        "Vert stéatite",
+        "Or doré",
+        "Crème pierre",
+        "Vert serpentine"
+      ],
+      "materials": [
+        "sculpture en verdite",
+        "stéatite verte de Zimbabwe",
+        "pierre serpentine",
+        "bois de mukwa",
+        "métal"
+      ],
+      "patterns": [
+        "formes organiques abstraites",
+        "figures humaines stylisées",
+        "fusion humain-animal",
+        "surfaces polies"
+      ],
+      "rooms": [
+        "salon",
+        "galerie",
+        "bureau",
+        "jardin intérieur"
+      ],
+      "prompt": "Shona sculpture Zimbabwe interior design, green verdite stone sculptures as centerpieces, serpentine abstract figures, polished stone surfaces, gallery lighting, natural organic shapes, modern African art collector space",
+      "description": "Sculptures en verdite verte et stéatite de Zimbabwe, formes organiques abstraites — l'école Shona mondialement reconnue"
+    },
+    {
+      "id": "ga-fang",
+      "name": "Fang Reliquaire",
+      "country": "Gabon",
+      "flag": "🇬🇦",
+      "region": "Afrique Centrale",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#3D1C02",
+        "#C4A35A",
+        "#000000",
+        "#8B4513",
+        "#F5DEB3"
+      ],
+      "colorNames": [
+        "Ébène",
+        "Cuivre reliquaire",
+        "Nuit équatoriale",
+        "Bois rouge",
+        "Ivoire"
+      ],
+      "materials": [
+        "boîtes à reliques Byeri",
+        "bronze à patine",
+        "fibre végétale",
+        "bois de padouk",
+        "raphia"
+      ],
+      "patterns": [
+        "visages gardiens Fang",
+        "formes cubistes avant-gardistes",
+        "motifs de protection",
+        "cylindres sacrés"
+      ],
+      "rooms": [
+        "galerie",
+        "bureau",
+        "salon",
+        "couloir"
+      ],
+      "prompt": "Fang reliquary Gabon interior design, Byeri ancestral guardian figures displayed in gallery setting, equatorial forest dark wood, bronze patina, collector's cabinet of African art, dark moody atmosphere, museum spotlighting",
+      "description": "Boîtes à reliques Byeri, gardiens aux visages cubistes — l'art Fang qui inspira Picasso"
+    },
+    {
+      "id": "dz-casbah",
+      "name": "Casbah d'Alger",
+      "country": "Algérie",
+      "flag": "🇩🇿",
+      "region": "Afrique du Nord",
+      "family": "Islamique Africain",
+      "colors": [
+        "#FFFFFF",
+        "#1B4F72",
+        "#B8860B",
+        "#2C3E50",
+        "#8B4513"
+      ],
+      "colorNames": [
+        "Blanc chaux",
+        "Bleu médina",
+        "Or vieilli",
+        "Ardoise",
+        "Terre cuite"
+      ],
+      "materials": [
+        "zellige algérois",
+        "bois de cèdre",
+        "fer forgé",
+        "stuc sculpté",
+        "marbre"
+      ],
+      "patterns": [
+        "arches mauresques",
+        "muqarnas",
+        "géométrie islamique",
+        "carreaux colorés"
+      ],
+      "rooms": [
+        "salon",
+        "cour intérieure",
+        "terrasse",
+        "entrée"
+      ],
+      "prompt": "Algiers Casbah interior, Moorish architecture, white lime walls with blue medina accents, zellige tile floors, carved cedar wood ceilings, wrought iron balconies, central patio with fountain, Ottoman influence, dramatic shadows, heritage photography",
+      "description": "Ruelles escarpées, patios secrets et zellige bleu — l'âme millénaire de la Casbah d'Alger"
+    },
+    {
+      "id": "dz-kabylie",
+      "name": "Kabylie Rustique",
+      "country": "Algérie",
+      "flag": "🇩🇿",
+      "region": "Afrique du Nord",
+      "family": "Terres & Banco",
+      "colors": [
+        "#8B4513",
+        "#D2691E",
+        "#F5DEB3",
+        "#228B22",
+        "#696969"
+      ],
+      "colorNames": [
+        "Argile Kabyle",
+        "Terre brûlée",
+        "Paille",
+        "Olivier",
+        "Pierre grise"
+      ],
+      "materials": [
+        "pierre sèche",
+        "bois d'olivier",
+        "toiles de laine",
+        "terre cuite",
+        "roseau"
+      ],
+      "patterns": [
+        "géométrie berbère",
+        "losanges",
+        "bandes horizontales",
+        "sculptures libellules"
+      ],
+      "rooms": [
+        "salon",
+        "salle à manger",
+        "terrasse",
+        "chambre"
+      ],
+      "prompt": "Kabyle rustic interior Algeria, dry stone walls, olive wood furniture, woven wool textiles, earthy terracotta tones, mountain village atmosphere, traditional Berber house, natural materials, warm inviting light",
+      "description": "Maisons en pierre sèche, bois d'olivier et tissus de laine — la Kabylie authentique"
+    },
+    {
+      "id": "dz-sahara",
+      "name": "Sahara Algérien",
+      "country": "Algérie",
+      "flag": "🇩🇿",
+      "region": "Afrique du Nord",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#E2703A",
+        "#D4AC0D",
+        "#2C1810",
+        "#F5DEB3",
+        "#8B4513"
+      ],
+      "colorNames": [
+        "Orange dune",
+        "Or désert",
+        "Nuit saharienne",
+        "Sable",
+        "Ocre rouge"
+      ],
+      "materials": [
+        "peau de chameau",
+        "tente nomade",
+        "tapis de sable",
+        "bois de palmier",
+        "métal"
+      ],
+      "patterns": [
+        "bandes nomades",
+        "franges",
+        "tressages",
+        "motifs touaregs"
+      ],
+      "rooms": [
+        "salon",
+        "tente",
+        "terrasse",
+        "espace nomade"
+      ],
+      "prompt": "Algerian Sahara nomadic interior, desert tent atmosphere, camel leather poufs, sand dune color palette, nomadic textiles, palm wood accents, golden hour lighting, desert luxury camping, warm earth tones",
+      "description": "Tentes nomades, cuir de chameau et dunes ocre — le Sahara algérien"
+    },
+    {
+      "id": "dz-tuareg",
+      "name": "Ahaggar Tuareg",
+      "country": "Algérie",
+      "flag": "🇩🇿",
+      "region": "Afrique du Nord",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#1A237E",
+        "#000000",
+        "#C9A84C",
+        "#F5F5DC",
+        "#4A4A4A"
+      ],
+      "colorNames": [
+        "Indigo Targui",
+        "Nuit du Hoggar",
+        "Argent",
+        "Lin",
+        "Gris basalte"
+      ],
+      "materials": [
+        "cuir indigo",
+        "argent ciselé",
+        "tente peau",
+        "bois d'ébène",
+        "sel"
+      ],
+      "patterns": [
+        "croix d'Agadez",
+        "inscriptions Tifinagh",
+        "géométrie nomade",
+        "franges"
+      ],
+      "rooms": [
+        "tente",
+        "salon",
+        "espace rituel"
+      ],
+      "prompt": "Tuareg Ahaggar interior Algeria, deep indigo leather tent, silver Agadez cross jewelry, Saharan Hoggar mountains, camel leather, night blue and silver palette, nomadic elegance, dramatic desert light",
+      "description": "Cuir indigo profond, croix d'Agadez en argent — l'élégance nomade des Touaregs du Hoggar"
+    },
+    {
+      "id": "dz-mzab",
+      "name": "M'zab Minimaliste",
+      "country": "Algérie",
+      "flag": "🇩🇿",
+      "region": "Afrique du Nord",
+      "family": "Islamique Africain",
+      "colors": [
+        "#F5F5DC",
+        "#8B7355",
+        "#DEB887",
+        "#2F4F4F",
+        "#FFFFFF"
+      ],
+      "colorNames": [
+        "Ocre M'zab",
+        "Sable",
+        "Terre",
+        "Ardoise",
+        "Blanc pur"
+      ],
+      "materials": [
+        "terre crue",
+        "palmier dattier",
+        "argile",
+        "chaux blanche",
+        "bois local"
+      ],
+      "patterns": [
+        "architecture vernaculaire",
+        "formes cubiques",
+        "minarets",
+        "purisme"
+      ],
+      "rooms": [
+        "salon",
+        "cour",
+        "salle de prière",
+        "chambre"
+      ],
+      "prompt": "Mzab Ghardaia interior Algeria, Ibadi minimalist architecture, raw earth walls, white lime accents, date palm wood, cubic geometric forms, desert oasis atmosphere, pure simple aesthetic, traditional courtyard house",
+      "description": "Maisons cubiques en terre, minarets et pureté ibadite — l'architecture unique du M'zab"
+    },
+    {
+      "id": "cg-brazza",
+      "name": "Brazzaville Afro-Urbain",
+      "country": "Congo",
+      "flag": "🇨🇬",
+      "region": "Afrique Centrale",
+      "family": "Urbain Contemporain",
+      "colors": [
+        "#FF4500",
+        "#FFD700",
+        "#006400",
+        "#1E90FF",
+        "#000000"
+      ],
+      "colorNames": [
+        "Rouge Poto-Poto",
+        "Jaune taxi",
+        "Vert Congo",
+        "Bleu fleuve",
+        "Nuit brazza"
+      ],
+      "materials": [
+        "béton brut",
+        "tissu Wax congolais",
+        "métal recyclé",
+        "bois local",
+        "néons"
+      ],
+      "patterns": [
+        "street art congolais",
+        "motifs Poto-Poto",
+        "typographie africaine",
+        "géométrie urbaine"
+      ],
+      "rooms": [
+        "salon",
+        "bureau",
+        "terrasse",
+        "espace créatif"
+      ],
+      "prompt": "Brazzaville Congo urban interior design, Afro-contemporary creative space, raw concrete walls with vibrant Congolese Wax fabric art, neon accents, recycled metal furniture, Poto-Poto art district vibe, bold energetic colors, urban African modernity",
+      "description": "Béton brut, Wax congolais explosif et néons — l'énergie créative de Poto-Poto et Brazzaville"
+    },
+    {
+      "id": "cg-vili",
+      "name": "Vili Royal",
+      "country": "Congo",
+      "flag": "🇨🇬",
+      "region": "Afrique Centrale",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#4B0082",
+        "#FFD700",
+        "#DC143C",
+        "#000000",
+        "#F5F5DC"
+      ],
+      "colorNames": [
+        "Violet royal",
+        "Or Vili",
+        "Rouge couronne",
+        "Noir dignité",
+        "Blanc pureté"
+      ],
+      "materials": [
+        "tissu raphia royal",
+        "perles de couronne",
+        "bois d'iroko",
+        "cuivre",
+        "ivoire sculpté"
+      ],
+      "patterns": [
+        "motifs de couronne Vili",
+        "symboles de pouvoir",
+        "sculptures de sceptres",
+        "géométrie royale"
+      ],
+      "rooms": [
+        "salon",
+        "salle du trône",
+        "bureau",
+        "galerie"
+      ],
+      "prompt": "Vili royal interior Congo, Loango kingdom heritage, royal raphia textiles and crown beadwork, carved scepter display, deep purple and gold palette, coastal kingdom atmosphere, regal museum-quality presentation",
+      "description": "Textiles royaux en raphia, perles de couronne et sceptres sculptés — la royauté Vili du Royaume de Loango"
+    },
+    {
+      "id": "cf-bayaka",
+      "name": "Bayaka Forêt",
+      "country": "RCA",
+      "flag": "🇨🇫",
+      "region": "Afrique Centrale",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#228B22",
+        "#8B4513",
+        "#F5DEB3",
+        "#4A235A",
+        "#D2691E"
+      ],
+      "colorNames": [
+        "Vert forêt",
+        "Bois liane",
+        "Paille",
+        "Terre",
+        "Ocre"
+      ],
+      "materials": [
+        "feuilles de palmier",
+        "lianes",
+        "écorce",
+        "fibres végétales",
+        "argile"
+      ],
+      "patterns": [
+        "motifs forestiers",
+        "spirales de lianes",
+        "formes organiques",
+        "masques rituels"
+      ],
+      "rooms": [
+        "case",
+        "espace rituel",
+        "abri",
+        "galerie"
+      ],
+      "prompt": "Bayaka Aka forest interior Central African Republic, tropical rainforest dwelling, palm leaf and vine construction, organic curved forms, deep forest green palette, earth and bark textures, traditional pygmy architecture, dappled forest light",
+      "description": "Cases en feuilles de palmier, lianes et forêt équatoriale — l'habitat Bayaka de la forêt centrafricaine"
+    },
+    {
+      "id": "td-sara",
+      "name": "Sara Traditionnel",
+      "country": "Tchad",
+      "flag": "🇹🇩",
+      "region": "Afrique Centrale",
+      "family": "Terres & Banco",
+      "colors": [
+        "#8B4513",
+        "#D2691E",
+        "#F5F5DC",
+        "#228B22",
+        "#A0522D"
+      ],
+      "colorNames": [
+        "Terre Tchad",
+        "Argile",
+        "Lin",
+        "Vert savane",
+        "Bois"
+      ],
+      "materials": [
+        "banco",
+        "paille",
+        "cuir",
+        "osier",
+        "terre cuite"
+      ],
+      "patterns": [
+        "géométrie Sara",
+        "motifs de scarifications",
+        "tressages",
+        "peintures corporelles"
+      ],
+      "rooms": [
+        "case",
+        "terrasse",
+        "cour",
+        "espace communautaire"
+      ],
+      "prompt": "Sara traditional interior Chad, Sudano-Sahelian earth architecture, banco mud walls with thatched roof, woven straw mats, terracotta pottery, warm earthy tones, Chadian savanna inspiration, traditional courtyard layout",
+      "description": "Architecture en banco, paille et terre — la tradition Sara du Tchad méridional"
+    },
+    {
+      "id": "td-ennedi",
+      "name": "Ennedi Désert",
+      "country": "Tchad",
+      "flag": "🇹🇩",
+      "region": "Afrique Centrale",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#E2703A",
+        "#DEB887",
+        "#8B4513",
+        "#2C1810",
+        "#F5DEB3"
+      ],
+      "colorNames": [
+        "Orange grès",
+        "Sable",
+        "Roche",
+        "Nuit sahélienne",
+        "Oasis"
+      ],
+      "materials": [
+        "pierre de grès",
+        "sable",
+        "cuir",
+        "bois fossilisé",
+        "peau"
+      ],
+      "patterns": [
+        "rocaille Ennedi",
+        "gravures rupestres",
+        "formes minérales",
+        "nomadisme"
+      ],
+      "rooms": [
+        "abri",
+        "grotte aménagée",
+        "tente",
+        "espace nomade"
+      ],
+      "prompt": "Ennedi desert interior Chad, ancient sandstone rock formations, cave dwelling atmosphere, leather and hide elements, prehistoric rock art inspiration, warm ochre and sand palette, desert nomadic sanctuary, dramatic natural light",
+      "description": "Rocaille du Sahara oriental, grottes aménagées et art rupestre — le désert mystique de l'Ennedi"
+    },
+    {
+      "id": "gq-annobon",
+      "name": "Annobón Créole",
+      "country": "Guinée Équatoriale",
+      "flag": "🇬🇶",
+      "region": "Afrique Centrale",
+      "family": "Côtier Swahili",
+      "colors": [
+        "#00CED1",
+        "#FFD700",
+        "#FF6347",
+        "#FFFFFF",
+        "#1E90FF"
+      ],
+      "colorNames": [
+        "Turquoise océan",
+        "Or soleil",
+        "Corail",
+        "Blanc plage",
+        "Bleu profond"
+      ],
+      "materials": [
+        "bois de balsa",
+        "coquillages",
+        "corail",
+        "tissu tropical",
+        "rotin"
+      ],
+      "patterns": [
+        "vagues océanes",
+        "motifs de tortues",
+        "tressages insulaires",
+        "végétation tropicale"
+      ],
+      "rooms": [
+        "salon",
+        "terrasse",
+        "chambre",
+        "véranda"
+      ],
+      "prompt": "Annobon Island Equatorial Guinea interior, tropical volcanic island atmosphere, turquoise ocean color palette, white coral sand accents, Balsa wood furniture, shell and coral decorations, beach house aesthetic, bright island light",
+      "description": "Île volcanique tropicale, bois de balsa et coquillages — le créole insulaire d'Annobón"
+    },
+    {
+      "id": "gn-fouta",
+      "name": "Fouta Djalon Terroir",
+      "country": "Guinée",
+      "flag": "🇬🇳",
+      "region": "Afrique de l'Ouest",
+      "family": "Terres & Banco",
+      "colors": [
+        "#8B4513",
+        "#D2691E",
+        "#F5DEB3",
+        "#228B22",
+        "#B8860B"
+      ],
+      "colorNames": [
+        "Terre Fouta",
+        "Argile",
+        "Sable",
+        "Vert montagne",
+        "Or"
+      ],
+      "materials": [
+        "banco",
+        "pierre",
+        "bois",
+        "paille",
+        "terre cuite"
+      ],
+      "patterns": [
+        "architecture en térre",
+        "toits de chaume",
+        "terrasse",
+        "motifs Peul"
+      ],
+      "rooms": [
+        "salon",
+        "cour",
+        "chambre",
+        "terrasse"
+      ],
+      "prompt": "Fouta Djalon Guinea highland interior, traditional earth architecture, mud brick walls with thatched roofs, mountain village atmosphere, woven grass mats, terracotta pottery, warm earth tones, Peul heritage, cool highland light",
+      "description": "Architecture en terre du Fouta Djalon, chaume et montagnes verdoyantes — l'héritage Peul de la Guinée"
+    },
+    {
+      "id": "gn-susse",
+      "name": "Sussu Textile",
+      "country": "Guinée",
+      "flag": "🇬🇳",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#4B0082",
+        "#FFD700",
+        "#DC143C",
+        "#000000",
+        "#F5F5DC"
+      ],
+      "colorNames": [
+        "Indigo",
+        "Or",
+        "Rouge",
+        "Noir",
+        "Blanc"
+      ],
+      "materials": [
+        "coton",
+        "indigo",
+        "fil de soie",
+        "perles",
+        "cuir"
+      ],
+      "patterns": [
+        "bandes indigo",
+        "broderies",
+        "géométrie",
+        "motifs Sussu"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "bureau",
+        "galerie"
+      ],
+      "prompt": "Sussu textile interior Guinea, indigo dyed cotton strips, embroidered patterns, vibrant purple and gold palette, traditional weaving heritage, coastal West African aesthetic, artisan craft displays, warm studio light",
+      "description": "Tissus indigo Sussu, broderies et coton — l'art textile de la Guinée côtière"
+    },
+    {
+      "id": "sl-temne",
+      "name": "Temne Rituel",
+      "country": "Sierra Leone",
+      "flag": "🇸🇱",
+      "region": "Afrique de l'Ouest",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#8B4513",
+        "#FFFFFF",
+        "#000000",
+        "#DC143C",
+        "#FFD700"
+      ],
+      "colorNames": [
+        "Bois",
+        "Blanc",
+        "Noir",
+        "Rouge",
+        "Or"
+      ],
+      "materials": [
+        "bois sculpté",
+        "craie",
+        "feuilles",
+        "terre",
+        "paille"
+      ],
+      "patterns": [
+        "masques Temne",
+        "scarifications",
+        "motifs rituels",
+        "tressages"
+      ],
+      "rooms": [
+        "salon",
+        "espace rituel",
+        "cour",
+        "galerie"
+      ],
+      "prompt": "Temne ritual interior Sierra Leone, carved wooden masks and ritual objects, white chalk and earth tones, tropical forest atmosphere, traditional Temne ceremonial space, bold graphic patterns, moody dramatic light",
+      "description": "Masques sculptés Temne, craie blanche et rituels — l'âme spirituelle de Sierra Leone"
+    },
+    {
+      "id": "sl-freetown",
+      "name": "Freetown Krio",
+      "country": "Sierra Leone",
+      "flag": "🇸🇱",
+      "region": "Afrique de l'Ouest",
+      "family": "Urbain Contemporain",
+      "colors": [
+        "#FFD700",
+        "#006400",
+        "#DC143C",
+        "#000000",
+        "#FFFFFF"
+      ],
+      "colorNames": [
+        "Jaune",
+        "Vert",
+        "Rouge",
+        "Noir",
+        "Blanc"
+      ],
+      "materials": [
+        "bois colonial",
+        "tissu wax",
+        "métal",
+        "pierre",
+        "verre"
+      ],
+      "patterns": [
+        "verandas",
+        "volets",
+        "motifs mixtes",
+        "colonial tropical"
+      ],
+      "rooms": [
+        "salon",
+        "véranda",
+        "bureau",
+        "salle à manger"
+      ],
+      "prompt": "Freetown Krio interior Sierra Leone, Creole colonial architecture, colorful wooden shutters, British West African heritage, tropical urban atmosphere, vibrant wax fabrics, historic port city aesthetic, warm natural light",
+      "description": "Architecture créole de Freetown, volets colorés et héritage colonial britannique — la capitale de Sierra Leone"
+    },
+    {
+      "id": "mr-maure",
+      "name": "Maure Nomade",
+      "country": "Mauritanie",
+      "flag": "🇲🇷",
+      "region": "Afrique de l'Ouest",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#1A237E",
+        "#FFFFFF",
+        "#8B4513",
+        "#D2691E",
+        "#F5F5DC"
+      ],
+      "colorNames": [
+        "Indigo",
+        "Blanc",
+        "Cuir",
+        "Sable",
+        "Lin"
+      ],
+      "materials": [
+        "cuir",
+        "tissu indigo",
+        "laine",
+        "peau",
+        "bois"
+      ],
+      "patterns": [
+        "broderies",
+        "tressages",
+        "géométrie nomade",
+        "franges"
+      ],
+      "rooms": [
+        "tente",
+        "salon",
+        "cour",
+        "chambre"
+      ],
+      "prompt": "Maure nomadic interior Mauritania, deep indigo dyed fabrics, leather tent atmosphere, Saharan desert luxury, white and blue palette, camel hair textiles, traditional Moorish aesthetic, dramatic desert light",
+      "description": "Tente maure, indigo profond et cuir du Sahara — l'élégance nomade de la Mauritanie"
+    },
+    {
+      "id": "tg-ewe",
+      "name": "Ewe Tissé",
+      "country": "Togo",
+      "flag": "🇹🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Textiles Royaux",
+      "colors": [
+        "#FFD700",
+        "#DC143C",
+        "#006400",
+        "#000000",
+        "#F5F5DC"
+      ],
+      "colorNames": [
+        "Or",
+        "Rouge",
+        "Vert",
+        "Noir",
+        "Blanc"
+      ],
+      "materials": [
+        "coton",
+        "soie",
+        "perles",
+        "bois",
+        "fil d'or"
+      ],
+      "patterns": [
+        "bandes",
+        "géométrie",
+        "motifs Ewe",
+        "tressages"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "salle à manger",
+        "bureau"
+      ],
+      "prompt": "Ewe woven interior Togo, intricate kente-style textiles, vibrant gold and red palette, traditional weaving heritage, coastal West African elegance, beaded embellishments, artisan craft aesthetic, warm studio light",
+      "description": "Textiles tissés Ewe, perles et tradition du Togo — l'art textile des peuples du Golfe"
+    },
+    {
+      "id": "tg-voodoo",
+      "name": "Vodun Togolais",
+      "country": "Togo",
+      "flag": "🇹🇬",
+      "region": "Afrique de l'Ouest",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#DC143C",
+        "#000000",
+        "#FFFFFF",
+        "#FFD700",
+        "#228B22"
+      ],
+      "colorNames": [
+        "Rouge",
+        "Noir",
+        "Blanc",
+        "Or",
+        "Vert"
+      ],
+      "materials": [
+        "bois sculpté",
+        "fer",
+        "craie",
+        "plumes",
+        "tissu"
+      ],
+      "patterns": [
+        "vévés",
+        "sculptures",
+        "autels",
+        "motifs vodun"
+      ],
+      "rooms": [
+        "salon",
+        "espace rituel",
+        "cour",
+        "galerie"
+      ],
+      "prompt": "Vodun interior Togo, sacred ritual space, carved wooden effigies and iron sculptures, red and black ceremonial palette, spiritual atmosphere, traditional Ewe vodun aesthetic, dramatic moody light, mystical ambiance",
+      "description": "Espace vodun sacré, sculptures en bois et fer — la spiritualité Ewe du Togo"
+    },
+    {
+      "id": "sd-nubie",
+      "name": "Nubie Antique",
+      "country": "Soudan",
+      "flag": "🇸🇩",
+      "region": "Afrique de l'Est",
+      "family": "Islamique Africain",
+      "colors": [
+        "#D2691E",
+        "#F5DEB3",
+        "#000000",
+        "#B8860B",
+        "#8B4513"
+      ],
+      "colorNames": [
+        "Sable",
+        "Ocre",
+        "Nuit",
+        "Or",
+        "Terre"
+      ],
+      "materials": [
+        "terre crue",
+        "palmier",
+        "tissu",
+        "cuir",
+        "pierre"
+      ],
+      "patterns": [
+        "motifs nubiens",
+        "géométrie",
+        "arabesques",
+        "sculptures"
+      ],
+      "rooms": [
+        "salon",
+        "cour",
+        "chambre",
+        "salle à manger"
+      ],
+      "prompt": "Nubian traditional interior Sudan, ancient Kushite heritage, mud brick architecture with domed roofs, Nile river inspired warm earth tones, palm wood accents, desert oasis atmosphere, traditional Nubian house, golden hour light",
+      "description": "Architecture nubienne en terre, dômes et héritage du Royaume de Koush — l'ancien Soudan"
+    },
+    {
+      "id": "mz-makua",
+      "name": "Makua Côtier",
+      "country": "Mozambique",
+      "flag": "🇲🇿",
+      "region": "Afrique Australe",
+      "family": "Côtier Swahili",
+      "colors": [
+        "#00CED1",
+        "#FFFFFF",
+        "#FFD700",
+        "#8B4513",
+        "#228B22"
+      ],
+      "colorNames": [
+        "Turquoise",
+        "Blanc",
+        "Or",
+        "Bois",
+        "Vert"
+      ],
+      "materials": [
+        "bois",
+        "coquillages",
+        "perles",
+        "tissu capulana",
+        "rotin"
+      ],
+      "patterns": [
+        "vagues",
+        "motifs capulana",
+        "tressages",
+        "coquillages"
+      ],
+      "rooms": [
+        "salon",
+        "véranda",
+        "chambre",
+        "terrasse"
+      ],
+      "prompt": "Makua coastal interior Mozambique, Swahili Indian Ocean aesthetic, turquoise and white palette, capulana fabric draping, shell and coral decorations, tropical beach house atmosphere, traditional Makua heritage, bright coastal light",
+      "description": "Côte swahili du Mozambique, tissu capulana et océan Indien — l'élégance côtière Makua"
+    },
+    {
+      "id": "mz-colonial",
+      "name": "Maputo Colonial",
+      "country": "Mozambique",
+      "flag": "🇲🇿",
+      "region": "Afrique Australe",
+      "family": "Urbain Contemporain",
+      "colors": [
+        "#FFD700",
+        "#006400",
+        "#DC143C",
+        "#FFFFFF",
+        "#000000"
+      ],
+      "colorNames": [
+        "Jaune",
+        "Vert",
+        "Rouge",
+        "Blanc",
+        "Noir"
+      ],
+      "materials": [
+        "bois colonial",
+        "azulejos",
+        "tissu",
+        "pierre",
+        "fer"
+      ],
+      "patterns": [
+        "verandas",
+        "azulejos portugais",
+        "balcons",
+        "architecture coloniale"
+      ],
+      "rooms": [
+        "salon",
+        "véranda",
+        "bureau",
+        "salle à manger"
+      ],
+      "prompt": "Maputo colonial interior Mozambique, Portuguese African heritage, azulejo tile accents, tropical urban architecture, colorful colonial buildings, vibrant African city atmosphere, historic capital aesthetic, warm natural light",
+      "description": "Architecture coloniale portugaise de Maputo, azulejos et héritage tropical — la capitale du Mozambique"
+    },
+    {
+      "id": "gw-baga",
+      "name": "Baga Nimba",
+      "country": "Guinée-Bissau",
+      "flag": "🇬🇼",
+      "region": "Afrique de l'Ouest",
+      "family": "Terres & Banco",
+      "colors": [
+        "#8B4513",
+        "#D2691E",
+        "#F5DEB3",
+        "#228B22",
+        "#B8860B"
+      ],
+      "colorNames": [
+        "Terre",
+        "Argile",
+        "Sable",
+        "Vert mangrove",
+        "Or"
+      ],
+      "materials": [
+        "banco",
+        "paille",
+        "bois",
+        "palmier",
+        "terre cuite"
+      ],
+      "patterns": [
+        "masque Nimba",
+        "architecture ronde",
+        "tressages",
+        "motifs Baga"
+      ],
+      "rooms": [
+        "salon",
+        "cour",
+        "chambre",
+        "espace rituel"
+      ],
+      "prompt": "Baga traditional interior Guinea-Bissau, sacred Nimba mask display, round earth architecture, coastal mangrove atmosphere, woven palm elements, warm earth tones, Bijagos archipelago inspiration, traditional ritual space",
+      "description": "Architecture ronde Baga, masque sacré Nimba et mangrove — l'héritage des îles Bijagos"
+    },
+    {
+      "id": "lr-americo",
+      "name": "Americo-Liberian",
+      "country": "Libéria",
+      "flag": "🇱🇷",
+      "region": "Afrique de l'Ouest",
+      "family": "Urbain Contemporain",
+      "colors": [
+        "#FFFFFF",
+        "#DC143C",
+        "#000080",
+        "#FFD700",
+        "#8B4513"
+      ],
+      "colorNames": [
+        "Blanc",
+        "Rouge",
+        "Bleu",
+        "Or",
+        "Bois"
+      ],
+      "materials": [
+        "bois",
+        "porcelaine",
+        "tissu",
+        "métal",
+        "verre"
+      ],
+      "patterns": [
+        "colonial américain",
+        "verandas",
+        "colonnes",
+        "symétrie"
+      ],
+      "rooms": [
+        "salon",
+        "véranda",
+        "bureau",
+        "salle à manger"
+      ],
+      "prompt": "Americo-Liberian interior Liberia, historic African American settler architecture, American South colonial style with West African elements, white plantation houses, columned verandas, unique Liberian heritage, warm tropical light",
+      "description": "Architecture américo-libérienne unique, maisons coloniales blanches — l'héritage des pionniers afro-américains"
+    },
+    {
+      "id": "km-comoros",
+      "name": "Comores Swahili",
+      "country": "Comores",
+      "flag": "🇰🇲",
+      "region": "Afrique de l'Est",
+      "family": "Côtier Swahili",
+      "colors": [
+        "#00CED1",
+        "#FFD700",
+        "#FFFFFF",
+        "#228B22",
+        "#8B4513"
+      ],
+      "colorNames": [
+        "Turquoise",
+        "Or",
+        "Blanc",
+        "Vert ylang",
+        "Bois"
+      ],
+      "materials": [
+        "bois",
+        "coquillages",
+        "ylang-ylang",
+        "tissu",
+        "corail"
+      ],
+      "patterns": [
+        "vagues",
+        "motifs swahili",
+        "fleurs",
+        "tressages"
+      ],
+      "rooms": [
+        "salon",
+        "véranda",
+        "chambre",
+        "terrasse"
+      ],
+      "prompt": "Comoros Swahili interior, Indian Ocean island aesthetic, turquoise lagoon colors, tropical fragrance elements, ylang-ylang flowers, shell decorations, traditional Swahili coastal house, bright island paradise light",
+      "description": "Îles des Comores, ylang-ylang et turquoise de l'océan Indien — la culture swahili des îles aux parfums"
+    },
+    {
+      "id": "ls-basotho",
+      "name": "Basotho Montagnard",
+      "country": "Lesotho",
+      "flag": "🇱🇸",
+      "region": "Afrique Australe",
+      "family": "Sauvage & Nomade",
+      "colors": [
+        "#DC143C",
+        "#FFFFFF",
+        "#000080",
+        "#228B22",
+        "#8B4513"
+      ],
+      "colorNames": [
+        "Rouge",
+        "Blanc",
+        "Bleu",
+        "Vert montagne",
+        "Terre"
+      ],
+      "materials": [
+        "laine",
+        "feutre",
+        "bois",
+        "pierre",
+        "terre"
+      ],
+      "patterns": [
+        "motifs Basotho",
+        "blankets",
+        "géométrie",
+        "tressages"
+      ],
+      "rooms": [
+        "salon",
+        "chambre",
+        "cour",
+        "espace communautaire"
+      ],
+      "prompt": "Basotho highland interior Lesotho, traditional mountain kingdom aesthetic, colorful wool blankets, round thatched rondavels, red white blue green national colors, Drakensberg mountain inspiration, cozy highland atmosphere",
+      "description": "Rondavels en chaume, couvertures en laine colorées — la culture montagnarde Basotho du royaume enclavé"
+    },
+    {
+      "id": "st-principe",
+      "name": "São Tomé Colonial",
+      "country": "São Tomé",
+      "flag": "🇸🇹",
+      "region": "Afrique Centrale",
+      "family": "Tropical Équatorial",
+      "colors": [
+        "#228B22",
+        "#8B4513",
+        "#F5DEB3",
+        "#D2691E",
+        "#006400"
+      ],
+      "colorNames": [
+        "Vert cacao",
+        "Terre",
+        "Sable",
+        "Orange tropical",
+        "Vert forêt"
+      ],
+      "materials": [
+        "bois colonial",
+        "cacao",
+        "bambou",
+        "tissu Africana",
+        "pierre volcanique"
+      ],
+      "patterns": [
+        "azulejos portugais",
+        "motifs de cacao",
+        "végétation luxuriante",
+        "colonial tropical"
+      ],
+      "rooms": [
+        "salon",
+        "véranda",
+        "chambre",
+        "bureau"
+      ],
+      "prompt": "Sao Tome Principe colonial interior design, Portuguese African heritage, tropical cocoa plantation house, azulejo tiles, dark colonial wood furniture, lush green vegetation views, volcanic stone accents, warm humid tropical atmosphere",
+      "description": "Héritage colonial portugais, bois sombre et cacaoyers — l'âme créole de São Tomé-et-Príncipe"
+    },
+    {
+      "id": "style-1772242296414",
+      "name": "Futuriste Congolais",
+      "region": "Centrale",
+      "family": "Afrofuturisme",
+      "description": "Un melange de motifs Kuba et de neons urbains.",
+      "prompt": "Congolese afrofuturism interior design, neon lights, glowing Kuba patterns, cinematic lighting.",
+      "materials": [
+        "Acier",
+        "Verre",
+        "Tissu Neon"
+      ],
+      "colors": [
+        "Cyberpunk Blue",
+        "Neon Pink"
+      ],
+      "patterns": [],
+      "flag": "🚀"
+    }
+  ]
+}

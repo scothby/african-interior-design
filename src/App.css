@@ -1,0 +1,188 @@
+/* App.css - African Styles Database & Interior Designer */
+
+/* Spinner Animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fade In Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse Animation for Loading */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #160E07;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A1A0E;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3A2A15;
+}
+
+/* Focus Styles */
+input:focus,
+select:focus,
+button:focus {
+  outline: 1px solid #B8860B;
+}
+
+/* Selection Color */
+::selection {
+  background: rgba(184, 134, 11, 0.3);
+  color: #F0E6D3;
+}
+
+/* Image Comparison Slider Styles */
+.comparison-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.comparison-slider img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.comparison-slider-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #B8860B;
+  cursor: ew-resize;
+  z-index: 10;
+}
+
+.comparison-slider-handle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background: #B8860B;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .selectionContainer {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .comparisonContainer {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .arrow {
+    transform: rotate(90deg);
+  }
+}
+
+/* Hover Effects */
+.styleCard:hover {
+  border-color: #3A2A15 !important;
+  transform: translateY(-2px);
+}
+
+/* Button Transitions */
+button {
+  transition: all 0.2s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* Upload Zone Animation */
+.dropZone {
+  transition: all 0.3s ease;
+}
+
+.dropZone.dragActive {
+  border-color: #B8860B !important;
+  background: rgba(184, 134, 11, 0.05) !important;
+  transform: scale(1.02);
+}
+
+/* Toast/Notification Styles */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #160E07;
+  border: 1px solid #B8860B;
+  border-radius: 6px;
+  padding: 12px 20px;
+  color: #F0E6D3;
+  font-size: 13px;
+  animation: fadeIn 0.3s ease;
+  z-index: 1000;
+}
+
+/* Loading Skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #160E07 25%, #1A1008 50%, #160E07 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Gallery Card Hover */
+.gallery-card:hover {
+  border-color: #3A2A15 !important;
+  transform: translateY(-2px);
+}
+
+.gallery-card:hover .gallery-thumb-overlay {
+  opacity: 1 !important;
+}
+
+.gallery-card:hover .gallery-thumb {
+  transform: scale(1.05);
+}
