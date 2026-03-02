@@ -242,162 +242,76 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
     setError(null);
   };
 
-  const renderTailwindUpload = () => (
-    <div className="bg-background-light dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300 relative overflow-x-hidden">
-      <div className="kente-pattern"></div>
+  const renderUploadContent = () => (
+    <div className="w-full max-w-5xl">
+      <div className="glass-panel-tw rounded-[2.5rem] p-8 md:p-14 overflow-hidden relative">
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-ochre/5 rounded-full blur-3xl"></div>
 
-      <nav className="container mx-auto px-6 py-8 flex items-center justify-between relative z-10">
-        <div className="flex items-center gap-4">
-          {onBack && (
-            <button
-              onClick={onBack}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm"
-            >
-              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-              Retour
-            </button>
-          )}
-          {onGoToStyles && (
-            <button
-              onClick={onGoToStyles}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm"
-            >
-              <span className="text-lg">📚</span>
-              Base de Styles
-            </button>
-          )}
-        </div>
-
-        <div className="text-center hidden lg:block">
-          <h1 className="flex items-center justify-center gap-3 text-3xl font-display font-bold text-slate-900 dark:text-white">
-            <span className="material-symbols-outlined text-primary text-4xl">temple_hindu</span>
-            African Interior Designer
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400 italic mt-1 font-medium">Transformez votre espace avec l’âme de l’Afrique</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            className="p-2.5 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 hover:scale-110 transition-transform"
-            onClick={() => document.documentElement.classList.toggle('dark')}
+        <div
+          className="relative group cursor-pointer"
+          onClick={() => document.getElementById('file-upload').click()}
+        >
+          <div
+            className={`upload-zone-glass-tw rounded-3xl p-12 md:p-20 transition-all duration-500 flex flex-col items-center justify-center text-center ${dragActive ? 'bg-white/60 border-primary scale-[1.01]' : 'group-hover:bg-white/40 dark:group-hover:bg-slate-800/40'}`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
           >
-            <span className="material-symbols-outlined dark:hidden">dark_mode</span>
-            <span className="material-symbols-outlined hidden dark:block">light_mode</span>
-          </button>
-          <button
-            className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all font-medium text-sm"
-            onClick={() => setCurrentView('manage-styles')}
-          >
-            <span className="material-symbols-outlined text-[18px]">settings</span>
-            Gérer la Base de Styles
-          </button>
-        </div>
-      </nav>
+            <div className="mb-8 relative pointer-events-none">
+              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 group-hover:scale-[2.5] transition-transform duration-700"></div>
+              <div className="relative w-24 h-24 bg-white dark:bg-slate-800 rounded-3xl flex items-center justify-center shadow-xl border border-white/50 dark:border-slate-700/50 transform group-hover:-translate-y-3 transition-transform duration-500">
+                <span className="material-symbols-outlined text-5xl text-primary">photo_camera</span>
+              </div>
+            </div>
 
-      <div className="lg:hidden text-center px-6 mb-8 relative z-10">
-        <h1 className="flex items-center justify-center gap-2 text-2xl font-display font-bold text-slate-900 dark:text-white">
-          <span className="material-symbols-outlined text-primary text-3xl">temple_hindu</span>
-          African Interior Designer
-        </h1>
-        <p className="text-slate-600 dark:text-slate-400 italic text-sm mt-1">Transformez votre espace avec l’âme de l’Afrique</p>
+            <h2 className="text-2xl md:text-4xl font-display font-bold mb-6 text-slate-900 dark:text-slate-50 leading-tight pointer-events-none">
+              Glissez votre photo ici ou <br className="hidden md:block" />
+              <span className="text-primary underline decoration-primary/30 decoration-4 underline-offset-8 cursor-pointer hover:text-primary/80 transition-colors pointer-events-auto">cliquez pour parcourir</span>
+            </h2>
+
+            <div className="flex flex-wrap items-center justify-center gap-4 text-slate-600 dark:text-slate-400 text-sm font-semibold uppercase tracking-widest pointer-events-none">
+              <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">JPG</span>
+              <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">PNG</span>
+              <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">WebP</span>
+              <span className="ml-2 font-normal lowercase italic opacity-70">— Jusqu'à 10MB</span>
+            </div>
+          </div>
+
+          <input
+            id="file-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => handleFileUpload(e.target.files[0])}
+          />
+        </div>
+
+        {isLoading && (
+          <div style={styles.loading} className="mt-8">
+            <div style={styles.spinner} />
+            <span>Téléchargement en cours...</span>
+          </div>
+        )}
+
+        {error && <div style={styles.error} className="mt-8">{error}</div>}
+
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-10 text-slate-700 dark:text-slate-300">
+          <div className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <span className="material-symbols-outlined text-primary text-xl">verified</span>
+            </div>
+            <span className="text-sm font-medium">IA optimisée pour les motifs africains</span>
+          </div>
+          <div className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
+              <span className="material-symbols-outlined text-secondary dark:text-indigo-300 text-xl">security</span>
+            </div>
+            <span className="text-sm font-medium">Traitement sécurisé et privé</span>
+          </div>
+        </div>
       </div>
-
-      <main className="container mx-auto px-6 py-4 flex flex-col items-center justify-center min-h-[65vh] relative z-10">
-        <div className="w-full max-w-5xl">
-          <div className="glass-panel-tw rounded-[2.5rem] p-8 md:p-14 overflow-hidden relative">
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl"></div>
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-ochre/5 rounded-full blur-3xl"></div>
-
-            <div
-              className="relative group cursor-pointer"
-              onClick={() => document.getElementById('file-upload').click()}
-            >
-              <div
-                className={`upload-zone-glass-tw rounded-3xl p-12 md:p-20 transition-all duration-500 flex flex-col items-center justify-center text-center ${dragActive ? 'bg-white/60 border-primary scale-[1.01]' : 'group-hover:bg-white/40 dark:group-hover:bg-slate-800/40'}`}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-              >
-                <div className="mb-8 relative pointer-events-none">
-                  <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 group-hover:scale-[2.5] transition-transform duration-700"></div>
-                  <div className="relative w-24 h-24 bg-white dark:bg-slate-800 rounded-3xl flex items-center justify-center shadow-xl border border-white/50 dark:border-slate-700/50 transform group-hover:-translate-y-3 transition-transform duration-500">
-                    <span className="material-symbols-outlined text-5xl text-primary">photo_camera</span>
-                  </div>
-                </div>
-
-                <h2 className="text-2xl md:text-4xl font-display font-bold mb-6 text-slate-900 dark:text-slate-50 leading-tight pointer-events-none">
-                  Glissez votre photo ici ou <br className="hidden md:block" />
-                  <span className="text-primary underline decoration-primary/30 decoration-4 underline-offset-8 cursor-pointer hover:text-primary/80 transition-colors pointer-events-auto">cliquez pour parcourir</span>
-                </h2>
-
-                <div className="flex flex-wrap items-center justify-center gap-4 text-slate-600 dark:text-slate-400 text-sm font-semibold uppercase tracking-widest pointer-events-none">
-                  <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">JPG</span>
-                  <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">PNG</span>
-                  <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">WebP</span>
-                  <span className="ml-2 font-normal lowercase italic opacity-70">— Jusqu'à 10MB</span>
-                </div>
-              </div>
-
-              <input
-                id="file-upload"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleFileUpload(e.target.files[0])}
-              />
-            </div>
-
-            {isLoading && (
-              <div style={styles.loading} className="mt-8">
-                <div style={styles.spinner} />
-                <span>Téléchargement en cours...</span>
-              </div>
-            )}
-
-            {error && <div style={styles.error} className="mt-8">{error}</div>}
-
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-10 text-slate-700 dark:text-slate-300">
-              <div className="flex items-center gap-3 group">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <span className="material-symbols-outlined text-primary text-xl">verified</span>
-                </div>
-                <span className="text-sm font-medium">IA optimisée pour les motifs africains</span>
-              </div>
-              <div className="flex items-center gap-3 group">
-                <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
-                  <span className="material-symbols-outlined text-secondary dark:text-indigo-300 text-xl">security</span>
-                </div>
-                <span className="text-sm font-medium">Traitement sécurisé et privé</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <footer className="mt-auto py-12 relative z-10">
-        <div className="container mx-auto px-6 text-center">
-          <div className="inline-flex flex-wrap items-center justify-center gap-4 md:gap-8 px-8 py-4 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md rounded-full border border-white/40 dark:border-slate-700/40 shadow-lg">
-            <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] w-full md:w-auto mb-2 md:mb-0">Base de données</span>
-            <div className="flex items-center gap-6 text-sm font-semibold text-slate-800 dark:text-slate-200">
-              <div className="flex flex-col items-center md:flex-row md:gap-2">
-                <span className="text-primary text-lg">{stylesDb.styles.length}</span>
-                <span className="text-xs opacity-70 uppercase tracking-tighter">Styles</span>
-              </div>
-              <span className="hidden md:block w-px h-6 bg-slate-400/30"></span>
-              <div className="flex flex-col items-center md:flex-row md:gap-2">
-                <span className="text-ochre text-lg">{stylesDb.regions.length}</span>
-                <span className="text-xs opacity-70 uppercase tracking-tighter">Régions</span>
-              </div>
-              <span className="hidden md:block w-px h-6 bg-slate-400/30"></span>
-              <div className="flex flex-col items-center md:flex-row md:gap-2">
-                <span className="text-secondary dark:text-indigo-400 text-lg">{stylesDb.families.length}</span>
-                <span className="text-xs opacity-70 uppercase tracking-tighter">Familles</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 
@@ -407,7 +321,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
       <div style={styles.previewSection}>
         <h3 style={styles.sectionTitle}>Votre Photo</h3>
         <img
-          src={`${API_BASE_URL}${uploadedImage}`}
+          src={uploadedImage && uploadedImage.startsWith('http') ? uploadedImage : `${API_BASE_URL}${uploadedImage}`}
           alt="Uploaded"
           style={styles.previewImage}
         />
@@ -781,28 +695,68 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
     </div>
   );
 
-  if (currentView === 'upload') {
-    return renderTailwindUpload();
-  }
-
   return (
-    <div style={styles.app}>
-      <header style={styles.header}>
-        <div style={styles.headerContent}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <div style={styles.maskIcon}>🎭</div>
-              <div>
-                <h1 style={styles.title}>African Interior Designer</h1>
-                <p style={styles.subtitle}>Transformez votre espace avec l'âme de l'Afrique</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="bg-background-light dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300 flex flex-col relative overflow-x-hidden">
+      <div className="kente-pattern"></div>
 
-      {/* Main Content */}
-      <main style={styles.main}>
+      <nav className="container mx-auto px-6 py-8 flex items-center justify-between relative z-10 w-full">
+        <div className="flex items-center gap-4">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm"
+            >
+              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+              Retour
+            </button>
+          )}
+          {onGoToStyles && (
+            <button
+              onClick={onGoToStyles}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm"
+            >
+              <span className="text-lg">📚</span>
+              Base de Styles
+            </button>
+          )}
+        </div>
+
+        <div className="text-center hidden lg:block">
+          <h1 className="flex items-center justify-center gap-3 text-3xl font-display font-bold text-slate-900 dark:text-white">
+            <span className="material-symbols-outlined text-primary text-4xl">temple_hindu</span>
+            African Interior Designer
+          </h1>
+          <p className="text-slate-600 dark:text-slate-400 italic mt-1 font-medium">Transformez votre espace avec l’âme de l’Afrique</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            className="p-2.5 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 hover:scale-110 transition-transform"
+            onClick={() => document.documentElement.classList.toggle('dark')}
+          >
+            <span className="material-symbols-outlined dark:hidden">dark_mode</span>
+            <span className="material-symbols-outlined hidden dark:block">light_mode</span>
+          </button>
+          <button
+            className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all font-medium text-sm"
+            onClick={() => setCurrentView('manage-styles')}
+          >
+            <span className="material-symbols-outlined text-[18px]">settings</span>
+            Gérer la Base de Styles
+          </button>
+        </div>
+      </nav>
+
+      <div className="lg:hidden text-center px-6 mb-8 relative z-10">
+        <h1 className="flex items-center justify-center gap-2 text-2xl font-display font-bold text-slate-900 dark:text-white">
+          <span className="material-symbols-outlined text-primary text-3xl">temple_hindu</span>
+          African Interior Designer
+        </h1>
+        <p className="text-slate-600 dark:text-slate-400 italic text-sm mt-1">Transformez votre espace avec l’âme de l’Afrique</p>
+      </div>
+
+      <main className="container mx-auto px-6 py-4 flex flex-col items-center justify-center flex-1 relative z-10 w-full" style={{ paddingBottom: '40px' }}>
+        {currentView === 'upload' && renderUploadContent()}
         {currentView === 'select-style' && renderStyleSelection()}
         {currentView === 'generating' && renderGenerating()}
         {currentView === 'result' && renderResult()}
@@ -816,9 +770,28 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
         )}
       </main>
 
-      {/* Footer */}
-      <footer style={styles.footer}>
-        <p>Base de {stylesDb.styles.length} styles africains · {stylesDb.regions.length} régions · {stylesDb.families.length} familles</p>
+      <footer className="mt-auto py-12 relative z-10 w-full">
+        <div className="container mx-auto px-6 text-center">
+          <div className="inline-flex flex-wrap items-center justify-center gap-4 md:gap-8 px-8 py-4 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md rounded-full border border-white/40 dark:border-slate-700/40 shadow-lg" style={{ boxSizing: 'border-box' }}>
+            <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] w-full md:w-auto mb-2 md:mb-0">Base de données</span>
+            <div className="flex items-center gap-6 text-sm font-semibold text-slate-800 dark:text-slate-200" style={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+              <div className="flex flex-col items-center md:flex-row md:gap-2">
+                <span className="text-primary text-lg">{stylesDb.styles.length}</span>
+                <span className="text-xs opacity-70 uppercase tracking-tighter">Styles</span>
+              </div>
+              <span className="hidden md:block w-px h-6 bg-slate-400/30"></span>
+              <div className="flex flex-col items-center md:flex-row md:gap-2">
+                <span className="text-ochre text-lg">{stylesDb.regions.length}</span>
+                <span className="text-xs opacity-70 uppercase tracking-tighter">Régions</span>
+              </div>
+              <span className="hidden md:block w-px h-6 bg-slate-400/30"></span>
+              <div className="flex flex-col items-center md:flex-row md:gap-2">
+                <span className="text-secondary dark:text-indigo-400 text-lg">{stylesDb.families.length}</span>
+                <span className="text-xs opacity-70 uppercase tracking-tighter">Familles</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </footer>
       {/* Zoom Modal */}
       {zoomModal.open && (
