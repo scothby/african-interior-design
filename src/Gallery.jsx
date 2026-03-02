@@ -238,8 +238,8 @@ export default function Gallery({ onBack, onGoToStyles }) {
                                             openZoom(
                                                 null,
                                                 entry.styleName,
-                                                `${API_BASE_URL}${entry.originalImage}`,
-                                                `${API_BASE_URL}${entry.generatedImage}`
+                                                entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
+                                                entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`
                                             );
                                         } else {
                                             // Otherwise, expand the card
