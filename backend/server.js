@@ -8,6 +8,7 @@ const axios = require('axios');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { editBackgroundOnly } = require('./imageEditing');
 const { createClient } = require('@supabase/supabase-js');
+const Replicate = require('replicate');
 require('dotenv').config();
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -44,8 +45,8 @@ app.use(cors({
   }
 }));
 
-// Limite la taille du payload JSON à 1 Mo
-app.use(express.json({ limit: '1mb' }));
+// Limite la taille du payload JSON à 50 Mo pour autoriser les images base64 (inpainting mask)
+app.use(express.json({ limit: '50mb' }));
 
 app.use('/uploads', express.static('uploads'));
 app.use('/generated', express.static('generated'));
@@ -265,6 +266,12 @@ app.post('/api/generate', async (req, res) => {
       }
 
       const candidate = candidates[0];
+
+      if (!candidate.content || !candidate.content.parts) {
+        console.error("Invalid Gemini response candidate:", JSON.stringify(candidate, null, 2));
+        throw new Error('La génération a été bloquée (possiblement par le filtre de sécurité) ou la réponse est invalide.');
+      }
+
       const parts = candidate.content.parts;
 
       const imagePart = parts.find(part => part.inlineData);
@@ -327,6 +334,134 @@ app.post('/api/generate', async (req, res) => {
     console.error('Generation error:', error);
     res.status(500).json({
       error: 'Failed to generate image',
+      ...(isDev && { details: error.message })
+    });
+  }
+});
+
+// Initialize Replicate API
+const replicate = new Replicate({
+  auth: process.env.REPLICATE_API_TOKEN,
+});
+
+// Inpainting endpoint (Cultural Inpainting)
+app.post('/api/inpaint', async (req, res) => {
+  try {
+    const { originalImage, maskImage, style, customPrompt } = req.body;
+
+    if (!originalImage || !maskImage || !style) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    if (!process.env.REPLICATE_API_TOKEN) {
+      return res.status(500).json({ error: 'Replicate API token not configured in .env' });
+    }
+
+    console.log('Generating inpainting for style:', style.name);
+
+    let imageForReplicate = originalImage;
+    if (!originalImage.startsWith('http') && !originalImage.startsWith('data:')) {
+      // Convert local path to data URL if not http, but Replicate accepts URLs or data URIs
+      const imageBase64 = await readImageAsBase64(originalImage);
+      imageForReplicate = `data:image/png;base64,${imageBase64}`;
+    } else {
+      // Si c'est un lien http vers Supabase mais signé, Replicate pourrait avoir du mal. Mais les urls public/ sont ok.
+      // On le laisse tel quel s'il commence par http
+      if (originalImage.startsWith('http') && !originalImage.includes('localhost')) {
+        imageForReplicate = originalImage;
+      } else if (originalImage.startsWith('http') && originalImage.includes('localhost')) {
+        // Local proxy, we need data URI
+        const imageBase64 = await readImageAsBase64(originalImage.replace(`http://localhost:${PORT}/`, ''));
+        imageForReplicate = `data:image/png;base64,${imageBase64}`;
+      }
+    }
+
+    const stylePrompt = style.prompt || `${style.name} interior design`;
+    let promptText = `Transform the masked area into ${stylePrompt}. 
+Use these colors: ${style.colors?.join(', ') || 'warm African earth tones'}.
+Materials: ${style.materials?.join(', ') || 'traditional African materials'}.
+Patterns: ${style.patterns?.join(', ') || 'African geometric patterns'}.
+The result must look photorealistic.`;
+
+    if (customPrompt && customPrompt.trim() !== '') {
+      promptText = `${customPrompt}, ${promptText}`;
+    }
+
+    // Call Replicate (using stability-ai/stable-diffusion-inpainting)
+    const output = await replicate.run(
+      "stability-ai/stable-diffusion-inpainting:95b7223104132402a9ae91cc677285bc5eb997834bd2349fa486f53910fd58bf",
+      {
+        input: {
+          image: imageForReplicate,
+          mask: maskImage,
+          prompt: promptText,
+          num_outputs: 1,
+          guidance_scale: 7.5,
+          num_inference_steps: 25
+        }
+      }
+    );
+
+    if (!output || output.length === 0) {
+      throw new Error('No output from Replicate API');
+    }
+
+    const generatedImageUrl = output[0]; // Replicate returns an array of output URLs
+
+    const response = await axios.get(generatedImageUrl, { responseType: 'arraybuffer' });
+    const generatedImageBuffer = Buffer.from(response.data, 'binary');
+
+    const generatedFilename = `inpaint-${Date.now()}-${style.id}.png`;
+    const generatedPath = path.join('generated', generatedFilename);
+
+    await fs.writeFile(generatedPath, generatedImageBuffer);
+
+    // Upload generated image to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('generated')
+      .upload(`public/${generatedFilename}`, generatedImageBuffer, {
+        contentType: 'image/png',
+        upsert: false
+      });
+
+    if (uploadError) throw new Error("Supabase Storage error: " + uploadError.message);
+
+    const { data: publicUrlData } = supabase.storage.from('generated').getPublicUrl(`public/${generatedFilename}`);
+    const finalGeneratedUrl = publicUrlData.publicUrl;
+
+    // Save to Supabase DB gallery
+    const galleryId = `gallery-inpaint-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    const { error: dbError } = await supabase.from('gallery').insert([{
+      id: galleryId,
+      original_image_url: originalImage,
+      generated_image_url: finalGeneratedUrl,
+      style_name: style.name || 'Unknown',
+      style_family: style.family || '',
+      style_id: style.id || '',
+      prompt: promptText,
+      custom_prompt: customPrompt || null,
+      mode: 'inpaint',
+      is_favorite: false
+    }]);
+
+    if (dbError) throw new Error("Supabase DB error: " + dbError.message);
+
+    res.json({
+      success: true,
+      id: galleryId,
+      originalImage: originalImage,
+      generatedImage: finalGeneratedUrl,
+      localGeneratedPath: `/generated/${generatedFilename}`,
+      style: style,
+      prompt: promptText,
+      mode: 'inpaint'
+    });
+
+  } catch (error) {
+    console.error('Inpainting generation error:', error);
+    res.status(500).json({
+      error: 'Failed to generate inpainting',
       ...(isDev && { details: error.message })
     });
   }
