@@ -4,7 +4,7 @@ import { exportCollage } from './utils/collageGenerator';
 import { exportDesignPDF } from './utils/pdfGenerator';
 import WorldViewerModal from './WorldViewerModal';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export default function Gallery({ onBack, onGoToStyles }) {
     const [entries, setEntries] = useState([]);

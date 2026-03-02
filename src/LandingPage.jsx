@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import DB from "./african-styles-db.json";
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const FAMILY_COLORS = {
     "Terres & Banco": "#8B4513",
