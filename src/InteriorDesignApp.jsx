@@ -806,14 +806,14 @@ const styles = {
     margin: "0 0 4px 0",
     fontSize: "clamp(28px, 5vw, 42px)",
     fontWeight: "900",
-    color: "#7e4a1d", // Darker brown
+    color: "red", // Darker brown
     textShadow: "1px 1px 0px rgba(255,255,255,0.8)",
     fontFamily: "var(--font-heading)"
   },
   subtitle: {
     margin: 0,
     fontSize: "16px",
-    color: "#5a3a18",
+    color: "red",
     fontWeight: "500",
     textShadow: "1px 1px 0px rgba(255,255,255,0.5)",
   },
@@ -829,7 +829,7 @@ const styles = {
     borderTop: "none",
     textAlign: "center",
     fontSize: "13px",
-    color: "#8e6231",
+    color: "red",
     fontWeight: "500"
   },
   woodenBtn: {
@@ -837,7 +837,7 @@ const styles = {
     background: "linear-gradient(to bottom, #fdfbf7, #f4eadc)",
     border: "2px solid #5a3a18",
     borderRadius: "24px",
-    color: "#5a3a18",
+    color: "red",
     fontSize: "14px",
     fontWeight: "bold",
     cursor: "pointer",
