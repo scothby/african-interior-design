@@ -88,8 +88,8 @@ export default function Gallery({ onBack, onGoToStyles }) {
         setDownloadingId(entry.id);
         try {
             await exportCollage(
-                `${API_BASE_URL}${entry.originalImage}`,
-                `${API_BASE_URL}${entry.generatedImage}`,
+                entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
+                entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`,
                 entry.styleName
             );
         } catch (err) {
@@ -105,8 +105,8 @@ export default function Gallery({ onBack, onGoToStyles }) {
         setPdfDownloadingId(entry.id);
         try {
             await exportDesignPDF({
-                beforeSrc: `${API_BASE_URL}${entry.originalImage}`,
-                afterSrc: `${API_BASE_URL}${entry.generatedImage}`,
+                beforeSrc: entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
+                afterSrc: entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`,
                 style: {
                     name: entry.styleName,
                     family: entry.styleFamily,
@@ -291,8 +291,8 @@ export default function Gallery({ onBack, onGoToStyles }) {
                                         {/* Comparison Slider */}
                                         <div style={{ marginBottom: '16px' }}>
                                             <ComparisonSlider
-                                                beforeImage={`${API_BASE_URL}${entry.originalImage}`}
-                                                afterImage={`${API_BASE_URL}${entry.generatedImage}`}
+                                                beforeImage={entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`}
+                                                afterImage={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`}
                                                 height={220}
                                             />
                                         </div>
@@ -302,8 +302,8 @@ export default function Gallery({ onBack, onGoToStyles }) {
                                                 onClick={() => openZoom(
                                                     null,
                                                     entry.styleName,
-                                                    `${API_BASE_URL}${entry.originalImage}`,
-                                                    `${API_BASE_URL}${entry.generatedImage}`
+                                                    entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
+                                                    entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`
                                                 )}
                                                 style={{
                                                     padding: '6px 12px',
@@ -316,7 +316,7 @@ export default function Gallery({ onBack, onGoToStyles }) {
                                                     fontFamily: 'inherit'
                                                 }}
                                             >
-                                                🔍 Voir en grand format
+                                                🔍 Voir en plein écran
                                             </button>
                                         </div>
 

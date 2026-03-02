@@ -7,9 +7,18 @@ const fs = require('fs-extra');
 const axios = require('axios');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { editBackgroundOnly } = require('./imageEditing');
+const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
 const isDev = process.env.NODE_ENV !== 'production';
+
+// Initialize Supabase Client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('⚠️ Supabase credentials missing in .env');
+}
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -63,55 +72,16 @@ app.use('/api/', generalLimiter);
 app.use('/api/generate', expensiveLimiter);
 app.use('/api/worlds/create', expensiveLimiter);
 
-// Ensure directories exist
-fs.ensureDirSync('uploads');
-fs.ensureDirSync('generated');
+// Constants for local fallback/cache directories
+const UPLOADS_DIR = 'uploads';
+const GENERATED_DIR = 'generated';
 
-// Gallery JSON file path
-const GALLERY_FILE = path.join(__dirname, 'gallery.json');
+fs.ensureDirSync(UPLOADS_DIR);
+fs.ensureDirSync(GENERATED_DIR);
 
-// Helper: read gallery data
-function readGallery() {
-  try {
-    if (fs.existsSync(GALLERY_FILE)) {
-      return JSON.parse(fs.readFileSync(GALLERY_FILE, 'utf-8'));
-    }
-  } catch (e) {
-    console.error('Error reading gallery:', e);
-  }
-  return [];
-}
-
-// Helper: write gallery data
-function writeGallery(data) {
-  fs.writeFileSync(GALLERY_FILE, JSON.stringify(data, null, 2), 'utf-8');
-}
-
-// Styles JSON file path
-const STYLES_FILE = path.join(__dirname, 'styles.json');
-
-// Helper: read styles data
-function readStyles() {
-  try {
-    if (fs.existsSync(STYLES_FILE)) {
-      return JSON.parse(fs.readFileSync(STYLES_FILE, 'utf-8'));
-    }
-  } catch (e) {
-    console.error('Error reading styles:', e);
-  }
-  return { styles: [] };
-}
-
-// Helper: write styles data
-function writeStyles(data) {
-  fs.writeFileSync(STYLES_FILE, JSON.stringify(data, null, 2), 'utf-8');
-}
-
-// Multer storage configuration
+// Multer storage config (keeping local cache for GenAI processing before upload)
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
+  destination: (req, file, cb) => cb(null, `${UPLOADS_DIR}/`),
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
@@ -123,9 +93,7 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-    if (extname && mimetype) {
+    if (allowedTypes.test(path.extname(file.originalname).toLowerCase()) && allowedTypes.test(file.mimetype)) {
       return cb(null, true);
     }
     cb(new Error('Only image files are allowed'));
@@ -137,31 +105,62 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-image-preview' });
 
 // Upload endpoint
-app.post('/api/upload', upload.single('photo'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' });
-  }
+app.post('/api/upload', upload.single('photo'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
-  res.json({
-    success: true,
-    filename: req.file.filename,
-    path: `/uploads/${req.file.filename}`,
-    originalName: req.file.originalname
-  });
+  try {
+    const filePath = req.file.path;
+    const fileContent = await fs.readFile(filePath);
+    const fileName = req.file.filename;
+
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('uploads')
+      .upload(`public/${fileName}`, fileContent, {
+        contentType: req.file.mimetype,
+        upsert: false
+      });
+
+    if (error) throw error;
+
+    const { data: publicUrlData } = supabase.storage.from('uploads').getPublicUrl(`public/${fileName}`);
+
+    res.json({
+      success: true,
+      filename: fileName,
+      path: publicUrlData.publicUrl, // return Supabase URL
+      localPath: filePath,           // keep for Gemini processing
+      originalName: req.file.originalname
+    });
+  } catch (err) {
+    console.error('Supabase upload error:', err);
+    res.status(500).json({ error: 'Upload to cloud failed', details: err.message });
+  }
 });
 
 // Helpers for image generation
-async function readImageAsBase64(relativePath) {
-  // Sécurité : s'assurer que le fichier est bien dans le dossier uploads/
-  const safeFilename = path.basename(relativePath);
-  const uploadsDir = path.resolve(__dirname, 'uploads');
-  const imagePath = path.resolve(uploadsDir, safeFilename);
+async function readImageAsBase64(imageRef) {
+  // imageRef can be a URL or a local path.
+  // Since we just uploaded it, it's safer/faster to read from local cache if available.
+  let imagePath = imageRef;
 
-  if (!imagePath.startsWith(uploadsDir + path.sep)) {
+  if (imageRef.startsWith('http')) {
+    // If it's a URL, we need to download it or pass the URL if Gemini supports it.
+    // For base64 encoding locally:
+    const response = await axios.get(imageRef, { responseType: 'arraybuffer' });
+    return Buffer.from(response.data, 'binary').toString('base64');
+  }
+
+  // Local fallback
+  const safeFilename = path.basename(imagePath);
+  const uploadsDir = path.resolve(__dirname, 'uploads');
+  const resolvedPath = path.resolve(uploadsDir, safeFilename);
+
+  if (!resolvedPath.startsWith(uploadsDir + path.sep)) {
     throw new Error('Accès interdit : chemin hors du répertoire autorisé');
   }
 
-  const imageBuffer = await fs.readFile(imagePath);
+  const imageBuffer = await fs.readFile(resolvedPath);
   return imageBuffer.toString('base64');
 }
 
@@ -277,32 +276,46 @@ app.post('/api/generate', async (req, res) => {
     const generatedFilename = `generated-${Date.now()}-${style.id}.png`;
     const generatedPath = path.join('generated', generatedFilename);
 
+    // Save locally for cache/World Labs creation later
     await fs.writeFile(generatedPath, generatedImageBuffer);
 
-    // Auto-save to gallery
-    const galleryEntry = {
-      id: `gallery-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      originalImage: originalImage,
-      generatedImage: `/generated/${generatedFilename}`,
-      styleName: style.name || 'Unknown',
-      styleFamily: style.family || '',
-      styleId: style.id || '',
+    // Upload generated image to Supabase Storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('generated')
+      .upload(`public/${generatedFilename}`, generatedImageBuffer, {
+        contentType: 'image/png',
+        upsert: false
+      });
+
+    if (uploadError) throw new Error("Supabase Storage error: " + uploadError.message);
+
+    const { data: publicUrlData } = supabase.storage.from('generated').getPublicUrl(`public/${generatedFilename}`);
+    const finalGeneratedUrl = publicUrlData.publicUrl;
+
+    // Save to Supabase DB gallery
+    const galleryId = `gallery-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+    const { error: dbError } = await supabase.from('gallery').insert([{
+      id: galleryId,
+      original_image_url: originalImage,
+      generated_image_url: finalGeneratedUrl,
+      style_name: style.name || 'Unknown',
+      style_family: style.family || '',
+      style_id: style.id || '',
       prompt: enhancedPrompt,
-      customPrompt: customPrompt || null,
+      custom_prompt: customPrompt || null,
       mode: mode,
-      isFavorite: false,
-      createdAt: new Date().toISOString()
-    };
-    const gallery = readGallery();
-    gallery.unshift(galleryEntry);
-    writeGallery(gallery);
-    console.log('Gallery entry saved:', galleryEntry.id);
+      is_favorite: false
+    }]);
+
+    if (dbError) throw new Error("Supabase DB error: " + dbError.message);
 
     res.json({
       success: true,
-      id: galleryEntry.id,
+      id: galleryId,
       originalImage: originalImage,
-      generatedImage: `/generated/${generatedFilename}`,
+      generatedImage: finalGeneratedUrl,
+      localGeneratedPath: `/generated/${generatedFilename}`, // Used for World Labs creation
       style: style,
       prompt: enhancedPrompt,
       mode: mode
@@ -317,22 +330,22 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
-// Get all styles endpoint (dynamic)
-app.get('/api/styles', (req, res) => {
-  const stylesData = readStyles();
-  res.json(stylesData);
+// Get all styles endpoint
+app.get('/api/styles', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('styles').select('*').order('created_at', { ascending: true });
+    if (error) throw error;
+    res.json({ styles: data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Create new style
-app.post('/api/styles', (req, res) => {
+app.post('/api/styles', async (req, res) => {
   try {
     const { name, region, family, description, prompt, materials, colors, patterns, flag } = req.body;
-
-    if (!name || !prompt) {
-      return res.status(400).json({ error: 'Name and Prompt are required' });
-    }
-
-    const stylesData = readStyles();
+    if (!name || !prompt) return res.status(400).json({ error: 'Name and Prompt are required' });
 
     const newStyle = {
       id: `style-${Date.now()}`,
@@ -347,127 +360,124 @@ app.post('/api/styles', (req, res) => {
       flag: flag || '🌍'
     };
 
-    stylesData.styles.push(newStyle);
-    writeStyles(stylesData);
+    const { error } = await supabase.from('styles').insert([newStyle]);
+    if (error) throw error;
 
     res.status(201).json(newStyle);
-  } catch (error) {
-    console.error('Create style error:', error);
-    res.status(500).json({ error: isDev ? error.message : 'Erreur interne' });
+  } catch (err) {
+    console.error('Create style error:', err);
+    res.status(500).json({ error: isDev ? err.message : 'Internal error' });
   }
 });
 
 // Update style
-app.put('/api/styles/:id', (req, res) => {
+app.put('/api/styles/:id', async (req, res) => {
   try {
-    const stylesData = readStyles();
-    const index = stylesData.styles.findIndex(s => s.id === req.params.id);
+    const { error } = await supabase.from('styles')
+      .update(req.body)
+      .eq('id', req.params.id);
 
-    if (index === -1) {
-      return res.status(404).json({ error: 'Style not found' });
-    }
+    if (error) throw error;
 
-    const updatedStyle = { ...stylesData.styles[index], ...req.body, id: req.params.id };
-    stylesData.styles[index] = updatedStyle;
-
-    writeStyles(stylesData);
-    res.json(updatedStyle);
-  } catch (error) {
-    console.error('Update style error:', error);
-    res.status(500).json({ error: isDev ? error.message : 'Erreur interne' });
+    // Fetch updated
+    const { data } = await supabase.from('styles').select('*').eq('id', req.params.id).single();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 // Delete style
-app.delete('/api/styles/:id', (req, res) => {
+app.delete('/api/styles/:id', async (req, res) => {
   try {
-    const stylesData = readStyles();
-    const index = stylesData.styles.findIndex(s => s.id === req.params.id);
-
-    if (index === -1) {
-      return res.status(404).json({ error: 'Style not found' });
-    }
-
-    stylesData.styles.splice(index, 1);
-    writeStyles(stylesData);
-
+    const { error } = await supabase.from('styles').delete().eq('id', req.params.id);
+    if (error) throw error;
     res.json({ success: true });
-  } catch (error) {
-    console.error('Delete style error:', error);
-    res.status(500).json({ error: isDev ? error.message : 'Erreur interne' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// Gallery: list all entries (newest first)
-app.get('/api/gallery', (req, res) => {
-  const gallery = readGallery();
-  res.json(gallery);
+// Gallery: list all entries
+app.get('/api/gallery', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+
+    // Map snake_case db columns to camelCase expected by frontend
+    const mapped = data.map(entry => ({
+      id: entry.id,
+      originalImage: entry.original_image_url,
+      generatedImage: entry.generated_image_url,
+      styleName: entry.style_name,
+      styleFamily: entry.style_family,
+      styleId: entry.style_id,
+      prompt: entry.prompt,
+      customPrompt: entry.custom_prompt,
+      mode: entry.mode,
+      isFavorite: entry.is_favorite,
+      worldUrl: entry.world_url,
+      worldOperationId: entry.world_operation_id,
+      createdAt: entry.created_at
+    }));
+
+    res.json(mapped);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Gallery: delete an entry
 app.delete('/api/gallery/:id', async (req, res) => {
   try {
-    const gallery = readGallery();
-    const entry = gallery.find(e => e.id === req.params.id);
-    if (!entry) {
-      return res.status(404).json({ error: 'Entry not found' });
+    const { data: entry } = await supabase.from('gallery').select('*').eq('id', req.params.id).single();
+    if (!entry) return res.status(404).json({ error: 'Entry not found' });
+
+    // Try to delete from storage if it exists on Supabase (optional hygiene)
+    if (entry.generated_image_url && entry.generated_image_url.includes('supabase.co')) {
+      const filename = entry.generated_image_url.split('/').pop();
+      await supabase.storage.from('generated').remove([`public/${filename}`]);
     }
-    // Delete the generated image file
-    const imagePath = path.join(__dirname, entry.generatedImage);
-    if (await fs.pathExists(imagePath)) {
-      await fs.remove(imagePath);
-    }
-    // Remove from gallery
-    const updated = gallery.filter(e => e.id !== req.params.id);
-    writeGallery(updated);
+
+    const { error } = await supabase.from('gallery').delete().eq('id', req.params.id);
+    if (error) throw error;
+
     res.json({ success: true });
-  } catch (error) {
-    console.error('Delete error:', error);
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 // Gallery: save world URL to an entry
-app.patch('/api/gallery/:id/world', (req, res) => {
+app.patch('/api/gallery/:id/world', async (req, res) => {
   try {
-    const gallery = readGallery();
-    const entryIndex = gallery.findIndex(e => e.id === req.params.id);
-
-    if (entryIndex === -1) {
-      return res.status(404).json({ error: 'Entry not found' });
-    }
-
     const { worldUrl, worldOperationId } = req.body;
-    if (worldUrl) gallery[entryIndex].worldUrl = worldUrl;
-    if (worldOperationId) gallery[entryIndex].worldOperationId = worldOperationId;
+    let updates = {};
+    if (worldUrl) updates.world_url = worldUrl;
+    if (worldOperationId) updates.world_operation_id = worldOperationId;
 
-    writeGallery(gallery);
-    console.log(`🌍 World saved for gallery entry ${req.params.id}: ${worldUrl}`);
-    res.json({ success: true, worldUrl: gallery[entryIndex].worldUrl });
-  } catch (error) {
-    console.error('Save world error:', error);
-    res.status(500).json({ error: error.message });
+    const { error } = await supabase.from('gallery').update(updates).eq('id', req.params.id);
+    if (error) throw error;
+
+    res.json({ success: true, worldUrl: worldUrl });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
 // Gallery: toggle favorite status
-app.patch('/api/gallery/:id/favorite', (req, res) => {
+app.patch('/api/gallery/:id/favorite', async (req, res) => {
   try {
-    const gallery = readGallery();
-    const entryIndex = gallery.findIndex(e => e.id === req.params.id);
+    const { data: entry } = await supabase.from('gallery').select('is_favorite').eq('id', req.params.id).single();
+    if (!entry) return res.status(404).json({ error: 'Entry not found' });
 
-    if (entryIndex === -1) {
-      return res.status(404).json({ error: 'Entry not found' });
-    }
+    const newValue = !entry.is_favorite;
+    const { error } = await supabase.from('gallery').update({ is_favorite: newValue }).eq('id', req.params.id);
+    if (error) throw error;
 
-    // Toggle the boolean value (or set to true if undefined)
-    gallery[entryIndex].isFavorite = !gallery[entryIndex].isFavorite;
-
-    writeGallery(gallery);
-    res.json({ success: true, isFavorite: gallery[entryIndex].isFavorite });
-  } catch (error) {
-    console.error('Favorite toggle error:', error);
-    res.status(500).json({ error: error.message });
+    res.json({ success: true, isFavorite: newValue });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

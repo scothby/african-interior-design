@@ -334,7 +334,8 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                             const count = DB.styles.filter(s => s.family === family).length;
                             const isHovered = hoveredFamily === family;
 
-                            const imageName = family.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "").replace(/&/g, "");
+                            // Terres & Banco -> TerresBanco
+                            const imageName = family.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "");
 
                             return (
                                 <div
@@ -477,7 +478,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                         background: "#120B05", border: "1px solid #1E1208", borderRadius: "8px", overflow: "hidden", transition: "all 0.2s"
                                     }} className="step-card">
                                         <div style={{ height: "200px", background: "#0A0603" }}>
-                                            <img src={`${API_BASE_URL}${entry.generatedImage}`} alt={entry.styleName} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                                            <img src={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`} alt={entry.styleName} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; }} />
                                         </div>
                                         <div style={{ padding: "14px" }}>
                                             <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" }}>
