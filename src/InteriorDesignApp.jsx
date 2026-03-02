@@ -245,7 +245,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
   // Render upload view
   const renderUpload = () => (
     <div style={styles.uploadContainer} className="glass-panel">
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', alignItems: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
         {onBack && (
           <button
             onClick={onBack}
@@ -266,7 +266,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
             📚 Base de Styles
           </button>
         )}
-        <div style={{ flex: 1 }} /> {/* Spacer */}
+        <div style={{ display: 'none' }} /> {/* Removed flex spacer to allow centering */}
         <button
           onClick={() => setCurrentView('manage-styles')}
           style={{ ...styles.woodenBtn, padding: '6px 16px', fontSize: '13px' }}
@@ -848,9 +848,9 @@ const styles = {
   // Upload styles
   uploadContainer: {
     width: "100%",
-    maxWidth: "1000px",
+    maxWidth: "500px",
     margin: "0 auto",
-    padding: "40px 60px",
+    padding: "32px 40px",
     background: "#fdfbf7", // Very light beige matching reference
     borderRadius: "24px",
     border: "none",
@@ -861,7 +861,7 @@ const styles = {
   dropZone: {
     border: "none",
     background: "#e8cfab",
-    padding: "80px 40px",
+    padding: "40px 24px",
     borderRadius: "16px",
     cursor: "pointer",
     display: "flex",
