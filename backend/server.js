@@ -545,6 +545,9 @@ app.post('/api/worlds/create', async (req, res) => {
             media_asset_id: assetId
           },
           text_prompt: textPrompt
+        },
+        permission: {
+          public: true
         }
       },
       {

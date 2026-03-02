@@ -481,10 +481,9 @@ export default function Gallery({ onBack, onGoToStyles }) {
 // Styles — consistent with the app's dark African aesthetic
 const s = {
     app: {
-        fontFamily: "'Georgia', serif",
-        background: "#0C0806",
+        background: "var(--color-bg-dark)",
         minHeight: "100vh",
-        color: "#F0E6D3",
+        color: "var(--color-text-main)",
         display: "flex",
         flexDirection: "column"
     },
@@ -538,12 +537,12 @@ const s = {
 
     // Card
     card: {
-        background: "#120B05", border: "1px solid #1E1208", borderRadius: "8px",
+        background: "var(--glass-bg)", border: "1px solid var(--color-border)", borderRadius: "8px",
         overflow: "hidden", transition: "all 0.2s"
     },
     thumbnailWrapper: {
         position: "relative", cursor: "pointer", overflow: "hidden",
-        height: "200px", background: "#0A0603"
+        height: "200px", background: "var(--color-bg-panel)"
     },
     thumbnail: {
         width: "100%", height: "100%", objectFit: "cover",
@@ -564,8 +563,8 @@ const s = {
 
     // Expanded Panel
     expandedPanel: {
-        padding: "16px", borderTop: "1px solid #1E1208",
-        background: "#0E0905", animation: "fadeIn 0.3s ease-in"
+        padding: "16px", borderTop: "1px solid var(--color-border)",
+        background: "var(--glass-bg)", animation: "fadeIn 0.3s ease-in"
     },
     comparisonRow: {
         display: "grid", gridTemplateColumns: "1fr auto 1fr",
@@ -620,7 +619,7 @@ const s = {
         justifyContent: "center", zIndex: 1000, padding: "20px"
     },
     modalContent: {
-        background: "#160E07", border: "1px solid #2A1A0E", borderRadius: "8px",
+        background: "var(--glass-bg)", border: "1px solid var(--color-border)", borderRadius: "8px",
         maxWidth: "90vw", maxHeight: "90vh", display: "flex", flexDirection: "column", overflow: "hidden"
     },
     modalHeader: {

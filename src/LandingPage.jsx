@@ -52,6 +52,20 @@ const FEATURES = [
     { icon: "🔒", label: "Sécurisé", desc: "Données protégées" },
 ];
 
+const HERO_IMAGES = [
+    "/families/TerresBanco.png",
+    "/families/TextilesRoyaux.png",
+    "/families/CotierSwahili.png",
+    "/families/GeometriquePeint.png",
+    "/families/SauvageNomade.png",
+    "/families/IslamiqueAfricain.png",
+    "/families/TropicalEquatorial.png",
+    "/families/UrbainContemporain.png"
+];
+
+// Create stable random columns for the masonry outside the component to avoid reshuffling on re-render
+const MASONRY_COLS = Array.from({ length: 6 }, () => [...HERO_IMAGES].sort(() => 0.5 - Math.random()));
+
 export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDatabase }) {
     const [visible, setVisible] = useState(false);
     const [hoveredFamily, setHoveredFamily] = useState(null);
@@ -85,13 +99,21 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
     const totalFamilies = DB.families.length;
 
     return (
-        <div style={{ fontFamily: "'Georgia', serif", background: "#0C0806", minHeight: "100vh", color: "#F0E6D3", overflowX: "hidden" }}>
+        <div style={{ background: "var(--color-bg-dark)", minHeight: "100vh", color: "var(--color-text-main)", overflowX: "hidden" }}>
 
             {/* ── Keyframe styles ── */}
             <style>{`
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(28px); }
           to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+          0%   { transform: translateY(0); }
+          100% { transform: translateY(-50%); }
+        }
+        @keyframes slideDown {
+          0%   { transform: translateY(-50%); }
+          100% { transform: translateY(0); }
         }
         @keyframes shimmer {
           0%   { background-position: -200% center; }
@@ -132,101 +154,137 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
             {/* ─────────────────────────────────────────────────────────────
           SECTION HÉRO
       ───────────────────────────────────────────────────────────── */}
-            <section style={{ position: "relative", minHeight: "92vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 24px 80px", textAlign: "center", overflow: "hidden" }}>
+            <section style={{ position: "relative", minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 24px 80px", textAlign: "center", overflow: "hidden" }}>
 
-                {/* Grille de fond décorative */}
-                <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(#2A1A0E 1px, transparent 1px)", backgroundSize: "32px 32px", opacity: 0.35, pointerEvents: "none" }} />
-
-                {/* Halo doré central */}
-                <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "600px", height: "600px", background: "radial-gradient(ellipse at center, rgba(184,134,11,0.08) 0%, transparent 70%)", pointerEvents: "none", borderRadius: "50%" }} />
-
-                {/* Globe animé */}
-                <div style={{ fontSize: "80px", animation: "floatGlobe 5s ease-in-out infinite", marginBottom: "28px", filter: "drop-shadow(0 0 24px rgba(184,134,11,0.4))", opacity: visible ? 1 : 0, transition: "opacity 0.6s" }}>
-                    🌍
-                </div>
-
-                {/* Badge */}
-                <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "5px 16px", border: "1px solid rgba(184,134,11,0.4)", borderRadius: "999px", background: "rgba(184,134,11,0.08)", fontSize: "11px", color: "#B8860B", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "24px", animation: visible ? "fadeUp 0.5s ease both" : "none", animationDelay: "0.1s" }}>
-                    ✦ Design d'intérieur africain par IA
-                </div>
-
-                {/* Titre */}
-                <h1 style={{ margin: "0 0 20px", fontSize: "clamp(32px, 6vw, 68px)", fontWeight: "normal", lineHeight: 1.15, maxWidth: "840px", animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.2s" }}>
-                    Transformez votre espace avec
-                    <br />
-                    <span style={{
-                        background: "linear-gradient(90deg, #B8860B, #F0C040, #B8860B)",
-                        backgroundSize: "200% auto",
-                        WebkitBackgroundClip: "text",
-                        WebkitTextFillColor: "transparent",
-                        animation: "shimmer 3s linear infinite",
-                        display: "inline-block"
-                    }}>
-                        l'âme de l'Afrique
-                    </span>
-                </h1>
-
-                {/* Sous-titre */}
-                <p style={{ margin: "0 0 40px", fontSize: "clamp(15px, 2vw, 18px)", color: "#8B7050", maxWidth: "560px", lineHeight: 1.7, animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.3s" }}>
-                    Uploadez une photo de votre pièce, choisissez parmi <strong style={{ color: "#B8860B" }}>{totalStyles}+ styles africains authentiques</strong> et laissez l'IA la transformer en quelques secondes.
-                </p>
-
-                {/* CTA Buttons */}
-                <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", justifyContent: "center", animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.4s" }}>
-                    <button
-                        className="cta-primary"
-                        onClick={onEnterDesigner}
-                        style={{ padding: "16px 40px", background: "linear-gradient(135deg, #B8860B, #8B6914)", border: "none", borderRadius: "8px", color: "#FFF8E7", fontSize: "16px", fontWeight: "bold", cursor: "pointer", fontFamily: "Georgia, serif", transition: "all 0.25s", animation: "pulseGold 3s ease infinite" }}
-                    >
-                        🏛️ Commencer le design
-                    </button>
-                    <button
-                        className="cta-secondary"
-                        onClick={onEnterGallery}
-                        style={{ padding: "16px 36px", background: "transparent", border: "1px solid rgba(184,134,11,0.5)", borderRadius: "8px", color: "#B8860B", fontSize: "16px", cursor: "pointer", fontFamily: "Georgia, serif", transition: "all 0.25s" }}
-                    >
-                        🖼️ Voir la galerie
-                    </button>
-                    <button
-                        className="cta-secondary"
-                        onClick={onEnterDatabase}
-                        style={{ padding: "16px 36px", background: "transparent", border: "1px solid rgba(184,134,11,0.5)", borderRadius: "8px", color: "#B8860B", fontSize: "16px", cursor: "pointer", fontFamily: "Georgia, serif", transition: "all 0.25s" }}
-                    >
-                        📚 Parcourir tous les styles
-                    </button>
-                </div>
-
-                {/* Stats */}
-                <div style={{ display: "flex", gap: "40px", marginTop: "56px", flexWrap: "wrap", justifyContent: "center", animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.55s" }}>
-                    {[
-                        { value: `${totalStyles}+`, label: "Styles africains" },
-                        { value: `${totalRegions}`, label: "Régions d'Afrique" },
-                        { value: `${totalFamilies}`, label: "Familles de design" },
-                    ].map((stat) => (
-                        <div key={stat.label} style={{ textAlign: "center" }}>
-                            <div style={{ fontSize: "32px", fontWeight: "bold", color: "#B8860B", lineHeight: 1 }}>{stat.value}</div>
+                {/* Animated Masonry Grid Background */}
+                <div style={{
+                    position: "absolute",
+                    inset: "-50% -20%",
+                    transform: "rotate(-12deg) scale(1.1)",
+                    display: "flex",
+                    gap: "16px",
+                    opacity: 0.5,
+                    pointerEvents: "none",
+                    zIndex: 0,
+                    overflow: "hidden"
+                }}>
+                    {MASONRY_COLS.map((col, i) => (
+                        <div key={i} style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "16px",
+                            width: "calc(100vw / 5)",
+                            animation: `${i % 2 === 0 ? 'slideUp' : 'slideDown'} ${40 + (i % 3) * 10}s linear infinite`
+                        }}>
+                            {/* Double the images to loop seamlessly */}
+                            {[...col, ...col].map((img, j) => (
+                                <img key={j} src={img} alt="" style={{ width: "100%", borderRadius: "12px", objectFit: "cover", boxShadow: "0 8px 24px rgba(0,0,0,0.8)" }} />
+                            ))}
                         </div>
                     ))}
                 </div>
 
-                {/* Hero Comparison Image */}
                 <div style={{
-                    marginTop: "80px",
-                    maxWidth: "1000px",
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                    borderRadius: "16px",
-                    overflow: "hidden",
-                    border: "1px solid #2A1A0E",
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
-                    animation: visible ? "fadeUp 0.8s ease both" : "none",
-                    animationDelay: "0.7s"
-                }}>
-                    <img
-                        src="/hero-comparison.png"
-                        alt="Avant et Après Design Africain par IA"
-                        style={{ width: "100%", height: "auto", display: "block" }}
-                    />
+                    position: "absolute",
+                    inset: 0,
+                    background: "linear-gradient(to bottom, transparent 0%, rgba(12, 8, 6, 0.2) 40%, var(--color-bg-dark) 100%)",
+                    zIndex: 1,
+                    pointerEvents: "none"
+                }} />
+
+                <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: "800px", height: "800px", background: "radial-gradient(ellipse at center, rgba(184,134,11,0.25) 0%, transparent 60%)", pointerEvents: "none", borderRadius: "50%", zIndex: 1 }} />
+
+                {/* Contenu Héro en premier plan */}
+                <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1200px" }}>
+
+                    {/* Globe animé */}
+                    <div style={{ fontSize: "80px", animation: "floatGlobe 5s ease-in-out infinite", marginBottom: "28px", filter: "drop-shadow(0 0 24px rgba(184,134,11,0.4))", opacity: visible ? 1 : 0, transition: "opacity 0.6s" }}>
+                        🌍
+                    </div>
+
+                    {/* Badge */}
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "5px 16px", border: "1px solid rgba(184,134,11,0.4)", borderRadius: "999px", background: "rgba(184,134,11,0.08)", fontSize: "11px", color: "#B8860B", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "24px", animation: visible ? "fadeUp 0.5s ease both" : "none", animationDelay: "0.1s" }}>
+                        ✦ Design d'intérieur africain par IA
+                    </div>
+
+                    {/* Titre */}
+                    <h1 style={{ margin: "0 0 20px", fontSize: "clamp(32px, 6vw, 68px)", lineHeight: 1.15, maxWidth: "840px", animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.2s" }}>
+                        Transformez votre espace avec
+                        <br />
+                        <span style={{
+                            background: "linear-gradient(90deg, var(--color-primary), #F0C040, var(--color-primary))",
+                            backgroundSize: "200% auto",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            animation: "shimmer 3s linear infinite",
+                            display: "inline-block"
+                        }}>
+                            l'âme de l'Afrique
+                        </span>
+                    </h1>
+
+                    {/* Sous-titre */}
+                    <p style={{ margin: "0 0 40px", fontSize: "clamp(15px, 2vw, 18px)", color: "#8B7050", maxWidth: "560px", lineHeight: 1.7, animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.3s" }}>
+                        Uploadez une photo de votre pièce, choisissez parmi <strong style={{ color: "#B8860B" }}>{totalStyles}+ styles africains authentiques</strong> et laissez l'IA la transformer en quelques secondes.
+                    </p>
+
+                    {/* CTA Buttons */}
+                    <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", justifyContent: "center", animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.4s" }}>
+                        <button
+                            className="btn-primary"
+                            onClick={onEnterDesigner}
+                            style={{ padding: "16px 40px", borderRadius: "8px", fontSize: "16px", animation: "pulseGold 3s ease infinite" }}
+                        >
+                            🏛️ Commencer le design
+                        </button>
+                        <button
+                            className="btn-secondary"
+                            onClick={onEnterGallery}
+                            style={{ padding: "16px 36px", borderRadius: "8px", fontSize: "16px" }}
+                        >
+                            🖼️ Voir la galerie
+                        </button>
+                        <button
+                            className="btn-secondary"
+                            onClick={onEnterDatabase}
+                            style={{ padding: "16px 36px", borderRadius: "8px", fontSize: "16px" }}
+                        >
+                            📚 Parcourir tous les styles
+                        </button>
+                    </div>
+
+                    {/* Stats */}
+                    <div style={{ display: "flex", gap: "40px", marginTop: "56px", flexWrap: "wrap", justifyContent: "center", animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.55s" }}>
+                        {[
+                            { value: `${totalStyles}+`, label: "Styles africains" },
+                            { value: `${totalRegions}`, label: "Régions d'Afrique" },
+                            { value: `${totalFamilies}`, label: "Familles de design" },
+                        ].map((stat) => (
+                            <div key={stat.label} style={{ textAlign: "center" }}>
+                                <div style={{ fontSize: "32px", fontWeight: "bold", color: "#B8860B", lineHeight: 1 }}>{stat.value}</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Hero Comparison Image */}
+                    <div style={{
+                        marginTop: "80px",
+                        maxWidth: "1000px",
+                        marginLeft: "auto",
+                        marginRight: "auto",
+                        borderRadius: "16px",
+                        overflow: "hidden",
+                        border: "1px solid #2A1A0E",
+                        boxShadow: "0 20px 40px rgba(0,0,0,0.5)",
+                        animation: visible ? "fadeUp 0.8s ease both" : "none",
+                        animationDelay: "0.7s"
+                    }}>
+                        <img
+                            src="/hero-comparison.png"
+                            alt="Avant et Après Design Africain par IA"
+                            style={{ width: "100%", height: "auto", display: "block" }}
+                        />
+                    </div>
                 </div>
             </section>
 
@@ -244,14 +302,14 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                         {STEPS.map((step, i) => (
                             <div
                                 key={i}
-                                className="step-card"
-                                style={{ position: "relative", padding: "32px 28px", background: "#120B05", border: "1px solid #1E1208", borderRadius: "10px", transition: "all 0.25s" }}
+                                className="step-card glass-panel"
+                                style={{ position: "relative", padding: "32px 28px", borderRadius: "10px", transition: "all 0.25s" }}
                             >
                                 {/* Numéro de step */}
-                                <div style={{ position: "absolute", top: "16px", right: "20px", fontSize: "44px", fontWeight: "bold", color: "rgba(184,134,11,0.08)", lineHeight: 1, fontFamily: "serif" }}>0{i + 1}</div>
+                                <div style={{ position: "absolute", top: "16px", right: "20px", fontSize: "44px", fontWeight: "bold", color: "rgba(184,134,11,0.08)", lineHeight: 1, fontFamily: "var(--font-heading)" }}>0{i + 1}</div>
                                 <div style={{ fontSize: "40px", marginBottom: "16px" }}>{step.icon}</div>
-                                <h3 style={{ margin: "0 0 10px", fontSize: "16px", fontWeight: "bold", color: "#F0E6D3" }}>{step.title}</h3>
-                                <p style={{ margin: 0, fontSize: "13px", color: "#8B7050", lineHeight: 1.7 }}>{step.desc}</p>
+                                <h3 style={{ margin: "0 0 10px", fontSize: "16px", fontWeight: "bold", color: "var(--color-text-main)" }}>{step.title}</h3>
+                                <p style={{ margin: 0, fontSize: "13px", color: "var(--color-text-muted)", lineHeight: 1.7 }}>{step.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -281,14 +339,14 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                             return (
                                 <div
                                     key={family}
-                                    className="family-card"
+                                    className="family-card glass-panel"
                                     onClick={onEnterDatabase}
                                     onMouseEnter={() => setHoveredFamily(family)}
                                     onMouseLeave={() => setHoveredFamily(null)}
                                     style={{
                                         padding: "0",
-                                        background: isHovered ? `${color}18` : "#120B05",
-                                        border: `1px solid ${isHovered ? color : "#1E1208"}`,
+                                        background: isHovered ? `${color}18` : "var(--glass-bg)",
+                                        border: `1px solid ${isHovered ? color : "var(--glass-border)"}`,
                                         borderRadius: "10px",
                                         cursor: "pointer",
                                         transition: "all 0.25s",

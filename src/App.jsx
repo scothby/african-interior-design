@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import DB from "./african-styles-db.json";
 import InteriorDesignApp from "./InteriorDesignApp";
 import Gallery from "./Gallery";
@@ -28,12 +28,15 @@ const FAMILY_ICONS = {
 };
 
 export default function App() {
-  const [currentApp, setCurrentApp] = useState("landing"); // "landing", "database", "designer", "gallery"
+  const [currentApp, setCurrentApp] = useState(() => {
+    return localStorage.getItem('interior_ai_last_page') || 'landing';
+  });
   const [search, setSearch] = useState("");
   const [activeRegion, setActiveRegion] = useState("Tout");
   const [activeFamily, setActiveFamily] = useState("Tout");
   const [selected, setSelected] = useState(null);
   const [copied, setCopied] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const filtered = useMemo(() => {
     return DB.styles.filter(s => {
@@ -46,6 +49,10 @@ export default function App() {
       return matchSearch && matchRegion && matchFamily;
     });
   }, [search, activeRegion, activeFamily]);
+
+  useEffect(() => {
+    localStorage.setItem('interior_ai_last_page', currentApp);
+  }, [currentApp]);
 
   const copyPrompt = (prompt) => {
     navigator.clipboard?.writeText(prompt);
@@ -79,67 +86,53 @@ export default function App() {
   // Render Database View (existing)
 
   return (
-    <div style={{ fontFamily: "'Georgia', serif", background: "#0C0806", minHeight: "100vh", color: "#F0E6D3" }}>
+    <div style={{ background: "var(--color-bg-dark)", minHeight: "100vh", color: "var(--color-text-main)" }}>
       {/* Kente header bar */}
       <div style={{ height: "5px", background: "linear-gradient(90deg,#8B0000,#B8860B,#228B22,#1A2744,#B8860B,#C41E3A,#B8860B,#228B22,#8B0000)" }} />
 
       {/* Header */}
-      <div style={{ padding: "28px 32px 20px", borderBottom: "1px solid #1E1208" }}>
+      <header className="glass-panel" style={{ padding: "28px 32px 20px", borderBottom: `1px solid var(--color-border)`, borderTop: "none", borderLeft: "none", borderRight: "none", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
           <div>
-            <div style={{ fontSize: "10px", letterSpacing: "0.35em", color: "#B8860B", textTransform: "uppercase", marginBottom: "4px" }}>
+            <div style={{ fontSize: "10px", letterSpacing: "0.35em", color: "var(--color-primary)", textTransform: "uppercase", marginBottom: "4px" }}>
               Base de données
             </div>
-            <h1 style={{ margin: 0, fontSize: "clamp(20px,3vw,32px)", fontWeight: "normal" }}>
-              Styles Africains <span style={{ color: "#B8860B" }}>·</span> <span style={{ color: "#8B7050", fontSize: "0.6em" }}>{filtered.length} / {DB.styles.length}</span>
+            <h1 style={{ margin: 0, fontSize: "clamp(20px,3vw,32px)" }}>
+              Styles Africains <span style={{ color: "var(--color-primary)" }}>·</span> <span style={{ color: "var(--color-text-muted)", fontSize: "0.6em" }}>{filtered.length} / {DB.styles.length}</span>
             </h1>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+
+          {/* Hamburger Menu Button (Mobile Only) */}
+          <button
+            className={`mobile-menu-btn ${isMenuOpen ? 'open' : ''}`}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Menu"
+          >
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+          </button>
+
+          {/* Desktop Navigation */}
+          <div className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <button
+              className="btn-secondary"
               onClick={() => setCurrentApp("landing")}
-              style={{
-                padding: "10px 20px",
-                background: "transparent",
-                border: "1px solid #B8860B",
-                borderRadius: "4px",
-                color: "#B8860B",
-                fontSize: "13px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                fontFamily: "Georgia, serif"
-              }}
+              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px" }}
             >
               🏠 Accueil
             </button>
             <button
+              className="btn-primary"
               onClick={() => setCurrentApp("designer")}
-              style={{
-                padding: "10px 20px",
-                background: "#B8860B",
-                border: "none",
-                borderRadius: "4px",
-                color: "#0C0806",
-                fontSize: "13px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                fontFamily: "Georgia, serif"
-              }}
+              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px" }}
             >
               🏛️ African Interior Designer
             </button>
             <button
+              className="btn-secondary"
               onClick={() => setCurrentApp("gallery")}
-              style={{
-                padding: "10px 20px",
-                background: "transparent",
-                border: "1px solid #B8860B",
-                borderRadius: "4px",
-                color: "#B8860B",
-                fontSize: "13px",
-                fontWeight: "bold",
-                cursor: "pointer",
-                fontFamily: "Georgia, serif"
-              }}
+              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px" }}
             >
               🖼️ Galerie
             </button>
@@ -149,49 +142,80 @@ export default function App() {
               onChange={e => setSearch(e.target.value)}
               placeholder="Rechercher un style, pays, famille..."
               style={{
-                background: "#160E07", border: "1px solid #2A1A0E", color: "#F0E6D3",
-                padding: "10px 16px", borderRadius: "3px", fontSize: "13px",
-                width: "280px", fontFamily: "Georgia, serif", outline: "none"
+                background: "var(--color-bg-dark)", border: "1px solid var(--color-border)", color: "var(--color-text-main)",
+                padding: "10px 16px", borderRadius: "4px", fontSize: "13px",
+                width: "280px", fontFamily: "var(--font-body)", outline: "none", transition: "border-color 0.3s"
               }}
+              onFocus={(e) => e.target.style.borderColor = "var(--color-primary)"}
+              onBlur={(e) => e.target.style.borderColor = "var(--color-border)"}
             />
           </div>
         </div>
 
-        {/* Filters */}
-        <div style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "8px 16px" }}>
-          {/* Region filter */}
-          <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-            {["Tout", ...DB.regions].map(r => (
-              <button key={r} onClick={() => setActiveRegion(r)} style={{
-                padding: "5px 12px", border: `1px solid ${activeRegion === r ? "#B8860B" : "#2A1A0E"}`,
-                background: activeRegion === r ? "rgba(184,134,11,0.12)" : "transparent",
-                color: activeRegion === r ? "#B8860B" : "#6B5030", cursor: "pointer",
-                fontSize: "11px", letterSpacing: "0.08em", borderRadius: "2px",
-                fontFamily: "Georgia, serif", transition: "all 0.15s"
-              }}>{r}</button>
-            ))}
+        {/* Mobile Navigation Overlay */}
+        <div className={`mobile-nav-overlay ${isMenuOpen ? 'open' : ''}`}>
+          <div className="mobile-nav-links">
+            <button onClick={() => { setCurrentApp("landing"); setIsMenuOpen(false); }}>
+              🏠 Accueil
+            </button>
+            <button onClick={() => { setCurrentApp("designer"); setIsMenuOpen(false); }}>
+              🏛️ Designer
+            </button>
+            <button onClick={() => { setCurrentApp("gallery"); setIsMenuOpen(false); }}>
+              🖼️ Galerie
+            </button>
+
+            {/* Mobile Search */}
+            <div style={{ padding: "0 20px", width: "100%", boxSizing: "border-box", marginTop: "20px" }}>
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Rechercher..."
+                style={{
+                  background: "rgba(0,0,0,0.5)", border: "1px solid var(--color-border)", color: "var(--color-text-main)",
+                  padding: "14px 16px", borderRadius: "8px", fontSize: "16px",
+                  width: "100%", boxSizing: "border-box", fontFamily: "var(--font-body)", outline: "none"
+                }}
+              />
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* Family filter */}
-        <div style={{ marginTop: "10px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
-          <button onClick={() => setActiveFamily("Tout")} style={{
-            padding: "5px 12px", border: `1px solid ${activeFamily === "Tout" ? "#B8860B" : "#2A1A0E"}`,
-            background: activeFamily === "Tout" ? "rgba(184,134,11,0.12)" : "transparent",
-            color: activeFamily === "Tout" ? "#B8860B" : "#6B5030", cursor: "pointer",
-            fontSize: "11px", borderRadius: "2px", fontFamily: "Georgia, serif"
-          }}>Toutes</button>
-          {DB.families.map(f => (
-            <button key={f} onClick={() => setActiveFamily(f)} style={{
-              padding: "5px 12px",
-              border: `1px solid ${activeFamily === f ? FAMILY_COLORS[f] : "#2A1A0E"}`,
-              background: activeFamily === f ? `${FAMILY_COLORS[f]}22` : "transparent",
-              color: activeFamily === f ? FAMILY_COLORS[f] : "#6B5030",
-              cursor: "pointer", fontSize: "11px", borderRadius: "2px",
+      {/* Filters */}
+      <div style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "8px 16px" }}>
+        {/* Region filter */}
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          {["Tout", ...DB.regions].map(r => (
+            <button key={r} onClick={() => setActiveRegion(r)} style={{
+              padding: "5px 12px", border: `1px solid ${activeRegion === r ? "#B8860B" : "#2A1A0E"}`,
+              background: activeRegion === r ? "rgba(184,134,11,0.12)" : "transparent",
+              color: activeRegion === r ? "#B8860B" : "#6B5030", cursor: "pointer",
+              fontSize: "11px", letterSpacing: "0.08em", borderRadius: "2px",
               fontFamily: "Georgia, serif", transition: "all 0.15s"
-            }}>{FAMILY_ICONS[f]} {f}</button>
+            }}>{r}</button>
           ))}
         </div>
+      </div>
+
+      {/* Family filter */}
+      <div style={{ marginTop: "10px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
+        <button onClick={() => setActiveFamily("Tout")} style={{
+          padding: "5px 12px", border: `1px solid ${activeFamily === "Tout" ? "#B8860B" : "#2A1A0E"}`,
+          background: activeFamily === "Tout" ? "rgba(184,134,11,0.12)" : "transparent",
+          color: activeFamily === "Tout" ? "#B8860B" : "#6B5030", cursor: "pointer",
+          fontSize: "11px", borderRadius: "2px", fontFamily: "Georgia, serif"
+        }}>Toutes</button>
+        {DB.families.map(f => (
+          <button key={f} onClick={() => setActiveFamily(f)} style={{
+            padding: "5px 12px",
+            border: `1px solid ${activeFamily === f ? FAMILY_COLORS[f] : "#2A1A0E"}`,
+            background: activeFamily === f ? `${FAMILY_COLORS[f]}22` : "transparent",
+            color: activeFamily === f ? FAMILY_COLORS[f] : "#6B5030",
+            cursor: "pointer", fontSize: "11px", borderRadius: "2px",
+            fontFamily: "Georgia, serif", transition: "all 0.15s"
+          }}>{FAMILY_ICONS[f]} {f}</button>
+        ))}
       </div>
 
       <div style={{ display: "flex", minHeight: "calc(100vh - 200px)" }}>
@@ -402,6 +426,6 @@ export default function App() {
       </div>
 
       <div style={{ height: "5px", background: "linear-gradient(90deg,#1A2744,#B8860B,#228B22,#8B0000,#B8860B,#1A2744)" }} />
-    </div>
+    </div >
   );
 }

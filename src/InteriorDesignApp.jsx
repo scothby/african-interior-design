@@ -244,21 +244,34 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
 
   // Render upload view
   const renderUpload = () => (
-    <div style={styles.uploadContainer}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+    <div style={styles.uploadContainer} className="glass-panel">
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px', alignItems: 'center' }}>
+        {onBack && (
+          <button
+            onClick={onBack}
+            style={{ ...styles.woodenBtn, padding: '6px 16px', fontSize: '13px' }}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          >
+            ← Retour
+          </button>
+        )}
+        {onGoToStyles && (
+          <button
+            onClick={onGoToStyles}
+            style={{ ...styles.woodenBtn, padding: '6px 16px', fontSize: '13px' }}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          >
+            📚 Base de Styles
+          </button>
+        )}
+        <div style={{ flex: 1 }} /> {/* Spacer */}
         <button
           onClick={() => setCurrentView('manage-styles')}
-          style={{
-            padding: '8px 16px',
-            background: 'transparent',
-            border: '1px solid #B8860B',
-            borderRadius: '20px',
-            color: '#B8860B',
-            fontSize: '13px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            transition: 'background 0.2s',
-          }}
+          style={{ ...styles.woodenBtn, padding: '6px 16px', fontSize: '13px' }}
+          onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
         >
           ⚙️ Gérer la Base de Styles
         </button>
@@ -266,8 +279,8 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
       <div
         style={{
           ...styles.dropZone,
-          borderColor: dragActive ? '#B8860B' : '#2A1A0E',
-          background: dragActive ? 'rgba(184,134,11,0.05)' : 'transparent'
+          borderColor: dragActive ? '#B8860B' : 'transparent',
+          background: dragActive ? 'rgba(184,134,11,0.05)' : '#e8cfab'
         }}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -282,7 +295,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
           id="file-upload"
         />
         <label htmlFor="file-upload" style={styles.uploadLabel}>
-          <div style={styles.uploadIcon}>📷</div>
+          <div style={styles.uploadIcon}>
+            <img src="/camera-icon.svg" alt="Camera" style={{ width: '64px', height: '64px', opacity: 0.8 }} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }} />
+            <div style={{ display: 'none', fontSize: '48px' }}>📷</div>
+          </div>
           <div style={styles.uploadText}>
             Glissez votre photo ici ou <span style={styles.uploadLink}>cliquez pour parcourir</span>
           </div>
@@ -432,7 +448,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
         )}
       </div>
 
-      <div style={styles.stylesSection}>
+      <div style={styles.stylesSection} className="glass-panel">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h3 style={{ ...styles.sectionTitle, marginBottom: 0 }}>Choisir un Style Africain</h3>
         </div>
@@ -507,7 +523,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
 
   // Render generating view
   const renderGenerating = () => (
-    <div style={styles.generatingContainer}>
+    <div style={styles.generatingContainer} className="glass-panel">
       <div style={styles.spinnerLarge} />
       <h3 style={styles.generatingTitle}>Création de votre design...</h3>
       <p style={styles.generatingText}>
@@ -607,7 +623,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
         </div>
       )}
 
-      <div style={styles.styleInfo}>
+      <div style={styles.styleInfo} className="glass-panel">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <h4 style={styles.styleInfoTitle}>
             {selectedStyle?.flag} {selectedStyle?.name}
@@ -685,48 +701,15 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
 
   return (
     <div style={styles.app}>
-      {/* Header */}
       <header style={styles.header}>
-        <div style={styles.headerBar} />
         <div style={styles.headerContent}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}>
-            {onBack && (
-              <button
-                onClick={onBack}
-                style={{
-                  padding: "8px 16px",
-                  background: "transparent",
-                  border: "1px solid #2A1A0E",
-                  borderRadius: "4px",
-                  color: "#8B7050",
-                  fontSize: "12px",
-                  cursor: "pointer",
-                  fontFamily: "inherit"
-                }}
-              >
-                ← Retour
-              </button>
-            )}
-            {onGoToStyles && (
-              <button
-                onClick={onGoToStyles}
-                style={{
-                  padding: "8px 16px",
-                  background: "transparent",
-                  border: "1px solid #B8860B",
-                  borderRadius: "4px",
-                  color: "#B8860B",
-                  fontSize: "12px",
-                  cursor: "pointer",
-                  fontFamily: "inherit"
-                }}
-              >
-                📚 Base de Styles
-              </button>
-            )}
-            <div>
-              <h1 style={styles.title}>🏛️ African Interior Designer</h1>
-              <p style={styles.subtitle}>Transformez votre espace avec l'âme de l'Afrique</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={styles.maskIcon}>🎭</div>
+              <div>
+                <h1 style={styles.title}>African Interior Designer</h1>
+                <p style={styles.subtitle}>Transformez votre espace avec l'âme de l'Afrique</p>
+              </div>
             </div>
           </div>
         </div>
@@ -795,82 +778,127 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
 
 const styles = {
   app: {
-    fontFamily: "'Georgia', serif",
-    background: "#0C0806",
+    fontFamily: "var(--font-body)",
+    backgroundImage: "url(/ndop-bg.png)",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundAttachment: "fixed",
     minHeight: "100vh",
     color: "#F0E6D3",
     display: "flex",
     flexDirection: "column"
   },
   header: {
-    borderBottom: "1px solid #1E1208"
-  },
-  headerBar: {
-    height: "5px",
-    background: "linear-gradient(90deg,#8B0000,#B8860B,#228B22,#1A2744,#B8860B,#C41E3A,#B8860B,#228B22,#8B0000)"
+    borderBottom: "none",
+    background: "transparent",
+    paddingTop: "40px",
+    paddingBottom: "20px"
   },
   headerContent: {
-    padding: "24px 32px",
+    padding: "0 32px",
     textAlign: "center"
   },
+  maskIcon: {
+    fontSize: "64px",
+    filter: "drop-shadow(2px 4px 6px rgba(0,0,0,0.5))"
+  },
   title: {
-    margin: "0 0 8px 0",
-    fontSize: "28px",
-    fontWeight: "normal",
-    color: "#F0E6D3"
+    margin: "0 0 4px 0",
+    fontSize: "clamp(28px, 5vw, 42px)",
+    fontWeight: "900",
+    color: "#7e4a1d", // Darker brown
+    textShadow: "1px 1px 0px rgba(255,255,255,0.8)",
+    fontFamily: "var(--font-heading)"
   },
   subtitle: {
     margin: 0,
-    fontSize: "14px",
-    color: "#8B7050"
+    fontSize: "16px",
+    color: "#5a3a18",
+    fontWeight: "500",
+    textShadow: "1px 1px 0px rgba(255,255,255,0.5)",
   },
   main: {
     flex: 1,
-    padding: "24px 32px"
+    padding: "0 32px 40px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center"
   },
   footer: {
     padding: "16px 32px",
-    borderTop: "1px solid #1E1208",
+    borderTop: "none",
     textAlign: "center",
-    fontSize: "12px",
-    color: "#6B5030"
+    fontSize: "13px",
+    color: "#8e6231",
+    fontWeight: "500"
   },
-
+  woodenBtn: {
+    padding: "8px 20px",
+    background: "linear-gradient(to bottom, #fdfbf7, #f4eadc)",
+    border: "2px solid #5a3a18",
+    borderRadius: "24px",
+    color: "#5a3a18",
+    fontSize: "14px",
+    fontWeight: "bold",
+    cursor: "pointer",
+    fontFamily: "var(--font-heading)",
+    boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+    transition: "all 0.2s ease"
+  },
   // Upload styles
   uploadContainer: {
-    maxWidth: "600px",
-    margin: "40px auto"
+    width: "100%",
+    maxWidth: "1000px",
+    margin: "0 auto",
+    padding: "40px 60px",
+    background: "#fdfbf7", // Very light beige matching reference
+    borderRadius: "24px",
+    border: "none",
+    boxShadow: "0 24px 60px rgba(0,0,0,0.6)",
+    textAlign: "center",
+    position: "relative"
   },
   dropZone: {
-    border: "2px dashed #2A1A0E",
-    borderRadius: "8px",
-    padding: "48px 32px",
-    textAlign: "center",
-    transition: "all 0.3s"
+    border: "none",
+    background: "#e8cfab",
+    padding: "80px 40px",
+    borderRadius: "16px",
+    cursor: "pointer",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "all 0.3s ease",
+    boxShadow: "inset 0 4px 12px rgba(142, 98, 49, 0.2)",
+    marginBottom: "20px"
   },
   fileInput: {
     display: "none"
   },
   uploadLabel: {
-    cursor: "pointer",
-    display: "block"
+    cursor: "pointer"
   },
   uploadIcon: {
     fontSize: "48px",
-    marginBottom: "16px"
+    marginBottom: "16px",
+    filter: "drop-shadow(2px 4px 6px rgba(142, 98, 49, 0.3))"
   },
   uploadText: {
-    fontSize: "16px",
-    color: "#F0E6D3",
-    marginBottom: "8px"
+    fontSize: "22px",
+    fontWeight: "500",
+    color: "#2a1a0e",
+    marginBottom: "8px",
+    fontFamily: "var(--font-body)"
   },
   uploadLink: {
-    color: "#B8860B",
-    textDecoration: "underline"
+    color: "#5a3a18",
+    textDecoration: "underline",
+    fontWeight: "bold"
   },
   uploadHint: {
-    fontSize: "12px",
-    color: "#6B5030"
+    fontSize: "14px",
+    color: "#5a3a18",
+    fontWeight: "500"
   },
   loading: {
     marginTop: "24px",
@@ -907,8 +935,8 @@ const styles = {
     margin: "0 auto"
   },
   previewSection: {
-    background: "#160E07",
-    border: "1px solid #2A1A0E",
+    background: "var(--glass-bg)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "16px"
   },
@@ -937,8 +965,8 @@ const styles = {
     fontFamily: "inherit"
   },
   stylesSection: {
-    background: "#160E07",
-    border: "1px solid #2A1A0E",
+    background: "var(--glass-bg)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "16px"
   },
@@ -1278,8 +1306,8 @@ const styles = {
     background: "#0C0806"
   },
   styleInfo: {
-    background: "#160E07",
-    border: "1px solid #2A1A0E",
+    background: "var(--glass-bg)",
+    border: "1px solid var(--color-border)",
     borderRadius: "8px",
     padding: "24px",
     textAlign: "center",

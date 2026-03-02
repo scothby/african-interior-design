@@ -1,10 +1,89 @@
 /* App.css - African Styles Database & Interior Designer */
 
+:root {
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --color-primary: #B8860B;
+  --color-primary-hover: #D4AF37;
+  --color-bg-dark: #0C0806;
+  --color-bg-panel: #120B05;
+  --color-border: #1E1208;
+  --color-text-main: #F0E6D3;
+  --color-text-muted: #8B7050;
+
+  --glass-bg: rgba(18, 11, 5, 0.7);
+  --glass-border: rgba(184, 134, 11, 0.15);
+  --glass-blur: blur(12px);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-main);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  margin-top: 0;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #B8860B 0%, #8B6508 100%);
+  color: #120B05;
+  border: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(184, 134, 11, 0.2);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+  box-shadow: 0 6px 20px rgba(184, 134, 11, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: rgba(184, 134, 11, 0.1);
+  color: #B8860B;
+  border: 1px solid rgba(184, 134, 11, 0.3);
+  font-family: var(--font-body);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(184, 134, 11, 0.2);
+  border-color: rgba(184, 134, 11, 0.5);
+  transform: translateY(-2px);
+}
+
 /* Spinner Animation */
 @keyframes spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -16,6 +95,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -24,9 +104,12 @@
 
 /* Pulse Animation for Loading */
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -105,11 +188,11 @@ button:focus {
   .selectionContainer {
     grid-template-columns: 1fr !important;
   }
-  
+
   .comparisonContainer {
     grid-template-columns: 1fr !important;
   }
-  
+
   .arrow {
     transform: rotate(90deg);
   }
@@ -168,6 +251,7 @@ button:active {
   0% {
     background-position: 200% 0;
   }
+
   100% {
     background-position: -200% 0;
   }
@@ -185,4 +269,117 @@ button:active {
 
 .gallery-card:hover .gallery-thumb {
   transform: scale(1.05);
+}
+
+/* --- Responsive & Mobile First Utils --- */
+
+/* Hamburger Menu Base Styles */
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 100;
+}
+
+.hamburger-line {
+  display: block;
+  width: 24px;
+  height: 2px;
+  margin: 5px auto;
+  background-color: var(--color-text-main);
+  transition: all 0.3s ease-in-out;
+}
+
+.mobile-nav-overlay {
+  display: none;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+
+  /* Header & Navigation */
+  header,
+  .glass-panel header {
+    padding: 16px 20px !important;
+  }
+
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: block;
+  }
+
+  /* Hamburger Animation */
+  .mobile-menu-btn.open .hamburger-line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .mobile-menu-btn.open .hamburger-line:nth-child(2) {
+    opacity: 0;
+  }
+
+  .mobile-menu-btn.open .hamburger-line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Mobile Nav Overlay Menu */
+  .mobile-nav-overlay {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    z-index: 90;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    padding-top: 100px;
+    box-sizing: border-box;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mobile-nav-overlay.open {
+    transform: translateX(0);
+  }
+
+  .mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+  }
+
+  .mobile-nav-links button {
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: var(--color-text-main);
+    font-family: var(--font-heading);
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .mobile-nav-links button:active,
+  .mobile-nav-links button:focus {
+    color: var(--color-primary);
+    outline: none;
+  }
+
+  h1 {
+    font-size: clamp(32px, 8vw, 48px) !important;
+  }
+
+  h2 {
+    font-size: clamp(24px, 6vw, 36px) !important;
+  }
 }
