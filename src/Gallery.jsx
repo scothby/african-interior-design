@@ -248,7 +248,7 @@ export default function Gallery({ onBack, onGoToStyles }) {
                                     }}
                                 >
                                     <img
-                                        src={`${API_BASE_URL}${entry.generatedImage}`}
+                                        src={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`}
                                         alt={entry.styleName}
                                         style={s.thumbnail}
                                         className="gallery-thumb"
