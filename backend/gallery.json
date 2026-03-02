@@ -1,5 +1,18 @@
 [
   {
+    "id": "gallery-1772453076408-xcqj063cm",
+    "originalImage": "/uploads/1772453047825-233091069.png",
+    "generatedImage": "/generated/generated-1772453076398-eg-nubie.png",
+    "styleName": "Nubie Colorée",
+    "styleFamily": "Géométrique Peint",
+    "styleId": "eg-nubie",
+    "prompt": "Transform this entire room into Nubian colorful interior design, hand painted walls with vibrant scenes, turquoise and orange color scheme, palm wood furniture, woven mats, Upper Egypt village style, warm bright photography. \nUse these colors: #FF6B35, #004E89, #F7C59F, #1A936F, #FFD166.\nMaterials: argile peinte, palmier doum, nattes tressées, tissu coton peint, poteries.\nPatterns: scènes de vie peintes, crocodiles stylisés, oiseaux du Nil, géométrie colorée.\nMaintain the room layout and structure while completely transforming the style.\nHigh quality architectural interior photography style, 4K, photorealistic.",
+    "customPrompt": null,
+    "mode": "full",
+    "isFavorite": false,
+    "createdAt": "2026-03-02T12:04:36.408Z"
+  },
+  {
     "id": "gallery-1772391906864-8mgncsmo8",
     "originalImage": "/uploads/1772391839786-4125623.png",
     "generatedImage": "/generated/generated-1772391906852-td-ennedi.png",
@@ -9,7 +22,7 @@
     "prompt": "Transform this entire room into Ennedi desert interior Chad, ancient sandstone rock formations, cave dwelling atmosphere, leather and hide elements, prehistoric rock art inspiration, warm ochre and sand palette, desert nomadic sanctuary, dramatic natural light. \nUse these colors: #E2703A, #DEB887, #8B4513, #2C1810, #F5DEB3.\nMaterials: pierre de grès, sable, cuir, bois fossilisé, peau.\nPatterns: rocaille Ennedi, gravures rupestres, formes minérales, nomadisme.\nMaintain the room layout and structure while completely transforming the style.\nHigh quality architectural interior photography style, 4K, photorealistic.",
     "customPrompt": null,
     "mode": "full",
-    "isFavorite": false,
+    "isFavorite": true,
     "createdAt": "2026-03-01T19:05:06.864Z"
   },
   {
@@ -22,7 +35,7 @@
     "prompt": "Transform this entire room into Tuareg Air Niger interior design, deep indigo leather tent atmosphere, silver Agadez cross jewelry displayed, Saharan desert nomadic luxury, camel leather poufs, night blue palette, starry desert sky inspiration, elegant minimal. \nUse these colors: #1A237E, #000000, #C9A84C, #F5F5DC, #4A4A4A.\nMaterials: cuir chameau, argent ciselé, tissu indigo, tente en peau, bois d'ébène.\nPatterns: croix d'Agadez en argent, motifs de selle, inscriptions Tifinagh, géométrie nomade.\nMaintain the room layout and structure while completely transforming the style.\nHigh quality architectural interior photography style, 4K, photorealistic.",
     "customPrompt": null,
     "mode": "full",
-    "isFavorite": false,
+    "isFavorite": true,
     "createdAt": "2026-03-01T18:04:50.519Z",
     "worldUrl": "https://marble.worldlabs.ai/world/58bc5e5a-2505-4b1b-adba-b80a0d6e97ec",
     "worldOperationId": "9a8cec5e-ba09-48dd-95ae-9ac3f36fdbc9"

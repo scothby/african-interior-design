@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import ComparisonSlider from './ComparisonSlider';
 import { exportCollage } from './utils/collageGenerator';
+import { exportDesignPDF } from './utils/pdfGenerator';
 import WorldViewerModal from './WorldViewerModal';
 
 const API_BASE_URL = 'http://localhost:5000';
 
-export default function Gallery({ onBack }) {
+export default function Gallery({ onBack, onGoToStyles }) {
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,7 +15,8 @@ export default function Gallery({ onBack }) {
     const [downloadingId, setDownloadingId] = useState(null);
     const [filter, setFilter] = useState('all');
     const [zoomModal, setZoomModal] = useState({ open: false, image: null, alt: '', zoom: 1, beforeImage: null, afterImage: null });
-    const [worldModal, setWorldModal] = useState({ open: false, entry: null }); // pour ouvrir le viewer monde
+    const [worldModal, setWorldModal] = useState({ open: false, entry: null });
+    const [pdfDownloadingId, setPdfDownloadingId] = useState(null);
 
     // Fetch gallery entries
     const fetchGallery = useCallback(async () => {
@@ -98,6 +100,32 @@ export default function Gallery({ onBack }) {
         }
     };
 
+    // Export PDF d'une entrée galerie
+    const handleExportPDF = async (entry) => {
+        setPdfDownloadingId(entry.id);
+        try {
+            await exportDesignPDF({
+                beforeSrc: `${API_BASE_URL}${entry.originalImage}`,
+                afterSrc: `${API_BASE_URL}${entry.generatedImage}`,
+                style: {
+                    name: entry.styleName,
+                    family: entry.styleFamily,
+                    description: entry.styleDescription || '',
+                    materials: entry.materials || [],
+                    colors: entry.colors || [],
+                    patterns: entry.patterns || [],
+                    flag: entry.flag || '',
+                    region: entry.region || '',
+                },
+                customPrompt: entry.customPrompt || null,
+            });
+        } catch (err) {
+            console.error('PDF export error:', err);
+        } finally {
+            setPdfDownloadingId(null);
+        }
+    };
+
     return (
         <div style={s.app}>
             {/* Header */}
@@ -107,6 +135,23 @@ export default function Gallery({ onBack }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}>
                         {onBack && (
                             <button onClick={onBack} style={s.backBtn}>← Retour</button>
+                        )}
+                        {onGoToStyles && (
+                            <button
+                                onClick={onGoToStyles}
+                                style={{
+                                    padding: "8px 16px",
+                                    background: "transparent",
+                                    border: "1px solid #B8860B",
+                                    borderRadius: "4px",
+                                    color: "#B8860B",
+                                    fontSize: "12px",
+                                    cursor: "pointer",
+                                    fontFamily: "inherit"
+                                }}
+                            >
+                                📚 Base de Styles
+                            </button>
                         )}
                         <div>
                             <h1 style={s.title}>🖼️ Galerie des Réalisations</h1>
@@ -315,6 +360,18 @@ export default function Gallery({ onBack }) {
                                                 }}
                                             >
                                                 {downloadingId === entry.id ? '⏳ Collage...' : '📥 Télécharger'}
+                                            </button>
+
+                                            <button
+                                                onClick={() => handleExportPDF(entry)}
+                                                disabled={pdfDownloadingId === entry.id}
+                                                style={{
+                                                    ...s.pdfBtn,
+                                                    opacity: pdfDownloadingId === entry.id ? 0.7 : 1,
+                                                    cursor: pdfDownloadingId === entry.id ? 'wait' : 'pointer'
+                                                }}
+                                            >
+                                                {pdfDownloadingId === entry.id ? '⏳ PDF...' : '📄 PDF'}
                                             </button>
 
                                             {/* Bouton Monde 3D si worldUrl existe */}
@@ -531,6 +588,12 @@ const s = {
         padding: "8px 16px", background: "rgba(34,139,34,0.15)",
         border: "1px solid #228B22", borderRadius: "4px",
         color: "#6DBF6D", fontSize: "12px", cursor: "pointer", fontFamily: "inherit",
+        fontWeight: "bold"
+    },
+    pdfBtn: {
+        padding: "8px 16px", background: "rgba(184,134,11,0.15)",
+        border: "1px solid #B8860B", borderRadius: "4px",
+        color: "#B8860B", fontSize: "12px", cursor: "pointer", fontFamily: "inherit",
         fontWeight: "bold"
     },
     downloadBtn: {

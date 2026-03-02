@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import DB from "./african-styles-db.json";
 import InteriorDesignApp from "./InteriorDesignApp";
 import Gallery from "./Gallery";
+import LandingPage from "./LandingPage";
 import "./App.css";
 
 const FAMILY_COLORS = {
@@ -27,7 +28,7 @@ const FAMILY_ICONS = {
 };
 
 export default function App() {
-  const [currentApp, setCurrentApp] = useState("database"); // "database", "designer", or "gallery"
+  const [currentApp, setCurrentApp] = useState("landing"); // "landing", "database", "designer", "gallery"
   const [search, setSearch] = useState("");
   const [activeRegion, setActiveRegion] = useState("Tout");
   const [activeFamily, setActiveFamily] = useState("Tout");
@@ -54,14 +55,25 @@ export default function App() {
 
   const selectedStyle = selected ? DB.styles.find(s => s.id === selected) : null;
 
+  // Render Landing Page
+  if (currentApp === "landing") {
+    return (
+      <LandingPage
+        onEnterDesigner={() => setCurrentApp("designer")}
+        onEnterGallery={() => setCurrentApp("gallery")}
+        onEnterDatabase={() => setCurrentApp("database")}
+      />
+    );
+  }
+
   // Render Interior Designer App
   if (currentApp === "designer") {
-    return <InteriorDesignApp onBack={() => setCurrentApp("database")} />;
+    return <InteriorDesignApp onBack={() => setCurrentApp("landing")} onGoToStyles={() => setCurrentApp("database")} />;
   }
 
   // Render Gallery
   if (currentApp === "gallery") {
-    return <Gallery onBack={() => setCurrentApp("database")} />;
+    return <Gallery onBack={() => setCurrentApp("landing")} onGoToStyles={() => setCurrentApp("database")} />;
   }
 
   // Render Database View (existing)
@@ -83,6 +95,22 @@ export default function App() {
             </h1>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <button
+              onClick={() => setCurrentApp("landing")}
+              style={{
+                padding: "10px 20px",
+                background: "transparent",
+                border: "1px solid #B8860B",
+                borderRadius: "4px",
+                color: "#B8860B",
+                fontSize: "13px",
+                fontWeight: "bold",
+                cursor: "pointer",
+                fontFamily: "Georgia, serif"
+              }}
+            >
+              🏠 Accueil
+            </button>
             <button
               onClick={() => setCurrentApp("designer")}
               style={{

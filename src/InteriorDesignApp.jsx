@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ComparisonSlider from './ComparisonSlider';
 import { exportCollage } from './utils/collageGenerator';
+import { exportDesignPDF } from './utils/pdfGenerator';
 import StyleManager from './StyleManager';
 import WorldViewerModal from './WorldViewerModal';
 
 const API_BASE_URL = 'http://localhost:5000';
 
-export default function InteriorDesignApp({ onBack }) {
+export default function InteriorDesignApp({ onBack, onGoToStyles }) {
   const [currentView, setCurrentView] = useState('upload'); // 'upload', 'select-style', 'generating', 'result', 'manage-styles'
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
@@ -15,6 +16,7 @@ export default function InteriorDesignApp({ onBack }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [error, setError] = useState(null);
   const [activeRegion, setActiveRegion] = useState('Tout');
   const [activeFamily, setActiveFamily] = useState('Tout');
@@ -182,6 +184,24 @@ export default function InteriorDesignApp({ onBack }) {
       setError('Échec du téléchargement du collage');
     } finally {
       setIsDownloading(false);
+    }
+  };
+
+  // Export PDF du design
+  const handleExportPDF = async () => {
+    if (!generatedImage || !selectedStyle || isPdfGenerating) return;
+    setIsPdfGenerating(true);
+    try {
+      await exportDesignPDF({
+        beforeSrc: `${API_BASE_URL}${uploadedImage}`,
+        afterSrc: `${API_BASE_URL}${generatedImage}`,
+        style: selectedStyle,
+        customPrompt: customPrompt || null,
+      });
+    } catch (err) {
+      console.error('PDF export error:', err);
+    } finally {
+      setIsPdfGenerating(false);
     }
   };
 
@@ -629,6 +649,21 @@ export default function InteriorDesignApp({ onBack }) {
             {isDownloading ? '⏳ Création du collage...' : '📸 Télécharger Avant/Après'}
           </button>
           <button
+            onClick={handleExportPDF}
+            disabled={isPdfGenerating}
+            style={{
+              ...styles.downloadBtn,
+              background: 'rgba(184,134,11,0.2)',
+              border: '1px solid #B8860B',
+              color: '#B8860B',
+              opacity: isPdfGenerating ? 0.7 : 1,
+              cursor: isPdfGenerating ? 'wait' : 'pointer',
+              marginTop: '4px'
+            }}
+          >
+            {isPdfGenerating ? '⏳ Génération PDF...' : '📄 Exporter en PDF'}
+          </button>
+          <button
             onClick={handleCreateWorld}
             style={{ ...styles.secondaryBtn, marginTop: '4px' }}
           >
@@ -670,6 +705,23 @@ export default function InteriorDesignApp({ onBack }) {
                 }}
               >
                 ← Retour
+              </button>
+            )}
+            {onGoToStyles && (
+              <button
+                onClick={onGoToStyles}
+                style={{
+                  padding: "8px 16px",
+                  background: "transparent",
+                  border: "1px solid #B8860B",
+                  borderRadius: "4px",
+                  color: "#B8860B",
+                  fontSize: "12px",
+                  cursor: "pointer",
+                  fontFamily: "inherit"
+                }}
+              >
+                📚 Base de Styles
               </button>
             )}
             <div>
