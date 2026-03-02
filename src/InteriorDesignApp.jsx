@@ -886,18 +886,18 @@ const styles = {
   uploadText: {
     fontSize: "22px",
     fontWeight: "500",
-    color: "#2a1a0e",
+    color: "red",
     marginBottom: "8px",
     fontFamily: "var(--font-body)"
   },
   uploadLink: {
-    color: "#5a3a18",
+    color: "red",
     textDecoration: "underline",
     fontWeight: "bold"
   },
   uploadHint: {
     fontSize: "14px",
-    color: "#5a3a18",
+    color: "red",
     fontWeight: "500"
   },
   loading: {
