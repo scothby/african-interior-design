@@ -7,11 +7,13 @@ import StyleManager from "./StyleManager";
 import WorldViewerModal from "./WorldViewerModal";
 import InpaintingModal from "./InpaintingModal";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+import { useAuth } from "./AuthContext";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery }) {
   const { t } = useTranslation();
+  const { getToken } = useAuth();
   const [currentView, setCurrentView] = useState("upload"); // 'upload', 'select-style', 'generating', 'result', 'manage-styles'
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
@@ -52,7 +54,12 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
   // Fetch styles from backend
   const fetchStyles = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/styles`);
+      const token = await getToken();
+      const res = await fetch(`${API_BASE_URL}/api/styles`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (!res.ok) throw new Error("Failed to fetch styles");
       const data = await res.json();
 
@@ -100,9 +107,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
     try {
       const formData = new FormData();
       formData.append("photo", file);
-
+      const token = await getToken();
       const response = await fetch(`${API_BASE_URL}/api/upload`, {
         method: "POST",
+        headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
       });
 
@@ -148,9 +156,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
     setCurrentView("generating");
 
     try {
+      const token = await getToken();
       const response = await fetch(`${API_BASE_URL}/api/generate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
           originalImage: uploadedImage,
           style: selectedStyle,
@@ -1052,10 +1061,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
           <span className="material-symbols-outlined text-primary text-3xl">
             temple_hindu
           </span>
-          African Interior Designer
+          {t('designer.title')}
         </h1>
         <p className="text-slate-600 dark:text-slate-400 italic text-sm mt-1">
-          Transformez votre espace avec l’âme de l’Afrique
+          {t('designer.subtitle')}
         </p>
       </div>
 
@@ -1084,7 +1093,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             style={{ boxSizing: "border-box" }}
           >
             <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] w-full md:w-auto mb-2 md:mb-0">
-              Base de données
+              {t('footerStats.database')}
             </span>
             <div
               className="flex items-center gap-6 text-sm font-semibold text-slate-800 dark:text-slate-200"
@@ -1095,7 +1104,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                   {stylesDb.styles.length}
                 </span>
                 <span className="text-xs opacity-70 uppercase tracking-tighter">
-                  Styles
+                  {t('footerStats.styles')}
                 </span>
               </div>
               <span className="hidden md:block w-px h-6 bg-slate-400/30"></span>
@@ -1104,7 +1113,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                   {stylesDb.regions.length}
                 </span>
                 <span className="text-xs opacity-70 uppercase tracking-tighter">
-                  Régions
+                  {t('footerStats.regions')}
                 </span>
               </div>
               <span className="hidden md:block w-px h-6 bg-slate-400/30"></span>
@@ -1113,7 +1122,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                   {stylesDb.families.length}
                 </span>
                 <span className="text-xs opacity-70 uppercase tracking-tighter">
-                  Familles
+                  {t('footerStats.families')}
                 </span>
               </div>
             </div>
@@ -1158,14 +1167,14 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                 -
               </button>
               <button onClick={closeZoom} style={styles.closeBtn}>
-                Fermer
+                {t('zoomModal.close')}
               </button>
               <button onClick={zoomIn} style={styles.zoomBtn}>
                 +
               </button>
             </div>
             <div style={styles.modalHint}>
-              Molette souris ou boutons +/- pour zoomer
+              {t('zoomModal.hint')}
             </div>
           </div>
         </div>

@@ -101,6 +101,7 @@
         "pollingInfoLine2": "Le viewer s'affichera automatiquement une fois prêt. Pas besoin de rester sur cette fenêtre.",
         "directLink": "Lien direct vers World Labs (si le proxy échoue)",
         "errors": {
+            "noOpId": "Aucun operationId reçu de World Labs",
             "noUrl": "Monde généré mais aucun lien disponible.",
             "statusCheck": "Impossible de vérifier l'état du monde",
             "failed": "Création échouée"
@@ -214,12 +215,92 @@
         "clear": "Effacer le masque",
         "promptLabel": "Nouveau meuble/objet",
         "placeholder": "Ex: Canapé en tissu indigo Dogon, Table basse carrée en bois massif...",
-        "generate": "Générer",
+        "generate": "Générer les modifications",
         "cancel": "Annuler",
         "alerts": {
             "mask": "Veuillez peindre la zone à modifier.",
-            "prompt": "Veuillez décrire ce que vous souhaitez générer."
+            "prompt": "Veuillez décrire ce que vous souhaitez générer.",
+            "noStyle": "Aucun style sélectionné"
+        },
+        "mode": "Mode Édition",
+        "tools": {
+            "brush": "Pinceau",
+            "eraser": "Gomme",
+            "clearAll": "Effacer tout"
         }
+    },
+    "nav": {
+        "home": "Home",
+        "styles": "Styles",
+        "create": "Create"
+    },
+    "admin": {
+        "title": "Gestionnaire de Styles",
+        "add": "Ajouter un style",
+        "edit": "Modifier le Style",
+        "createNew": "Créer un Nouveau Style",
+        "name": "Nom du style",
+        "idHint": "Un identifiant unique sans espace sera généré",
+        "region": "Région (ex: Ouest, Est, Centrale...)",
+        "family": "Famille",
+        "desc": "Description complète",
+        "prompt": "Prompt IA de Base",
+        "promptHint": "Le prompt secret envoyé à l'IA pour générer ce style précis.",
+        "materials": "Matériaux (séparés par des virgules)",
+        "colors": "Couleurs (séparées par des virgules)",
+        "save": "Enregistrer le style",
+        "cancel": "Annuler",
+        "saveSuccess": "Style enregistré avec succès",
+        "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce style ?",
+        "deleteSuccess": "Style supprimé",
+        "table": {
+            "name": "Nom",
+            "region": "Région",
+            "family": "Famille",
+            "actions": "Actions",
+            "empty": "Aucun style configuré.",
+            "edit": "Modifier",
+            "delete": "Supprimer"
+        }
+    },
+    "footerStats": {
+        "database": "Base de données",
+        "styles": "Styles",
+        "regions": "Régions",
+        "families": "Familles"
+    },
+    "zoomModal": {
+        "close": "Fermer",
+        "hint": "Molette souris ou boutons +/- pour zoomer"
+    },
+    "auth": {
+        "tagline": "Styles Africains",
+        "title": "Design d'intérieur IA",
+        "login": "Connexion",
+        "createAccount": "Créer un compte",
+        "email": "Email",
+        "emailPlaceholder": "votre@email.com",
+        "password": "Mot de passe",
+        "passwordPlaceholder": "••••••••",
+        "confirmPassword": "Confirmer le mot de passe",
+        "errors": {
+            "passwordMismatch": "Les mots de passe ne correspondent pas.",
+            "passwordLength": "Le mot de passe doit contenir au moins 6 caractères.",
+            "invalidCredentials": "Email ou mot de passe incorrect.",
+            "emailInUse": "Cet email est déjà utilisé.",
+            "general": "Une erreur est survenue.",
+            "googleExt": "Erreur Google OAuth."
+        },
+        "success": {
+            "created": "Compte créé ! Vérifiez votre email pour confirmer votre inscription."
+        },
+        "loading": "⏳ Chargement...",
+        "btnLogin": "🔓 Se connecter",
+        "btnCreate": "✨ Créer mon compte",
+        "or": "ou",
+        "googleRedirect": "Redirection...",
+        "googleBtn": "Continuer avec Google",
+        "secureText": "Vos créations sont sécurisées et privées 🔒"
     },
     "db": {
         "families": {

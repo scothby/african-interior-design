@@ -101,6 +101,7 @@
         "pollingInfoLine2": "The viewer will display automatically once ready. No need to stay on this window.",
         "directLink": "Direct link to World Labs (if proxy fails)",
         "errors": {
+            "noOpId": "No operationId received from World Labs",
             "noUrl": "World generated but no link available.",
             "statusCheck": "Could not check world status",
             "failed": "Creation failed"
@@ -214,12 +215,92 @@
         "clear": "Clear Mask",
         "promptLabel": "New furniture/object",
         "placeholder": "Ex: Indigo Dogon fabric sofa, Square solid wood coffee table...",
-        "generate": "Generate",
+        "generate": "Generate modifications",
         "cancel": "Cancel",
         "alerts": {
             "mask": "Please paint the area to modify.",
-            "prompt": "Please describe what you want to generate."
+            "prompt": "Please describe what you want to generate.",
+            "noStyle": "No style selected"
+        },
+        "mode": "Edit Mode",
+        "tools": {
+            "brush": "Brush",
+            "eraser": "Eraser",
+            "clearAll": "Clear All"
         }
+    },
+    "nav": {
+        "home": "Home",
+        "styles": "Styles",
+        "create": "Create"
+    },
+    "admin": {
+        "title": "Style Manager",
+        "add": "Add Style",
+        "edit": "Edit Style",
+        "createNew": "Create New Style",
+        "name": "Style Name",
+        "idHint": "A unique identifier without spaces will be generated",
+        "region": "Region (e.g. West, East, Central...)",
+        "family": "Family",
+        "desc": "Full description",
+        "prompt": "Base AI Prompt",
+        "promptHint": "The secret prompt sent to the AI to generate this specific style.",
+        "materials": "Materials (comma separated)",
+        "colors": "Colors (comma separated)",
+        "save": "Save Style",
+        "cancel": "Cancel",
+        "saveSuccess": "Style saved successfully",
+        "deleteConfirm": "Are you sure you want to delete this style?",
+        "deleteSuccess": "Style deleted",
+        "table": {
+            "name": "Name",
+            "region": "Region",
+            "family": "Family",
+            "actions": "Actions",
+            "empty": "No configured styles.",
+            "edit": "Edit",
+            "delete": "Delete"
+        }
+    },
+    "footerStats": {
+        "database": "Database",
+        "styles": "Styles",
+        "regions": "Regions",
+        "families": "Families"
+    },
+    "zoomModal": {
+        "close": "Close",
+        "hint": "Mouse wheel or +/- buttons to zoom"
+    },
+    "auth": {
+        "tagline": "African Styles",
+        "title": "AI Interior Design",
+        "login": "Login",
+        "createAccount": "Create Account",
+        "email": "Email",
+        "emailPlaceholder": "your@email.com",
+        "password": "Password",
+        "passwordPlaceholder": "••••••••",
+        "confirmPassword": "Confirm Password",
+        "errors": {
+            "passwordMismatch": "Passwords do not match.",
+            "passwordLength": "Password must be at least 6 characters.",
+            "invalidCredentials": "Invalid email or password.",
+            "emailInUse": "This email is already in use.",
+            "general": "An error occurred.",
+            "googleExt": "Google OAuth error."
+        },
+        "success": {
+            "created": "Account created! Check your email to confirm registration."
+        },
+        "loading": "⏳ Loading...",
+        "btnLogin": "🔓 Login",
+        "btnCreate": "✨ Create my account",
+        "or": "or",
+        "googleRedirect": "Redirecting...",
+        "googleBtn": "Continue with Google",
+        "secureText": "Your creations are secure and private 🔒"
     },
     "db": {
         "families": {

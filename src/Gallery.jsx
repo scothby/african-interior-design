@@ -4,6 +4,7 @@ import ComparisonSlider from './ComparisonSlider';
 import { exportCollage } from './utils/collageGenerator';
 import { exportDesignPDF } from './utils/pdfGenerator';
 import WorldViewerModal from './WorldViewerModal';
+import { useAuth } from './AuthContext';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -20,6 +21,7 @@ function useWindowSize() {
 
 export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
     const { t, i18n } = useTranslation();
+    const { getToken } = useAuth();
     const { w: winW } = useWindowSize();
 
     // Breakpoints responsives
@@ -77,7 +79,10 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
     const fetchGallery = useCallback(async () => {
         try {
             setLoading(true);
-            const res = await fetch(`${API_BASE_URL}/api/gallery`);
+            const token = await getToken();
+            const res = await fetch(`${API_BASE_URL}/api/gallery`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (!res.ok) throw new Error('Failed to load gallery');
             const data = await res.json();
             setEntries(data);
@@ -86,18 +91,22 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [getToken]);
 
     useEffect(() => { fetchGallery(); }, [fetchGallery]);
 
     // Delete entry
     const handleDelete = async (id) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/gallery/${id}`, { method: 'DELETE' });
+            const token = await getToken();
+            const res = await fetch(`${API_BASE_URL}/api/gallery/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (!res.ok) throw new Error('Delete failed');
             setEntries(prev => prev.filter(e => e.id !== id));
             setConfirmDeleteId(null);
-            setExpandedId(null);
+            closeEntryModal();
         } catch (err) {
             setError(err.message);
         }
@@ -107,7 +116,11 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
     const toggleFavorite = async (id, e) => {
         if (e) e.stopPropagation();
         try {
-            const res = await fetch(`${API_BASE_URL}/api/gallery/${id}/favorite`, { method: 'PATCH' });
+            const token = await getToken();
+            const res = await fetch(`${API_BASE_URL}/api/gallery/${id}/favorite`, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             if (!res.ok) throw new Error('Failed to update favorite');
             const data = await res.json();
             setEntries(prev => prev.map(entry => entry.id === id ? { ...entry, isFavorite: data.isFavorite } : entry));
@@ -126,8 +139,8 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
         setDownloadingId(entry.id);
         try {
             await exportCollage(
-                entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
-                entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`,
+                entry.originalImage ? (entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`) : '',
+                entry.generatedImage ? (entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`) : '',
                 entry.styleName
             );
         } catch (err) {
@@ -143,8 +156,8 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
         setPdfDownloadingId(entry.id);
         try {
             await exportDesignPDF({
-                originalImage: entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
-                generatedImage: entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`,
+                originalImage: entry.originalImage ? (entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`) : '',
+                generatedImage: entry.generatedImage ? (entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`) : '',
                 styleName: entry.styleName,
                 styleFamily: entry.styleFamily,
                 description: entry.styleDescription || ''
@@ -163,86 +176,97 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
             <header style={s.header}>
                 <div style={s.headerBar} />
                 <div style={s.headerContent}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}>
-                        {onBack && (
-                            <button onClick={onBack} style={s.backBtn}>{t('gallery.actions.back')}</button>
-                        )}
-                        {onGoToStyles && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', flexWrap: 'wrap', gap: '20px' }}>
+                        {/* Navigation Buttons */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
+                            {onBack && (
+                                <button onClick={onBack} style={s.backBtn}>
+                                    <span style={{ marginRight: '6px' }}>🏠</span>
+                                    {t('nav.home', 'Home')}
+                                </button>
+                            )}
+                            {onGoToStyles && (
+                                <button
+                                    onClick={onGoToStyles}
+                                    style={{
+                                        padding: "8px 16px",
+                                        background: "rgba(184, 134, 11, 0.1)",
+                                        border: "1px solid #B8860B",
+                                        borderRadius: "4px",
+                                        color: "#B8860B",
+                                        fontSize: "12px",
+                                        cursor: "pointer",
+                                        fontFamily: "inherit"
+                                    }}
+                                >
+                                    <span style={{ marginRight: '6px' }}>📚</span>
+                                    {t('nav.styles', 'Styles')}
+                                </button>
+                            )}
+                            {onGoToDesigner && (
+                                <button
+                                    onClick={onGoToDesigner}
+                                    style={{
+                                        padding: "8px 16px",
+                                        background: "#B8860B",
+                                        border: "none",
+                                        borderRadius: "4px",
+                                        color: "#0C0806",
+                                        fontSize: "12px",
+                                        cursor: "pointer",
+                                        fontFamily: "inherit",
+                                        fontWeight: "bold"
+                                    }}
+                                >
+                                    <span style={{ marginRight: '6px' }}>🎨</span>
+                                    {t('nav.create', 'Create')}
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Filters */}
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flex: 1 }}>
                             <button
-                                onClick={onGoToStyles}
+                                onClick={() => setFilter('all')}
                                 style={{
-                                    padding: "8px 16px",
-                                    background: "rgba(184, 134, 11, 0.1)",
-                                    border: "1px solid #B8860B",
-                                    borderRadius: "4px",
-                                    color: "#B8860B",
-                                    fontSize: "12px",
-                                    cursor: "pointer",
-                                    fontFamily: "inherit"
+                                    padding: '8px 16px',
+                                    background: filter === 'all' ? '#B8860B' : 'transparent',
+                                    color: filter === 'all' ? '#0C0806' : '#D4C3A3',
+                                    border: `1px solid ${filter === 'all' ? '#B8860B' : 'rgba(184,134,11,0.3)'}`,
+                                    borderRadius: '20px',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                    fontWeight: 'bold',
+                                    transition: 'all 0.2s'
                                 }}
                             >
-                                {t('gallery.actions.styles')}
+                                {t('gallery.filters.all')}
                             </button>
-                        )}
-                        {onGoToDesigner && (
                             <button
-                                onClick={onGoToDesigner}
+                                onClick={() => setFilter('favorites')}
                                 style={{
-                                    padding: "8px 16px",
-                                    background: "#B8860B",
-                                    border: "none",
-                                    borderRadius: "4px",
-                                    color: "#0C0806",
-                                    fontSize: "12px",
-                                    cursor: "pointer",
-                                    fontFamily: "inherit",
-                                    fontWeight: "bold"
+                                    padding: '8px 16px',
+                                    background: filter === 'favorites' ? '#B8860B' : 'transparent',
+                                    color: filter === 'favorites' ? '#0C0806' : '#D4C3A3',
+                                    border: `1px solid ${filter === 'favorites' ? '#B8860B' : 'rgba(184,134,11,0.3)'}`,
+                                    borderRadius: '20px',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                    fontWeight: 'bold',
+                                    transition: 'all 0.2s'
                                 }}
                             >
-                                {t('gallery.actions.create')}
+                                {t('gallery.filters.favorites')}
                             </button>
-                        )}
-                        <div>
+                        </div>
+
+                        {/* Title and Subtitle */}
+                        <div style={{ textAlign: 'right', flex: 1 }}>
                             <h1 style={s.title}>{t('gallery.title')}</h1>
                             <p style={s.subtitle}>
                                 {t('gallery.subtitle', { count: entries.length })}
                             </p>
                         </div>
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px', gap: '8px' }}>
-                        <button
-                            onClick={() => setFilter('all')}
-                            style={{
-                                padding: '8px 16px',
-                                background: filter === 'all' ? '#B8860B' : 'transparent',
-                                color: filter === 'all' ? '#0C0806' : '#D4C3A3',
-                                border: `1px solid ${filter === 'all' ? '#B8860B' : 'rgba(184,134,11,0.3)'}`,
-                                borderRadius: '20px',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: 'bold',
-                                transition: 'all 0.2s'
-                            }}
-                        >
-                            {t('gallery.filters.all')}
-                        </button>
-                        <button
-                            onClick={() => setFilter('favorites')}
-                            style={{
-                                padding: '8px 16px',
-                                background: filter === 'favorites' ? '#B8860B' : 'transparent',
-                                color: filter === 'favorites' ? '#0C0806' : '#D4C3A3',
-                                border: `1px solid ${filter === 'favorites' ? '#B8860B' : 'rgba(184,134,11,0.3)'}`,
-                                borderRadius: '20px',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                fontWeight: 'bold',
-                                transition: 'all 0.2s'
-                            }}
-                        >
-                            {t('gallery.filters.favorites')}
-                        </button>
                     </div>
                 </div>
             </header>
@@ -252,7 +276,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                 {loading && (
                     <div style={s.loadingContainer}>
                         <div style={s.spinner} />
-                        <span style={{ color: '#B8860B' }}>{t('gallery.status.loading')}</span>
+                        <span style={{ color: '#B8860B' }}>{t('gallery.loading')}</span>
                     </div>
                 )}
 
@@ -262,13 +286,13 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                     <div style={s.emptyState}>
                         <div style={{ fontSize: '64px', marginBottom: '24px' }}>🎨</div>
                         <h3 style={{ color: '#F0E6D3', fontSize: '20px', margin: '0 0 12px 0' }}>
-                            {t('gallery.status.emptyTitle')}
+                            {t('gallery.empty.title')}
                         </h3>
                         <p style={{ color: '#8B7050', fontSize: '14px', margin: '0 0 24px 0' }}>
-                            {t('gallery.status.emptyDesc')}
+                            {t('gallery.empty.desc')}
                         </p>
                         <button onClick={onBack} style={s.primaryBtn}>
-                            {t('gallery.status.goToDesigner')}
+                            {t('gallery.empty.goto')}
                         </button>
                     </div>
                 )}
@@ -283,7 +307,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                     onClick={() => openEntryModal(entry)}
                                 >
                                     <img
-                                        src={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`}
+                                        src={entry.generatedImage ? (entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`) : ''}
                                         alt={entry.styleName}
                                         style={s.thumbnail}
                                         className="gallery-thumb"
@@ -327,9 +351,11 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
             </footer>
 
             {/* World Viewer Modal */}
-            {worldModal.open && worldModal.entry?.worldUrl && (
+            {worldModal.open && worldModal.entry && (
                 <WorldViewerModal
-                    mode="view"
+                    mode={worldModal.entry.worldUrl ? "view" : "generate"}
+                    generatedImage={worldModal.entry.generatedImage}
+                    galleryEntryId={worldModal.entry.id}
                     worldUrl={worldModal.entry.worldUrl}
                     selectedStyle={{ name: worldModal.entry.styleName }}
                     onClose={() => setWorldModal({ open: false, entry: null })}
@@ -339,8 +365,8 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
             {/* ——— MODAL ENTRY : vue plein écran avec modes + actions ——— */}
             {entryModal && (() => {
                 const em = entryModal;
-                const origSrc = em.originalImage.startsWith('http') ? em.originalImage : `${API_BASE_URL}${em.originalImage}`;
-                const genSrc = em.generatedImage.startsWith('http') ? em.generatedImage : `${API_BASE_URL}${em.generatedImage}`;
+                const origSrc = em.originalImage ? (em.originalImage.startsWith('http') ? em.originalImage : `${API_BASE_URL}${em.originalImage}`) : '';
+                const genSrc = em.generatedImage ? (em.generatedImage.startsWith('http') ? em.generatedImage : `${API_BASE_URL}${em.generatedImage}`) : '';
                 return (
                     <div style={s.emOverlay} onClick={closeEntryModal}>
                         <div style={s.emBox} onClick={e => e.stopPropagation()}>
@@ -358,8 +384,10 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                             <div style={s.emTabs}>
                                 {[
                                     { id: 'single', label: '🖼️ Image' },
-                                    { id: 'slider', label: '↔️ Avant / Après' },
-                                    { id: 'sideBySide', label: '▥ Côte à côte' },
+                                    ...(origSrc ? [
+                                        { id: 'slider', label: `↔️ ${t('app.result.slider')}` },
+                                        { id: 'sideBySide', label: `▥ ${t('app.result.sideBySide')}` }
+                                    ] : [])
                                 ].map(tab => (
                                     <button
                                         key={tab.id}
@@ -387,11 +415,11 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                 {viewMode === 'sideBySide' && (
                                     <div style={s.emSide}>
                                         <div style={s.emSideCol}>
-                                            <div style={s.emSideLabel}>← AVANT</div>
+                                            <div style={s.emSideLabel}>← {t('app.result.before').toUpperCase()}</div>
                                             <img src={origSrc} alt="Original" style={s.emSideImg} />
                                         </div>
                                         <div style={s.emSideCol}>
-                                            <div style={{ ...s.emSideLabel, color: '#B8860B' }}>APRÈS →</div>
+                                            <div style={{ ...s.emSideLabel, color: '#B8860B' }}>{t('app.result.after').toUpperCase()} →</div>
                                             <img src={genSrc} alt="Généré" style={s.emSideImg} />
                                         </div>
                                     </div>
@@ -416,7 +444,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                     {pdfDownloadingId === em.id ? `⏳ PDF...` : `📄 PDF`}
                                 </button>
 
-                                {em.worldUrl && (
+                                {em.generatedImage && (
                                     <button onClick={() => { closeEntryModal(); setWorldModal({ open: true, entry: em }); }} style={{ ...s.emBtn, ...s.emBtnWorld }}>
                                         🌍 {t('gallery.actions.world')}
                                     </button>
@@ -425,10 +453,10 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                 {confirmDeleteId === em.id ? (
                                     <>
                                         <button onClick={() => { handleDelete(em.id); closeEntryModal(); }} style={{ ...s.emBtn, ...s.emBtnDanger }}>
-                                            {t('gallery.status.confirm')}
+                                            {t('gallery.actions.confirm')}
                                         </button>
                                         <button onClick={() => setConfirmDeleteId(null)} style={{ ...s.emBtn, ...s.emBtnSecondary }}>
-                                            {t('gallery.status.cancel')}
+                                            {t('gallery.actions.cancel')}
                                         </button>
                                     </>
                                 ) : (

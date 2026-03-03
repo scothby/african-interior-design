@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from './AuthContext';
 
 const API_BASE_URL = 'http://localhost:5000';
 
@@ -23,6 +24,7 @@ export default function WorldViewerModal({
     onClose
 }) {
     const { t } = useTranslation();
+    const { getToken } = useAuth();
     const [phase, setPhase] = useState(mode === 'view' ? 'viewer' : 'init');
     // phases: 'init' → 'uploading' → 'generating' → 'polling' → 'viewer' | 'error'
     const [worldUrl, setWorldUrl] = useState(initialWorldUrl || null);
@@ -58,7 +60,10 @@ export default function WorldViewerModal({
         setPhase('polling');
         pollRef.current = setInterval(async () => {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/worlds/status/${opId}`);
+                const token = await getToken();
+                const res = await fetch(`${API_BASE_URL}/api/worlds/status/${opId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const data = await res.json();
                 if (data.done) {
                     clearInterval(pollRef.current);
@@ -68,10 +73,15 @@ export default function WorldViewerModal({
                         setPhase('viewer');
                         // Sauvegarder en galerie si on a un entryId
                         if (entryId) {
-                            fetch(`${API_BASE_URL}/api/gallery/${entryId}/world`, {
-                                method: 'PATCH',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ worldUrl: url, worldOperationId: opId })
+                            getToken().then(token => {
+                                fetch(`${API_BASE_URL}/api/gallery/${entryId}/world`, {
+                                    method: 'PATCH',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': `Bearer ${token}`
+                                    },
+                                    body: JSON.stringify({ worldUrl: url, worldOperationId: opId })
+                                });
                             }).catch(console.error);
                         }
                     } else {
@@ -98,9 +108,13 @@ export default function WorldViewerModal({
         const create = async () => {
             try {
                 setPhase('uploading');
+                const token = await getToken();
                 const response = await fetch(`${API_BASE_URL}/api/worlds/create`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: JSON.stringify({ generatedImage, style: selectedStyle })
                 });
                 const data = await response.json();
@@ -113,17 +127,22 @@ export default function WorldViewerModal({
                     setWorldUrl(data.worldUrl);
                     setPhase('viewer');
                     if (galleryEntryId) {
-                        fetch(`${API_BASE_URL}/api/gallery/${galleryEntryId}/world`, {
-                            method: 'PATCH',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ worldUrl: data.worldUrl, worldOperationId: data.operationId })
+                        getToken().then(token => {
+                            fetch(`${API_BASE_URL}/api/gallery/${galleryEntryId}/world`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({ worldUrl: data.worldUrl, worldOperationId: data.operationId })
+                            });
                         }).catch(console.error);
                     }
                 } else if (data.operationId) {
                     setOperationId(data.operationId);
                     startPolling(data.operationId, galleryEntryId);
                 } else {
-                    throw new Error('Aucun operationId reçu de World Labs');
+                    throw new Error(t('world.errors.noOpId'));
                 }
             } catch (err) {
                 setError(err.message);

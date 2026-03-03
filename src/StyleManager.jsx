@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useAuth } from './AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const API_BASE_URL = 'http://localhost:5000';
 
 export default function StyleManager({ onBack }) {
+    const { t } = useTranslation();
+    const { getToken } = useAuth();
     const [styles, setStyles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -25,7 +29,12 @@ export default function StyleManager({ onBack }) {
     const fetchStyles = useCallback(async () => {
         try {
             setLoading(true);
-            const res = await fetch(`${API_BASE_URL}/api/styles`);
+            const token = await getToken();
+            const res = await fetch(`${API_BASE_URL}/api/styles`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!res.ok) throw new Error('Erreur chargement des styles');
             const data = await res.json();
             setStyles(data.styles || []);
@@ -41,9 +50,15 @@ export default function StyleManager({ onBack }) {
     }, [fetchStyles]);
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce style ?")) return;
+        if (!window.confirm(t('admin.deleteConfirm'))) return;
         try {
-            const res = await fetch(`${API_BASE_URL}/api/styles/${id}`, { method: 'DELETE' });
+            const token = await getToken();
+            const res = await fetch(`${API_BASE_URL}/api/styles/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!res.ok) throw new Error('Suppression impossible');
             setStyles(prev => prev.filter(s => s.id !== id));
         } catch (err) {
@@ -89,9 +104,13 @@ export default function StyleManager({ onBack }) {
             const url = currentStyle ? `${API_BASE_URL}/api/styles/${currentStyle.id}` : `${API_BASE_URL}/api/styles`;
             const method = currentStyle ? 'PUT' : 'POST';
 
+            const token = await getToken();
             const res = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(parsedData)
             });
 
@@ -108,21 +127,21 @@ export default function StyleManager({ onBack }) {
         return (
             <div style={s.container}>
                 <div style={s.header}>
-                    <h2>{currentStyle ? 'Modifier le Style' : 'Créer un Nouveau Style'}</h2>
-                    <button onClick={() => setIsEditing(false)} style={s.btnDanger}>Annuler</button>
+                    <h2>{currentStyle ? t('admin.edit') : t('admin.createNew')}</h2>
+                    <button onClick={() => setIsEditing(false)} style={s.btnDanger}>{t('admin.cancel')}</button>
                 </div>
                 <form onSubmit={handleSave} style={s.form}>
                     <div style={s.formGroup}>
-                        <label style={s.label}>Nom du style *</label>
+                        <label style={s.label}>{t('admin.name')} *</label>
                         <input required style={s.input} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Ex: Maison Massaï" />
                     </div>
                     <div style={s.formRow}>
                         <div style={s.formGroup}>
-                            <label style={s.label}>Région (ex: Ouest, Est, Centrale...)</label>
+                            <label style={s.label}>{t('admin.region')}</label>
                             <input style={s.input} value={formData.region} onChange={e => setFormData({ ...formData, region: e.target.value })} />
                         </div>
                         <div style={s.formGroup}>
-                            <label style={s.label}>Famille (ex: Traditionnel, Moderne...)</label>
+                            <label style={s.label}>{t('admin.family')}</label>
                             <input style={s.input} value={formData.family} onChange={e => setFormData({ ...formData, family: e.target.value })} />
                         </div>
                         <div style={s.formGroup}>
@@ -131,23 +150,23 @@ export default function StyleManager({ onBack }) {
                         </div>
                     </div>
                     <div style={s.formGroup}>
-                        <label style={s.label}>Description (Public)</label>
+                        <label style={s.label}>{t('admin.desc')}</label>
                         <textarea style={s.textarea} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Description affichée à l'utilisateur..." />
                     </div>
                     <div style={s.formGroup}>
-                        <label style={s.label}>Instructions IA / Prompt * (Secret)</label>
+                        <label style={s.label}>{t('admin.prompt')} *</label>
                         <textarea required style={{ ...s.textarea, fontFamily: 'monospace', borderColor: '#B8860B' }} value={formData.prompt} onChange={e => setFormData({ ...formData, prompt: e.target.value })} placeholder="Prompt en anglais pour Midjourney/Gemini..." rows={5} />
-                        <small style={s.hint}>Le prompt secret envoyé à l'IA pour générer ce style précis.</small>
+                        <small style={s.hint}>{t('admin.promptHint')}</small>
                     </div>
                     <div style={s.formGroup}>
-                        <label style={s.label}>Matériaux (séparés par des virgules)</label>
+                        <label style={s.label}>{t('admin.materials')}</label>
                         <input style={s.input} value={formData.materials} onChange={e => setFormData({ ...formData, materials: e.target.value })} placeholder="Bois, Argile, Bronze..." />
                     </div>
                     <div style={s.formGroup}>
-                        <label style={s.label}>Couleurs (séparées par des virgules)</label>
+                        <label style={s.label}>{t('admin.colors')}</label>
                         <input style={s.input} value={formData.colors} onChange={e => setFormData({ ...formData, colors: e.target.value })} placeholder="#C84B31, #2D4263, Ochre..." />
                     </div>
-                    <button type="submit" style={s.btnPrimary}>💾 Enregistrer le Style</button>
+                    <button type="submit" style={s.btnPrimary}>💾 {t('admin.save')}</button>
                 </form>
             </div>
         );
@@ -157,14 +176,14 @@ export default function StyleManager({ onBack }) {
         <div style={s.container}>
             <div style={s.header}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <button onClick={onBack} style={s.btnBack}>← Retour</button>
-                    <h2>⚙️ Gestion des Styles ({styles.length})</h2>
+                    <button onClick={onBack} style={s.btnBack}>← {t('gallery.back')}</button>
+                    <h2>⚙️ {t('admin.title')} ({styles.length})</h2>
                 </div>
-                <button onClick={handleAddNew} style={s.btnPrimary}>+ Ajouter un Style</button>
+                <button onClick={handleAddNew} style={s.btnPrimary}>+ {t('admin.add')}</button>
             </div>
 
             {loading ? (
-                <div style={{ padding: '40px', textAlign: 'center', color: '#B8860B' }}>Chargement...</div>
+                <div style={{ padding: '40px', textAlign: 'center', color: '#B8860B' }}>Loading...</div>
             ) : error ? (
                 <div style={{ padding: '20px', color: '#ff4444' }}>{error}</div>
             ) : (
@@ -172,11 +191,11 @@ export default function StyleManager({ onBack }) {
                     <table style={s.table}>
                         <thead>
                             <tr>
-                                <th style={s.th}>Nom</th>
-                                <th style={s.th}>Région</th>
-                                <th style={s.th}>Famille</th>
+                                <th style={s.th}>{t('admin.table.name')}</th>
+                                <th style={s.th}>{t('admin.table.region')}</th>
+                                <th style={s.th}>{t('admin.table.family')}</th>
                                 <th style={s.th}>Prompt</th>
-                                <th style={s.th}>Actions</th>
+                                <th style={s.th}>{t('admin.table.actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -193,7 +212,7 @@ export default function StyleManager({ onBack }) {
                                 </tr>
                             ))}
                             {styles.length === 0 && (
-                                <tr><td colSpan="5" style={{ ...s.td, textAlign: 'center' }}>Aucun style configuré.</td></tr>
+                                <tr><td colSpan="5" style={{ ...s.td, textAlign: 'center' }}>{t('admin.table.empty')}</td></tr>
                             )}
                         </tbody>
                     </table>

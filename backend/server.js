@@ -51,6 +51,25 @@ app.use(express.json({ limit: '50mb' }));
 app.use('/uploads', express.static('uploads'));
 app.use('/generated', express.static('generated'));
 
+// ── Auth Middleware ───────────────────────────────────────────────────────────
+const verifyToken = async (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Token manquant. Connectez-vous.' });
+  }
+  const token = authHeader.slice(7);
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) return res.status(401).json({ error: 'Token invalide ou expiré.' });
+    req.userId = user.id;
+    req.user = user;
+    next();
+  } catch (err) {
+    return res.status(401).json({ error: 'Erreur de vérification du token.' });
+  }
+};
+
+
 // Whitelist des préfixes de chemins autorisés sur le proxy Marble
 const MARBLE_ALLOWED_PREFIXES = ['/world/', '/_next/', '/static/', '/favicon', '/api/'];
 
@@ -250,9 +269,10 @@ function buildStylePrompt(style, customPrompt, mode) {
   if (mode === 'background') {
     let prompt = `You are an expert interior design retoucher.
 Transform ONLY the background of this room into ${stylePrompt}.
+CRITICAL INSTRUCTION: You MUST strictly preserve the exact geometric structure, dimensions, and original shapes of the entire room, including all walls, architectural elements, and spatial proportions. Do NOT alter the size or geometry of the space under any circumstances.
 Keep the main subject (any person, main sofa, bed, table or key furniture in the foreground) EXACTLY as in the original image: same shape, position and main colors.
 Do NOT change faces, bodies, skin tone, clothing, or the main furniture piece. You may only make very light global lighting adjustments.
-Change walls, floor, ceiling, windows, secondary furniture and decorative accessories to match the requested African interior style.
+Change walls, floor, ceiling, windows, secondary furniture and decorative accessories to match the requested African interior style, but they must perfectly fit the original geometry.
 Use these colors: ${style.colors?.join(', ') || 'warm African earth tones'}.
 Materials: ${style.materials?.join(', ') || 'traditional African materials'}.
 Patterns: ${style.patterns?.join(', ') || 'African geometric patterns'}.
@@ -266,10 +286,11 @@ The result must look like high quality architectural interior photography, 4K, p
   }
 
   let prompt = `Transform this entire room into ${stylePrompt}. 
+CRITICAL INSTRUCTION: You MUST strictly preserve the exact geometric structure, dimensions, and original shapes of the entire room, including all walls, windows, doors, architectural elements, and spatial proportions. Do NOT alter the size, geometry, or the fundamental layout of the space under any circumstances.
 Use these colors: ${style.colors?.join(', ') || 'warm African earth tones'}.
 Materials: ${style.materials?.join(', ') || 'traditional African materials'}.
 Patterns: ${style.patterns?.join(', ') || 'African geometric patterns'}.
-Maintain the room layout and structure while completely transforming the style.
+Maintain the room layout and structure perfectly while completely transforming the style.
 High quality architectural interior photography style, 4K, photorealistic.`;
 
   if (customPrompt && customPrompt.trim() !== '') {
@@ -280,7 +301,7 @@ High quality architectural interior photography style, 4K, photorealistic.`;
 }
 
 // Generate styled interior endpoint
-app.post('/api/generate', async (req, res) => {
+app.post('/api/generate', verifyToken, async (req, res) => {
   try {
     const { originalImage, style, customPrompt, editMode } = req.body;
 
@@ -391,7 +412,8 @@ app.post('/api/generate', async (req, res) => {
       prompt: enhancedPrompt,
       custom_prompt: customPrompt || null,
       mode: mode,
-      is_favorite: false
+      is_favorite: false,
+      user_id: req.userId
     }]);
 
     if (dbError) throw new Error("Supabase DB error: " + dbError.message);
@@ -422,7 +444,7 @@ const replicate = new Replicate({
 });
 
 // Inpainting endpoint (Cultural Inpainting)
-app.post('/api/inpaint', async (req, res) => {
+app.post('/api/inpaint', verifyToken, async (req, res) => {
   try {
     const { originalImage, maskImage, style, customPrompt } = req.body;
 
@@ -519,7 +541,8 @@ The result must look photorealistic.`;
       prompt: promptText,
       custom_prompt: customPrompt || null,
       mode: 'inpaint',
-      is_favorite: false
+      is_favorite: false,
+      user_id: req.userId
     }]);
 
     if (dbError) throw new Error("Supabase DB error: " + dbError.message);
@@ -545,7 +568,7 @@ The result must look photorealistic.`;
 });
 
 // Get all styles endpoint
-app.get('/api/styles', async (req, res) => {
+app.get('/api/styles', verifyToken, async (req, res) => {
   try {
     const { data, error } = await supabase.from('styles').select('*').order('created_at', { ascending: true });
     if (error) throw error;
@@ -556,7 +579,7 @@ app.get('/api/styles', async (req, res) => {
 });
 
 // Create new style
-app.post('/api/styles', async (req, res) => {
+app.post('/api/styles', verifyToken, async (req, res) => {
   try {
     const { name, region, family, description, prompt, materials, colors, patterns, flag } = req.body;
     if (!name || !prompt) return res.status(400).json({ error: 'Name and Prompt are required' });
@@ -585,7 +608,7 @@ app.post('/api/styles', async (req, res) => {
 });
 
 // Update style
-app.put('/api/styles/:id', async (req, res) => {
+app.put('/api/styles/:id', verifyToken, async (req, res) => {
   try {
     const { error } = await supabase.from('styles')
       .update(req.body)
@@ -602,7 +625,7 @@ app.put('/api/styles/:id', async (req, res) => {
 });
 
 // Delete style
-app.delete('/api/styles/:id', async (req, res) => {
+app.delete('/api/styles/:id', verifyToken, async (req, res) => {
   try {
     const { error } = await supabase.from('styles').delete().eq('id', req.params.id);
     if (error) throw error;
@@ -612,10 +635,10 @@ app.delete('/api/styles/:id', async (req, res) => {
   }
 });
 
-// Gallery: list all entries
-app.get('/api/gallery', async (req, res) => {
+// Gallery: list all entries (user's own only)
+app.get('/api/gallery', verifyToken, async (req, res) => {
   try {
-    const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('gallery').select('*').eq('user_id', req.userId).order('created_at', { ascending: false });
     if (error) throw error;
 
     // Map snake_case db columns to camelCase expected by frontend
@@ -642,7 +665,7 @@ app.get('/api/gallery', async (req, res) => {
 });
 
 // Gallery: delete an entry
-app.delete('/api/gallery/:id', async (req, res) => {
+app.delete('/api/gallery/:id', verifyToken, async (req, res) => {
   try {
     const { data: entry } = await supabase.from('gallery').select('*').eq('id', req.params.id).single();
     if (!entry) return res.status(404).json({ error: 'Entry not found' });
@@ -663,7 +686,7 @@ app.delete('/api/gallery/:id', async (req, res) => {
 });
 
 // Gallery: save world URL to an entry
-app.patch('/api/gallery/:id/world', async (req, res) => {
+app.patch('/api/gallery/:id/world', verifyToken, async (req, res) => {
   try {
     const { worldUrl, worldOperationId } = req.body;
     let updates = {};
@@ -680,7 +703,7 @@ app.patch('/api/gallery/:id/world', async (req, res) => {
 });
 
 // Gallery: toggle favorite status
-app.patch('/api/gallery/:id/favorite', async (req, res) => {
+app.patch('/api/gallery/:id/favorite', verifyToken, async (req, res) => {
   try {
     const { data: entry } = await supabase.from('gallery').select('is_favorite').eq('id', req.params.id).single();
     if (!entry) return res.status(404).json({ error: 'Entry not found' });
@@ -696,7 +719,7 @@ app.patch('/api/gallery/:id/favorite', async (req, res) => {
 });
 
 // Create virtual world from generated image (World Labs / Marble)
-app.post('/api/worlds/create', async (req, res) => {
+app.post('/api/worlds/create', verifyToken, async (req, res) => {
   try {
     const { generatedImage, style, worldName } = req.body || {};
 
@@ -708,12 +731,33 @@ app.post('/api/worlds/create', async (req, res) => {
       return res.status(500).json({ error: 'World Labs API key not configured' });
     }
 
-    // Read the generated image from disk
-    const relativePath = generatedImage.replace(/^[/\\]+/, '');
-    const imagePath = path.join(__dirname, relativePath);
-    const imageBuffer = await fs.readFile(imagePath);
-    const extension = (path.extname(imagePath) || '.png').replace('.', '') || 'png';
-    const fileName = path.basename(imagePath);
+    // Read the generated image
+    let imageBuffer;
+    let extension = '.png';
+    let fileName = 'world-image.png';
+
+    // Clean up potentially malformed URLs (e.g., if preceded by local paths)
+    let cleanImageUrl = generatedImage;
+    if (cleanImageUrl.includes('http')) {
+      cleanImageUrl = cleanImageUrl.substring(cleanImageUrl.indexOf('http'));
+      // Fix missing slashes after http:/ or https:/ if accidentally stripped
+      cleanImageUrl = cleanImageUrl.replace(/:\/([^/])/, '://$1');
+    }
+
+    if (cleanImageUrl.startsWith('http')) {
+      // Download from Supabase or other external URL
+      const response = await axios.get(cleanImageUrl, { responseType: 'arraybuffer' });
+      imageBuffer = Buffer.from(response.data, 'binary');
+      fileName = cleanImageUrl.split('/').pop().split('?')[0] || 'world-image.png';
+      extension = (path.extname(fileName) || '.png').replace('.', '') || 'png';
+    } else {
+      // Read from local disk
+      const relativePath = generatedImage.replace(/^[/\\]+/, '');
+      const imagePath = path.join(__dirname, relativePath);
+      imageBuffer = await fs.promises.readFile(imagePath);
+      extension = (path.extname(imagePath) || '.png').replace('.', '') || 'png';
+      fileName = path.basename(imagePath);
+    }
 
     // 1) Prepare upload (media-assets:prepare_upload)
     const prepareResponse = await axios.post(
@@ -813,7 +857,7 @@ app.post('/api/worlds/create', async (req, res) => {
 });
 
 // Polling status d'une opération World Labs
-app.get('/api/worlds/status/:operationId', async (req, res) => {
+app.get('/api/worlds/status/:operationId', verifyToken, async (req, res) => {
   try {
     if (!WORLD_API_KEY) {
       return res.status(500).json({ error: 'World Labs API key not configured' });

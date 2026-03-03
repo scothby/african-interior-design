@@ -68,7 +68,7 @@ const HERO_IMAGES = [
 // Create stable random columns for the masonry outside the component to avoid reshuffling on re-render
 const MASONRY_COLS = Array.from({ length: 6 }, () => [...HERO_IMAGES].sort(() => 0.5 - Math.random()));
 
-export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDatabase }) {
+export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDatabase, user, onSignOut }) {
     const { t } = useTranslation();
     const [visible, setVisible] = useState(false);
     const [hoveredFamily, setHoveredFamily] = useState(null);
@@ -78,6 +78,13 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
     useEffect(() => {
         const fetchGallery = async () => {
             try {
+                // For landing page, we might not have a token yet if unauthenticated
+                // so we only try to fetch if we actually show recent designs
+                // For now, let's keep it simple: if not logged in, we don't show recent designs
+                if (!user) {
+                    setLoadingGallery(false);
+                    return;
+                }
                 const res = await fetch(`${API_BASE_URL}/api/gallery`);
                 if (res.ok) {
                     const data = await res.json();
@@ -155,7 +162,29 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
             <div style={{ height: "5px", background: "linear-gradient(90deg,#8B0000,#B8860B,#228B22,#1A2744,#B8860B,#C41E3A,#B8860B,#228B22,#8B0000)" }} />
 
             {/* Language Switcher Overlay */}
-            <div style={{ position: "absolute", top: "20px", right: "24px", zIndex: 1000, display: "flex", gap: "10px" }}>
+            <div style={{ position: "absolute", top: "20px", right: "24px", zIndex: 1000, display: "flex", gap: "10px", alignItems: "center" }}>
+                {user && (
+                    <div style={{ marginRight: "10px", display: "flex", alignItems: "center", gap: "10px" }}>
+                        <span style={{ fontSize: "12px", color: "#8B7050", opacity: 0.8 }}>{user.email}</span>
+                        <button
+                            onClick={onSignOut}
+                            style={{
+                                background: "rgba(184,134,11,0.1)",
+                                border: "1px solid rgba(184,134,11,0.3)",
+                                color: "#B8860B",
+                                padding: "4px 12px",
+                                borderRadius: "4px",
+                                fontSize: "11px",
+                                cursor: "pointer",
+                                transition: "all 0.2s"
+                            }}
+                            onMouseOver={(e) => { e.currentTarget.style.background = "rgba(184,134,11,0.2)"; }}
+                            onMouseOut={(e) => { e.currentTarget.style.background = "rgba(184,134,11,0.1)"; }}
+                        >
+                            {t('header.signOut')}
+                        </button>
+                    </div>
+                )}
                 <LanguageSwitcher />
             </div>
 

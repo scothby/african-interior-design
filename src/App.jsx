@@ -5,6 +5,8 @@ import InteriorDesignApp from "./InteriorDesignApp";
 import Gallery from "./Gallery";
 import LandingPage from "./LandingPage";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+import { AuthProvider, useAuth } from "./AuthContext";
+import AuthPage from "./AuthPage";
 import "./App.css";
 
 const FAMILY_COLORS = {
@@ -29,8 +31,10 @@ const FAMILY_ICONS = {
   "Urbain Contemporain": "🏙"
 };
 
-export default function App() {
+// Main app content — wrapped inside AuthProvider
+function AppContent() {
   const { t } = useTranslation();
+  const { user, loading, signOut } = useAuth();
   const [currentApp, setCurrentApp] = useState(() => {
     return localStorage.getItem('interior_ai_last_page') || 'landing';
   });
@@ -57,6 +61,19 @@ export default function App() {
     localStorage.setItem('interior_ai_last_page', currentApp);
   }, [currentApp]);
 
+  // Redirect after login
+  useEffect(() => {
+    if (user && currentApp === 'auth') {
+      const lastPage = localStorage.getItem('interior_ai_last_page');
+      // If last page was auth or landing, go to designer. Otherwise go back.
+      if (!lastPage || lastPage === 'auth' || lastPage === 'landing') {
+        setCurrentApp('designer');
+      } else {
+        setCurrentApp(lastPage);
+      }
+    }
+  }, [user, currentApp]);
+
   const copyPrompt = (prompt) => {
     navigator.clipboard?.writeText(prompt);
     setCopied(prompt);
@@ -65,18 +82,37 @@ export default function App() {
 
   const selectedStyle = selected ? DB.styles.find(s => s.id === selected) : null;
 
-  // Render Landing Page
+  // Auth loading
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#0C0806', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏺</div>
+          <div style={{ color: '#B8860B', fontSize: '14px', letterSpacing: '0.1em' }}>Chargement...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render Landing Page — always public
   if (currentApp === "landing") {
     return (
       <LandingPage
-        onEnterDesigner={() => setCurrentApp("designer")}
-        onEnterGallery={() => setCurrentApp("gallery")}
-        onEnterDatabase={() => setCurrentApp("database")}
+        onEnterDesigner={() => user ? setCurrentApp("designer") : setCurrentApp("auth")}
+        onEnterGallery={() => user ? setCurrentApp("gallery") : setCurrentApp("auth")}
+        onEnterDatabase={() => user ? setCurrentApp("database") : setCurrentApp("auth")}
+        user={user}
+        onSignOut={async () => { await signOut(); setCurrentApp('landing'); }}
       />
     );
   }
 
-  // Render Interior Designer App
+  // Auth page
+  if (currentApp === "auth" || (!user && currentApp !== "landing")) {
+    return <AuthPage onSuccess={() => setCurrentApp(localStorage.getItem('interior_ai_last_page') || 'landing')} />;
+  }
+
+  // Private pages — require auth
   if (currentApp === "designer") {
     return <InteriorDesignApp
       onBack={() => setCurrentApp("landing")}
@@ -85,7 +121,6 @@ export default function App() {
     />;
   }
 
-  // Render Gallery
   if (currentApp === "gallery") {
     return <Gallery
       onBack={() => setCurrentApp("landing")}
@@ -282,7 +317,7 @@ export default function App() {
 
           {filtered.length === 0 && (
             <div style={{ gridColumn: "1/-1", textAlign: "center", padding: "60px 20px", color: "#6B5030", fontStyle: "italic" }}>
-              Aucun style trouvé pour cette recherche.
+              {t('app.noStyleFound')}
             </div>
           )}
         </div>
@@ -338,7 +373,7 @@ export default function App() {
 
             {/* Materials */}
             <div style={{ marginBottom: "20px" }}>
-              <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6B5030", marginBottom: "8px" }}>Matières & Matériaux</div>
+              <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6B5030", marginBottom: "8px" }}>{t('app.materials')}</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
                 {selectedStyle.materials.map((m, i) => (
                   <span key={i} style={{
@@ -352,7 +387,7 @@ export default function App() {
 
             {/* Patterns */}
             <div style={{ marginBottom: "20px" }}>
-              <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6B5030", marginBottom: "8px" }}>Motifs & Patterns</div>
+              <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6B5030", marginBottom: "8px" }}>{t('app.patterns')}</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
                 {selectedStyle.patterns.map((p, i) => (
                   <span key={i} style={{
@@ -367,7 +402,7 @@ export default function App() {
             {/* Rooms */}
             {selectedStyle.rooms && (
               <div style={{ marginBottom: "24px" }}>
-                <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6B5030", marginBottom: "8px" }}>Pièces adaptées</div>
+                <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6B5030", marginBottom: "8px" }}>{t('app.rooms')}</div>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
                   {selectedStyle.rooms.map((r, i) => (
                     <span key={i} style={{
@@ -383,7 +418,7 @@ export default function App() {
             {/* Prompt */}
             <div>
               <div style={{ fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6B5030", marginBottom: "8px" }}>
-                Prompt Replicate / FLUX
+                {t('app.promptTitle')}
               </div>
               <div style={{
                 background: "#0A0603", border: "1px solid #2A1A0E",
@@ -405,7 +440,7 @@ export default function App() {
                   fontFamily: "Georgia, serif", transition: "all 0.2s"
                 }}
               >
-                {copied === selectedStyle.prompt ? "✓ Copié !" : "⎘ Copier le prompt"}
+                {copied === selectedStyle.prompt ? `✓ ${t('app.copied')}` : `⎘ ${t('app.copyPrompt')}`}
               </button>
             </div>
 
@@ -418,7 +453,7 @@ export default function App() {
                 letterSpacing: "0.2em", textTransform: "uppercase",
                 borderRadius: "2px", fontFamily: "Georgia, serif"
               }}
-            >✕ Fermer</button>
+            >✕ {t('app.close')}</button>
           </div>
         )}
       </div>
@@ -442,5 +477,14 @@ export default function App() {
 
       <div style={{ height: "5px", background: "linear-gradient(90deg,#1A2744,#B8860B,#228B22,#8B0000,#B8860B,#1A2744)" }} />
     </div >
+  );
+}
+
+// Root export — wraps everything in AuthProvider
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
