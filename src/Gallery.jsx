@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import ComparisonSlider from './ComparisonSlider';
 import { exportCollage } from './utils/collageGenerator';
 import { exportDesignPDF } from './utils/pdfGenerator';
@@ -7,11 +8,13 @@ import WorldViewerModal from './WorldViewerModal';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
+    const { t, i18n } = useTranslation();
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [expandedId, setExpandedId] = useState(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+    const [comparisonModes, setComparisonModes] = useState({}); // { [entryId]: 'slider' | 'sideBySide' }
     const [downloadingId, setDownloadingId] = useState(null);
     const [filter, setFilter] = useState('all');
     const [zoomModal, setZoomModal] = useState({ open: false, image: null, alt: '', zoom: 1, beforeImage: null, afterImage: null });
@@ -80,7 +83,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
     // Format date
     const formatDate = (iso) => {
         const d = new Date(iso);
-        return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        return d.toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     };
 
     // Download image
@@ -100,27 +103,20 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
         }
     };
 
-    // Export PDF d'une entrée galerie
+    // Export PDF
     const handleExportPDF = async (entry) => {
         setPdfDownloadingId(entry.id);
         try {
             await exportDesignPDF({
-                beforeSrc: entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
-                afterSrc: entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`,
-                style: {
-                    name: entry.styleName,
-                    family: entry.styleFamily,
-                    description: entry.styleDescription || '',
-                    materials: entry.materials || [],
-                    colors: entry.colors || [],
-                    patterns: entry.patterns || [],
-                    flag: entry.flag || '',
-                    region: entry.region || '',
-                },
-                customPrompt: entry.customPrompt || null,
+                originalImage: entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
+                generatedImage: entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`,
+                styleName: entry.styleName,
+                styleFamily: entry.styleFamily,
+                description: entry.styleDescription || ''
             });
         } catch (err) {
-            console.error('PDF export error:', err);
+            console.error('PDF export failed:', err);
+            setError('Échec de la génération du PDF');
         } finally {
             setPdfDownloadingId(null);
         }
@@ -134,14 +130,14 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                 <div style={s.headerContent}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', justifyContent: 'center' }}>
                         {onBack && (
-                            <button onClick={onBack} style={s.backBtn}>← Retour</button>
+                            <button onClick={onBack} style={s.backBtn}>{t('gallery.actions.back')}</button>
                         )}
                         {onGoToStyles && (
                             <button
                                 onClick={onGoToStyles}
                                 style={{
                                     padding: "8px 16px",
-                                    background: "transparent",
+                                    background: "rgba(184, 134, 11, 0.1)",
                                     border: "1px solid #B8860B",
                                     borderRadius: "4px",
                                     color: "#B8860B",
@@ -150,7 +146,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                     fontFamily: "inherit"
                                 }}
                             >
-                                📚 Base de Styles
+                                {t('gallery.actions.styles')}
                             </button>
                         )}
                         {onGoToDesigner && (
@@ -168,13 +164,13 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                     fontWeight: "bold"
                                 }}
                             >
-                                📸 Créer
+                                {t('gallery.actions.create')}
                             </button>
                         )}
                         <div>
-                            <h1 style={s.title}>🖼️ Galerie des Réalisations</h1>
+                            <h1 style={s.title}>{t('gallery.title')}</h1>
                             <p style={s.subtitle}>
-                                {entries.length} design{entries.length !== 1 ? 's' : ''} réalisé{entries.length !== 1 ? 's' : ''}
+                                {t('gallery.subtitle', { count: entries.length })}
                             </p>
                         </div>
                     </div>
@@ -194,7 +190,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                 transition: 'all 0.2s'
                             }}
                         >
-                            Toutes
+                            {t('gallery.filters.all')}
                         </button>
                         <button
                             onClick={() => setFilter('favorites')}
@@ -210,7 +206,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                 transition: 'all 0.2s'
                             }}
                         >
-                            ❤️ Favoris
+                            {t('gallery.filters.favorites')}
                         </button>
                     </div>
                 </div>
@@ -221,7 +217,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                 {loading && (
                     <div style={s.loadingContainer}>
                         <div style={s.spinner} />
-                        <span style={{ color: '#B8860B' }}>Chargement de la galerie...</span>
+                        <span style={{ color: '#B8860B' }}>{t('gallery.status.loading')}</span>
                     </div>
                 )}
 
@@ -231,14 +227,13 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                     <div style={s.emptyState}>
                         <div style={{ fontSize: '64px', marginBottom: '24px' }}>🎨</div>
                         <h3 style={{ color: '#F0E6D3', fontSize: '20px', margin: '0 0 12px 0' }}>
-                            Aucune réalisation pour le moment
+                            {t('gallery.status.emptyTitle')}
                         </h3>
                         <p style={{ color: '#8B7050', fontSize: '14px', margin: '0 0 24px 0' }}>
-                            Utilisez le Designer pour transformer vos photos avec des styles africains.
-                            Chaque création sera automatiquement sauvegardée ici.
+                            {t('gallery.status.emptyDesc')}
                         </p>
                         <button onClick={onBack} style={s.primaryBtn}>
-                            🏛️ Aller au Designer
+                            {t('gallery.status.goToDesigner')}
                         </button>
                     </div>
                 )}
@@ -252,7 +247,6 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                     style={s.thumbnailWrapper}
                                     onClick={() => {
                                         if (expandedId === entry.id) {
-                                            // If already expanded, open zoom with comparison
                                             openZoom(
                                                 null,
                                                 entry.styleName,
@@ -260,7 +254,6 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                                 entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`
                                             );
                                         } else {
-                                            // Otherwise, expand the card
                                             setExpandedId(entry.id);
                                         }
                                     }}
@@ -273,7 +266,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                         onError={(e) => { e.target.style.display = 'none'; }}
                                     />
                                     <div style={s.thumbnailOverlay} className="gallery-thumb-overlay">
-                                        <span style={{ fontSize: '18px' }}>🔍</span>
+                                        <span style={{ fontSize: '18px' }}>{t('gallery.actions.zoom')}</span>
                                     </div>
                                 </div>
 
@@ -294,7 +287,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                                 transform: entry.isFavorite ? 'scale(1.1)' : 'scale(1)',
                                                 transition: 'all 0.2s'
                                             }}
-                                            title={entry.isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+                                            title={entry.isFavorite ? t('gallery.actions.unfavorite') : t('gallery.actions.favorite')}
                                         >
                                             {entry.isFavorite ? '❤️' : '🤍'}
                                         </button>
@@ -306,14 +299,83 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                 {/* Expanded View */}
                                 {expandedId === entry.id && (
                                     <div style={s.expandedPanel}>
-                                        {/* Comparison Slider */}
-                                        <div style={{ marginBottom: '16px' }}>
-                                            <ComparisonSlider
-                                                beforeImage={entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`}
-                                                afterImage={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`}
-                                                height={220}
-                                            />
+                                        {/* Comparison Mode Toggle */}
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            gap: '8px',
+                                            marginBottom: '16px'
+                                        }}>
+                                            <button
+                                                onClick={() => setComparisonModes(prev => ({ ...prev, [entry.id]: 'slider' }))}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    background: (comparisonModes[entry.id] || 'slider') === 'slider' ? '#B8860B' : 'transparent',
+                                                    border: `1px solid ${(comparisonModes[entry.id] || 'slider') === 'slider' ? '#B8860B' : '#2A1A0E'}`,
+                                                    borderRadius: '4px',
+                                                    color: (comparisonModes[entry.id] || 'slider') === 'slider' ? '#0C0806' : '#8B7050',
+                                                    fontSize: '11px',
+                                                    fontWeight: 'bold',
+                                                    cursor: 'pointer',
+                                                    fontFamily: 'inherit'
+                                                }}
+                                            >
+                                                ↔ Slider
+                                            </button>
+                                            <button
+                                                onClick={() => setComparisonModes(prev => ({ ...prev, [entry.id]: 'sideBySide' }))}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    background: comparisonModes[entry.id] === 'sideBySide' ? '#B8860B' : 'transparent',
+                                                    border: `1px solid ${comparisonModes[entry.id] === 'sideBySide' ? '#B8860B' : '#2A1A0E'}`,
+                                                    borderRadius: '4px',
+                                                    color: comparisonModes[entry.id] === 'sideBySide' ? '#0C0806' : '#8B7050',
+                                                    fontSize: '11px',
+                                                    fontWeight: 'bold',
+                                                    cursor: 'pointer',
+                                                    fontFamily: 'inherit'
+                                                }}
+                                            >
+                                                ▥ Side-by-Side
+                                            </button>
                                         </div>
+
+                                        {/* Result View */}
+                                        {(comparisonModes[entry.id] || 'slider') === 'slider' ? (
+                                            <div style={{ marginBottom: '16px' }}>
+                                                <ComparisonSlider
+                                                    beforeImage={entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`}
+                                                    afterImage={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`}
+                                                    height={220}
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div style={{
+                                                display: 'flex',
+                                                gap: '8px',
+                                                marginBottom: '16px',
+                                                flexDirection: window.innerWidth < 480 ? 'column' : 'row'
+                                            }}>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '10px', color: '#8B7050', marginBottom: '4px', textAlign: 'center' }}>AVANT</div>
+                                                    <img
+                                                        src={entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`}
+                                                        alt="Original"
+                                                        style={{ width: '100%', borderRadius: '4px', aspectRatio: '4/3', objectFit: 'cover', cursor: 'pointer' }}
+                                                        onClick={() => openZoom(null, entry.styleName, entry.originalImage, entry.generatedImage)}
+                                                    />
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '10px', color: '#B8860B', marginBottom: '4px', textAlign: 'center' }}>APRÈS</div>
+                                                    <img
+                                                        src={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`}
+                                                        alt="Generated"
+                                                        style={{ width: '100%', borderRadius: '4px', aspectRatio: '4/3', objectFit: 'cover', cursor: 'pointer' }}
+                                                        onClick={() => openZoom(null, entry.styleName, entry.originalImage, entry.generatedImage)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
 
                                         <div style={{ textAlign: 'center', marginBottom: '16px' }}>
                                             <button
@@ -334,7 +396,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                                     fontFamily: 'inherit'
                                                 }}
                                             >
-                                                🔍 Voir en plein écran
+                                                {t('gallery.actions.zoom')}
                                             </button>
                                         </div>
 
@@ -360,7 +422,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                                     fontSize: '10px',
                                                     letterSpacing: '0.05em'
                                                 }}>
-                                                    Instructions particulières :
+                                                    {t('gallery.prompts.instructions')}
                                                 </span>
                                                 "{entry.customPrompt}"
                                             </div>
@@ -377,7 +439,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                                     cursor: downloadingId === entry.id ? 'wait' : 'pointer'
                                                 }}
                                             >
-                                                {downloadingId === entry.id ? '⏳ Collage...' : '📥 Télécharger'}
+                                                {downloadingId === entry.id ? `⏳ ${t('app.result.creating')}` : `📥 ${t('gallery.actions.download')}`}
                                             </button>
 
                                             <button
@@ -389,7 +451,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                                     cursor: pdfDownloadingId === entry.id ? 'wait' : 'pointer'
                                                 }}
                                             >
-                                                {pdfDownloadingId === entry.id ? '⏳ PDF...' : '📄 PDF'}
+                                                {pdfDownloadingId === entry.id ? `⏳ ${t('gallery.actions.pdf')}...` : `📄 ${t('gallery.actions.pdf')}`}
                                             </button>
 
                                             {/* Bouton Monde 3D si worldUrl existe */}
@@ -398,22 +460,22 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                                     onClick={() => setWorldModal({ open: true, entry })}
                                                     style={s.worldBtn}
                                                 >
-                                                    🌍 Monde 3D
+                                                    🌍 {t('gallery.actions.world')}
                                                 </button>
                                             )}
 
                                             {confirmDeleteId === entry.id ? (
                                                 <div style={{ display: 'flex', gap: '8px' }}>
                                                     <button onClick={() => handleDelete(entry.id)} style={s.confirmDeleteBtn}>
-                                                        Confirmer
+                                                        {t('gallery.status.confirm')}
                                                     </button>
                                                     <button onClick={() => setConfirmDeleteId(null)} style={s.cancelDeleteBtn}>
-                                                        Annuler
+                                                        {t('gallery.status.cancel')}
                                                     </button>
                                                 </div>
                                             ) : (
                                                 <button onClick={() => setConfirmDeleteId(entry.id)} style={s.deleteBtn}>
-                                                    🗑️ Supprimer
+                                                    🗑️ {t('gallery.actions.delete')}
                                                 </button>
                                             )}
                                         </div>
@@ -427,7 +489,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
 
             {/* Footer */}
             <footer style={s.footer}>
-                <p>Galerie · {entries.length} réalisation{entries.length !== 1 ? 's' : ''}</p>
+                <p>{t('gallery.subtitle', { count: entries.length })}</p>
             </footer>
 
             {/* World Viewer Modal */}
@@ -486,7 +548,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                         </div>
                         <div style={s.modalControls}>
                             <button onClick={zoomOut} style={s.zoomBtn}>-</button>
-                            <button onClick={closeZoom} style={s.closeBtn}>Fermer</button>
+                            <button onClick={closeZoom} style={s.closeBtn}>{t('gallery.status.close')}</button>
                             <button onClick={zoomIn} style={s.zoomBtn}>+</button>
                         </div>
                     </div>
@@ -496,177 +558,337 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
     );
 }
 
-// Styles — consistent with the app's dark African aesthetic
 const s = {
     app: {
-        background: "var(--color-bg-dark)",
-        minHeight: "100vh",
-        color: "var(--color-text-main)",
-        display: "flex",
-        flexDirection: "column"
+        minHeight: '100vh',
+        background: '#0C0806',
+        color: '#F0E6D3',
+        fontFamily: "'Inter', sans-serif",
     },
-    header: { borderBottom: "1px solid #1E1208" },
+    header: {
+        background: '#160E07',
+        borderBottom: '1px solid #2A1A0E',
+        padding: '20px',
+        position: 'sticky',
+        top: 0,
+        zIndex: 100,
+    },
     headerBar: {
-        height: "5px",
-        background: "linear-gradient(90deg,#8B0000,#B8860B,#228B22,#1A2744,#B8860B,#C41E3A,#B8860B,#228B22,#8B0000)"
+        height: '4px',
+        background: 'linear-gradient(90deg, #B8860B, #8B4513, #B8860B)',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
     },
-    headerContent: { padding: "24px 32px", textAlign: "center" },
-    title: { margin: "0 0 8px 0", fontSize: "28px", fontWeight: "normal", color: "#F0E6D3" },
-    subtitle: { margin: 0, fontSize: "14px", color: "#8B7050" },
+    headerContent: {
+        maxWidth: '1200px',
+        margin: '0 auto',
+    },
     backBtn: {
-        padding: "8px 16px", background: "transparent", border: "1px solid #2A1A0E",
-        borderRadius: "4px", color: "#8B7050", fontSize: "12px", cursor: "pointer", fontFamily: "inherit"
+        background: 'none',
+        border: '1px solid #8B7050',
+        color: '#8B7050',
+        padding: '8px 16px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        fontSize: '12px',
+        fontFamily: 'inherit',
     },
-    main: { flex: 1, padding: "24px 32px" },
-    footer: {
-        padding: "16px 32px", borderTop: "1px solid #1E1208",
-        textAlign: "center", fontSize: "12px", color: "#6B5030"
+    title: {
+        fontSize: '24px',
+        margin: '0',
+        color: '#F0E6D3',
+        textAlign: 'center',
     },
-
-    // Loading & Error
+    subtitle: {
+        fontSize: '12px',
+        color: '#8B7050',
+        margin: '4px 0 0 0',
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        letterSpacing: '0.1em',
+    },
+    main: {
+        maxWidth: '1200px',
+        margin: '0 auto',
+        padding: '40px 20px',
+    },
     loadingContainer: {
-        display: "flex", alignItems: "center", justifyContent: "center",
-        gap: "12px", padding: "60px 20px"
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '60px 0',
+        gap: '20px',
     },
     spinner: {
-        width: "24px", height: "24px", border: "2px solid #2A1A0E",
-        borderTop: "2px solid #B8860B", borderRadius: "50%", animation: "spin 1s linear infinite"
+        width: '40px',
+        height: '40px',
+        border: '3px solid rgba(184, 134, 11, 0.1)',
+        borderTopColor: '#B8860B',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
     },
     error: {
-        padding: "12px", background: "rgba(196,30,58,0.1)", border: "1px solid #C41E3A",
-        borderRadius: "4px", color: "#C41E3A", textAlign: "center", marginBottom: "16px"
+        padding: '20px',
+        background: 'rgba(255, 107, 107, 0.1)',
+        border: '1px solid rgba(255, 107, 107, 0.3)',
+        borderRadius: '8px',
+        color: '#ff6b6b',
+        textAlign: 'center',
+        marginBottom: '40px',
     },
-
-    // Empty state
     emptyState: {
-        textAlign: "center", padding: "80px 20px", maxWidth: "500px", margin: "0 auto"
+        textAlign: 'center',
+        padding: '100px 20px',
+        background: 'rgba(22, 14, 7, 0.5)',
+        borderRadius: '24px',
+        border: '1px dashed #2A1A0E',
     },
     primaryBtn: {
-        padding: "12px 24px", background: "#B8860B", border: "none", borderRadius: "4px",
-        color: "#0C0806", fontSize: "14px", fontWeight: "bold", cursor: "pointer", fontFamily: "inherit"
+        background: '#B8860B',
+        color: '#0C0806',
+        border: 'none',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        transition: 'all 0.2s',
     },
-
-    // Grid
     grid: {
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-        gap: "16px"
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+        gap: '24px',
     },
-
-    // Card
     card: {
-        background: "var(--glass-bg)", border: "1px solid var(--color-border)", borderRadius: "8px",
-        overflow: "hidden", transition: "all 0.2s"
+        background: '#160E07',
+        border: '1px solid #2A1A0E',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        transition: 'transform 0.3s ease, border-color 0.3s ease',
+        cursor: 'pointer',
     },
     thumbnailWrapper: {
-        position: "relative", cursor: "pointer", overflow: "hidden",
-        height: "200px", background: "var(--color-bg-panel)"
+        position: 'relative',
+        height: 'min(50vw, 200px)',
+        overflow: 'hidden',
     },
     thumbnail: {
-        width: "100%", height: "100%", objectFit: "cover",
-        transition: "transform 0.3s"
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        transition: 'transform 0.5s ease',
     },
     thumbnailOverlay: {
-        position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        opacity: 0, transition: "opacity 0.2s", pointerEvents: "none"
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(12, 8, 6, 0.4)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        opacity: 0,
+        transition: 'opacity 0.3s ease',
     },
-    cardBody: { padding: "14px" },
-    cardTitle: { fontSize: "15px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" },
+    cardBody: {
+        padding: '16px',
+    },
+    cardTitle: {
+        fontSize: 'var(--font-size-base)',
+        fontWeight: 'bold',
+        color: '#F0E6D3',
+    },
     cardFamily: {
-        fontSize: "11px", color: "#B8860B", textTransform: "uppercase",
-        letterSpacing: "0.08em", marginBottom: "6px"
+        fontSize: 'var(--font-size-xs)',
+        color: '#B8860B',
+        marginTop: '4px',
     },
-    cardDate: { fontSize: "11px", color: "#6B5030" },
-
-    // Expanded Panel
+    cardDate: {
+        fontSize: 'var(--font-size-xs)',
+        opacity: 0.7,
+        color: '#8B7050',
+        marginTop: '8px',
+    },
     expandedPanel: {
-        padding: "16px", borderTop: "1px solid var(--color-border)",
-        background: "var(--glass-bg)", animation: "fadeIn 0.3s ease-in"
+        padding: '16px',
+        borderTop: '1px solid #2A1A0E',
+        background: 'rgba(12, 8, 6, 0.3)',
     },
-    comparisonRow: {
-        display: "grid", gridTemplateColumns: "1fr auto 1fr",
-        gap: "12px", alignItems: "center", marginBottom: "16px"
-    },
-    comparisonCol: { textAlign: "center" },
-    compLabel: {
-        fontSize: "10px", color: "#8B7050", textTransform: "uppercase",
-        letterSpacing: "0.1em", marginBottom: "6px"
-    },
-    compImage: {
-        width: "100%", height: "120px", objectFit: "cover",
-        borderRadius: "4px", border: "1px solid #2A1A0E", cursor: "pointer"
-    },
-    compArrow: { fontSize: "20px", color: "#B8860B" },
     expandedActions: {
-        display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap"
-    },
-    worldBtn: {
-        padding: "8px 16px", background: "rgba(34,139,34,0.15)",
-        border: "1px solid #228B22", borderRadius: "4px",
-        color: "#6DBF6D", fontSize: "12px", cursor: "pointer", fontFamily: "inherit",
-        fontWeight: "bold"
-    },
-    pdfBtn: {
-        padding: "8px 16px", background: "rgba(184,134,11,0.15)",
-        border: "1px solid #B8860B", borderRadius: "4px",
-        color: "#B8860B", fontSize: "12px", cursor: "pointer", fontFamily: "inherit",
-        fontWeight: "bold"
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '8px',
     },
     downloadBtn: {
-        padding: "8px 16px", background: "#1B5E20", border: "none",
-        borderRadius: "4px", color: "#F0E6D3", fontSize: "12px", cursor: "pointer", fontFamily: "inherit"
+        flex: 1,
+        minWidth: '100px',
+        background: 'rgba(184, 134, 11, 0.1)',
+        border: '1px solid #B8860B',
+        color: '#B8860B',
+        padding: '10px',
+        borderRadius: '6px',
+        fontSize: 'var(--font-size-xs)',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+    },
+    pdfBtn: {
+        flex: 1,
+        minWidth: '70px',
+        background: 'rgba(139, 112, 80, 0.1)',
+        border: '1px solid #8B7050',
+        color: '#8B7050',
+        padding: '10px',
+        borderRadius: '6px',
+        fontSize: 'var(--font-size-xs)',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+    },
+    worldBtn: {
+        flex: '1 0 100%',
+        background: 'rgba(184, 134, 11, 0.2)',
+        border: '1px solid #B8860B',
+        color: '#F0E6D3',
+        padding: '10px',
+        borderRadius: '8px',
+        fontSize: '13px',
+        fontWeight: '600',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        marginBottom: '8px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px',
     },
     deleteBtn: {
-        padding: "8px 16px", background: "transparent", border: "1px solid #C41E3A44",
-        borderRadius: "4px", color: "#C41E3A", fontSize: "12px", cursor: "pointer", fontFamily: "inherit"
+        flex: '1 0 100%',
+        background: 'none',
+        border: '1px solid rgba(255, 107, 107, 0.3)',
+        color: '#ff6b6b',
+        padding: '8px',
+        borderRadius: '6px',
+        fontSize: '12px',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        marginTop: '8px',
     },
     confirmDeleteBtn: {
-        padding: "8px 16px", background: "#C41E3A", border: "none",
-        borderRadius: "4px", color: "#fff", fontSize: "12px", cursor: "pointer", fontFamily: "inherit"
+        flex: 1,
+        background: '#ff6b6b',
+        color: '#ffffff',
+        border: 'none',
+        padding: '8px',
+        borderRadius: '6px',
+        fontSize: '12px',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
     },
     cancelDeleteBtn: {
-        padding: "8px 16px", background: "transparent", border: "1px solid #2A1A0E",
-        borderRadius: "4px", color: "#8B7050", fontSize: "12px", cursor: "pointer", fontFamily: "inherit"
+        flex: 1,
+        background: '#2A1A0E',
+        color: '#D4C3A3',
+        border: 'none',
+        padding: '8px',
+        borderRadius: '6px',
+        fontSize: '12px',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
     },
-
-    // Zoom Modal (identical to InteriorDesignApp)
+    footer: {
+        borderTop: '1px solid #2A1A0E',
+        padding: '40px 20px',
+        textAlign: 'center',
+        color: '#8B7050',
+        fontSize: '12px',
+        letterSpacing: '0.05em',
+        textTransform: 'uppercase',
+    },
     modalOverlay: {
-        position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-        background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center",
-        justifyContent: "center", zIndex: 1000, padding: "20px"
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: 'rgba(12, 8, 6, 0.9)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '40px',
     },
     modalContent: {
-        background: "var(--glass-bg)", border: "1px solid var(--color-border)", borderRadius: "8px",
-        maxWidth: "90vw", maxHeight: "90vh", display: "flex", flexDirection: "column", overflow: "hidden"
+        background: '#160E07',
+        border: '1px solid #2A1A0E',
+        borderRadius: '24px',
+        maxWidth: '800px',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
     },
     modalHeader: {
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "16px 20px", borderBottom: "1px solid #2A1A0E"
+        padding: '20px',
+        borderBottom: '1px solid #2A1A0E',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
-    modalTitle: { color: "#B8860B", fontSize: "16px" },
+    modalTitle: {
+        fontSize: '16px',
+        fontWeight: 'bold',
+        color: '#B8860B',
+    },
     modalClose: {
-        background: "transparent", border: "none", color: "#8B7050", fontSize: "20px", cursor: "pointer"
+        background: 'none',
+        border: 'none',
+        color: '#8B7050',
+        fontSize: '20px',
+        cursor: 'pointer',
     },
     modalImageContainer: {
-        flex: 1, display: "flex", alignItems: "center", justifyContent: "center",
-        overflow: "auto", padding: "20px", background: "#0C0806", cursor: "grab"
+        flex: 1,
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '400px',
+        padding: '20px',
     },
     modalImage: {
-        maxWidth: "100%", maxHeight: "70vh", objectFit: "contain",
-        transition: "transform 0.2s", borderRadius: "4px"
+        maxWidth: '100%',
+        maxHeight: '100%',
+        objectFit: 'contain',
+        transition: 'transform 0.3s ease',
     },
     modalControls: {
-        display: "flex", justifyContent: "center", alignItems: "center",
-        gap: "16px", padding: "16px 20px", borderTop: "1px solid #2A1A0E", background: "#160E07"
+        padding: '20px',
+        borderTop: '1px solid #2A1A0E',
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '20px',
     },
     zoomBtn: {
-        width: "40px", height: "40px", borderRadius: "50%", border: "1px solid #2A1A0E",
-        background: "#0C0806", color: "#B8860B", fontSize: "20px", cursor: "pointer",
-        display: "flex", alignItems: "center", justifyContent: "center"
+        width: '40px',
+        height: '40px',
+        background: '#2A1A0E',
+        border: 'none',
+        borderRadius: '50%',
+        color: '#F0E6D3',
+        fontSize: '20px',
+        cursor: 'pointer',
     },
     closeBtn: {
-        padding: "8px 24px", border: "1px solid #2A1A0E", borderRadius: "4px",
-        background: "transparent", color: "#8B7050", cursor: "pointer", fontSize: "14px"
+        padding: '8px 24px',
+        background: '#B8860B',
+        color: '#0C0806',
+        border: 'none',
+        borderRadius: '20px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
     }
 };

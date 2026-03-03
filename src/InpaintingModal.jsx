@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function InpaintingModal({ imageUrl, onClose, onSubmit }) {
+    const { t } = useTranslation();
     const canvasRef = useRef(null);
     const containerRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
@@ -84,11 +86,11 @@ export default function InpaintingModal({ imageUrl, onClose, onSubmit }) {
 
     const handleSubmit = () => {
         if (strokes.length === 0) {
-            alert("Veuillez peindre la zone à modifier.");
+            alert(t('inpainting.alerts.mask'));
             return;
         }
         if (!prompt.trim()) {
-            alert("Veuillez décrire ce que vous souhaitez générer.");
+            alert(t('inpainting.alerts.prompt'));
             return;
         }
 
@@ -128,14 +130,14 @@ export default function InpaintingModal({ imageUrl, onClose, onSubmit }) {
     return (
         <div style={modalOverlayStyle}>
             <div style={modalContentStyle}>
-                <h3 style={{ marginTop: 0, fontSize: '20px', color: '#B8860B' }}>🖌️ Remplacement de meuble (Inpainting)</h3>
+                <h3 style={{ marginTop: 0, fontSize: '20px', color: '#B8860B' }}>{t('inpainting.title')}</h3>
                 <p style={{ fontSize: '13px', color: '#8B7050', marginBottom: '15px' }}>
-                    Peignez sur l'objet que vous souhaitez remplacer dans l'image. (Le masque n'a pas besoin d'être parfait)
+                    {t('inpainting.desc')}
                 </p>
 
                 <div style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
                     <div style={{ flex: 1 }}>
-                        <label style={labelStyle}>Taille du pinceau : {brushSize}px</label>
+                        <label style={labelStyle}>{t('inpainting.brushSize')} : {brushSize}px</label>
                         <input
                             type="range"
                             min="10"
@@ -145,7 +147,7 @@ export default function InpaintingModal({ imageUrl, onClose, onSubmit }) {
                             style={{ width: '100%', accentColor: '#B8860B' }}
                         />
                     </div>
-                    <button onClick={clearMask} style={clearBtnStyle}>Effacer le masque</button>
+                    <button onClick={clearMask} style={clearBtnStyle}>{t('inpainting.clear')}</button>
                 </div>
 
                 <div
@@ -177,19 +179,19 @@ export default function InpaintingModal({ imageUrl, onClose, onSubmit }) {
                 </div>
 
                 <div style={{ marginTop: '20px' }}>
-                    <label style={labelStyle}>Nouveau meuble/objet :</label>
+                    <label style={labelStyle}>{t('inpainting.promptLabel')} :</label>
                     <input
                         type="text"
                         value={prompt}
                         onChange={e => setPrompt(e.target.value)}
-                        placeholder="Ex: Canapé en tissu indigo Dogon, Table basse carrée en bois massif..."
+                        placeholder={t('inpainting.placeholder')}
                         style={inputStyle}
                     />
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
-                    <button onClick={onClose} style={secondaryBtnStyle}>Annuler</button>
-                    <button onClick={handleSubmit} style={primaryBtnStyle}>Générer ✨</button>
+                    <button onClick={onClose} style={secondaryBtnStyle}>{t('inpainting.cancel')}</button>
+                    <button onClick={handleSubmit} style={primaryBtnStyle}>{t('inpainting.generate')} ✨</button>
                 </div>
             </div>
         </div>

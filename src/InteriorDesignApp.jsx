@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import ComparisonSlider from "./ComparisonSlider";
 import { exportCollage } from "./utils/collageGenerator";
 import { exportDesignPDF } from "./utils/pdfGenerator";
 import StyleManager from "./StyleManager";
 import WorldViewerModal from "./WorldViewerModal";
 import InpaintingModal from "./InpaintingModal";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery }) {
+  const { t } = useTranslation();
   const [currentView, setCurrentView] = useState("upload"); // 'upload', 'select-style', 'generating', 'result', 'manage-styles'
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
@@ -341,14 +344,14 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               </div>
             </div>
 
-            <h2 className="text-2xl md:text-4xl font-display font-bold mb-6 text-slate-900 dark:text-slate-50 leading-tight pointer-events-none">
-              Glissez votre photo ici ou <br className="hidden md:block" />
+            <h2 style={{ fontSize: "var(--font-size-xl)" }} className="font-display font-bold mb-6 text-slate-900 dark:text-slate-50 leading-tight pointer-events-none">
+              {t('app.upload.dragText')} <br className="hidden md:block" />
               <span className="text-primary underline decoration-primary/30 decoration-4 underline-offset-8 cursor-pointer hover:text-primary/80 transition-colors pointer-events-auto">
-                cliquez pour parcourir
+                {t('app.upload.clickText')}
               </span>
             </h2>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 text-slate-600 dark:text-slate-400 text-sm font-semibold uppercase tracking-widest pointer-events-none">
+            <div className="flex flex-wrap items-center justify-center gap-4 text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-widest pointer-events-none" style={{ fontSize: "var(--font-size-xs)" }}>
               <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">
                 JPG
               </span>
@@ -359,7 +362,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                 WebP
               </span>
               <span className="ml-2 font-normal lowercase italic opacity-70">
-                — Jusqu'à 10MB
+                {t('app.upload.maxSize')}
               </span>
             </div>
           </div>
@@ -376,7 +379,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
         {isLoading && (
           <div style={styles.loading} className="mt-8">
             <div style={styles.spinner} />
-            <span>Téléchargement en cours...</span>
+            <span>{t('app.upload.loading')}</span>
           </div>
         )}
 
@@ -394,7 +397,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               </span>
             </div>
             <span className="text-sm font-medium">
-              IA optimisée pour les motifs africains
+              {t('app.upload.feature1')}
             </span>
           </div>
           <div className="flex items-center gap-3 group">
@@ -404,7 +407,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               </span>
             </div>
             <span className="text-sm font-medium">
-              Traitement sécurisé et privé
+              {t('app.upload.feature2')}
             </span>
           </div>
         </div>
@@ -416,7 +419,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
   const renderStyleSelection = () => (
     <div style={styles.selectionContainer}>
       <div style={styles.previewSection}>
-        <h3 style={styles.sectionTitle}>Votre Photo</h3>
+        <h3 style={styles.sectionTitle}>{t('app.styleSelection.yourPhoto')}</h3>
         <img
           src={
             uploadedImage && uploadedImage.startsWith("http")
@@ -430,14 +433,14 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
           onClick={() => setCurrentView("upload")}
           style={styles.changePhotoBtn}
         >
-          Changer de photo
+          {t('app.styleSelection.changePhoto')}
         </button>
 
         {selectedStyle && (
           <div style={styles.generateSection}>
             <div style={styles.selectedStylePreview}>
               <span style={styles.flag}>{selectedStyle.flag}</span>
-              <span style={styles.selectedStyleName}>{selectedStyle.name}</span>
+              <span style={styles.selectedStyleName}>{t(`db.styles.${selectedStyle.id}.name`, { defaultValue: selectedStyle.name })}</span>
             </div>
 
             {/* Custom Instructions Input */}
@@ -456,7 +459,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                   letterSpacing: "0.05em",
                 }}
               >
-                Instructions supplémentaires (Optionnel)
+                {t('app.styleSelection.customInstructions')}
               </label>
               <textarea
                 id="customPrompt"
@@ -494,7 +497,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                   letterSpacing: "0.05em",
                 }}
               >
-                Mode de transformation
+                {t('app.styleSelection.transformationMode.title')}
               </div>
               <div
                 style={{
@@ -522,10 +525,9 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                     style={{ accentColor: "#B8860B" }}
                   />
                   <span>
-                    Transformer toute la pièce{" "}
+                    {t('app.styleSelection.transformationMode.full')}{" "}
                     <span style={{ color: "#8B7050", fontSize: "12px" }}>
-                      (mode actuel : la personne et les meubles peuvent aussi
-                      changer)
+                      {t('app.styleSelection.transformationMode.fullDesc')}
                     </span>
                   </span>
                 </label>
@@ -546,10 +548,9 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                     style={{ accentColor: "#B8860B" }}
                   />
                   <span>
-                    Ne modifier que l’arrière‑plan{" "}
+                    {t('app.styleSelection.transformationMode.background')}{" "}
                     <span style={{ color: "#8B7050", fontSize: "12px" }}>
-                      (la personne ou le meuble principal est conservé, seul le
-                      décor change)
+                      {t('app.styleSelection.transformationMode.backgroundDesc')}
                     </span>
                   </span>
                 </label>
@@ -566,10 +567,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               {isLoading ? (
                 <span style={styles.btnContent}>
                   <span style={styles.btnSpinner}></span>
-                  Génération...
+                  {t('app.styleSelection.generating')}
                 </span>
               ) : (
-                "🎨 Générer le design"
+                `🎨 ${t('app.styleSelection.generate')}`
               )}
             </button>
           </div>
@@ -586,7 +587,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
           }}
         >
           <h3 style={{ ...styles.sectionTitle, marginBottom: 0 }}>
-            Choisir un Style Africain
+            {t('app.styleSelection.chooseStyle')}
           </h3>
         </div>
 
@@ -597,10 +598,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             onChange={(e) => setActiveRegion(e.target.value)}
             style={styles.select}
           >
-            <option value="Tout">Toutes les régions</option>
+            <option value="Tout">{t('app.styleSelection.allRegions')}</option>
             {stylesDb.regions.map((r) => (
               <option key={r} value={r}>
-                {r}
+                {t(`db.regions.${r}`, { defaultValue: r })}
               </option>
             ))}
           </select>
@@ -610,17 +611,17 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             onChange={(e) => setActiveFamily(e.target.value)}
             style={styles.select}
           >
-            <option value="Tout">Toutes les familles</option>
+            <option value="Tout">{t('app.styleSelection.allFamilies')}</option>
             {stylesDb.families.map((f) => (
               <option key={f} value={f}>
-                {f}
+                {t(`db.families.${f}`, { defaultValue: f })}
               </option>
             ))}
           </select>
 
           <input
             type="text"
-            placeholder="Rechercher..."
+            placeholder={t('app.styleSelection.search')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             style={styles.searchInput}
@@ -645,10 +646,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             >
               <div style={styles.styleHeader}>
                 <span style={styles.flag}>{style.flag}</span>
-                <span style={styles.styleName}>{style.name}</span>
+                <span style={styles.styleName}>{t(`db.styles.${style.id}.name`, { defaultValue: style.name })}</span>
               </div>
               <div style={styles.styleCountry}>{style.country}</div>
-              <div style={styles.styleFamily}>{style.family}</div>
+              <div style={styles.styleFamily}>{t(`db.families.${style.family}`, { defaultValue: style.family })}</div>
               <div style={styles.colorPreview}>
                 {style.colors.slice(0, 4).map((c, i) => (
                   <div key={i} style={{ ...styles.colorDot, background: c }} />
@@ -661,9 +662,9 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
         {selectedStyle && (
           <div style={styles.selectedInfo}>
             <h4 style={styles.selectedTitle}>
-              {selectedStyle.flag} {selectedStyle.name}
+              {selectedStyle.flag} {t(`db.styles.${selectedStyle.id}.name`, { defaultValue: selectedStyle.name })}
             </h4>
-            <p style={styles.selectedDesc}>{selectedStyle.description}</p>
+            <p style={styles.selectedDesc}>{t(`db.styles.${selectedStyle.id}.description`, { defaultValue: selectedStyle.description })}</p>
           </div>
         )}
       </div>
@@ -674,21 +675,20 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
   const renderGenerating = () => (
     <div style={styles.generatingContainer} className="glass-panel">
       <div style={styles.spinnerLarge} />
-      <h3 style={styles.generatingTitle}>Création de votre design...</h3>
+      <h3 style={styles.generatingTitle}>{t('app.generating.title')}</h3>
       <p style={styles.generatingText}>
-        L'IA applique le style <strong>{selectedStyle?.name}</strong> à votre
-        photo
+        {t('app.generating.desc', { style: t(`db.styles.${selectedStyle?.id}.name`, { defaultValue: selectedStyle?.name }) })}
       </p>
       <p style={styles.generatingText}>
-        Mode :{" "}
+        {t('app.generating.mode')}{" "}
         {editMode === "background"
-          ? "Arrière‑plan uniquement"
-          : "Transformation complète"}
+          ? t('app.generating.background')
+          : t('app.generating.full')}
       </p>
       <div style={styles.generatingDetails}>
-        <div>🎨 Palette: {selectedStyle?.colors?.slice(0, 3).join(", ")}</div>
-        <div>🏛️ Style: {selectedStyle?.family}</div>
-        <div>🌍 Région: {selectedStyle?.region}</div>
+        <div>🎨 {t('app.generating.palette')} {selectedStyle?.colors?.slice(0, 3).join(", ")}</div>
+        <div>🏛️ {t('app.generating.style')} {t(`db.families.${selectedStyle?.family}`, { defaultValue: selectedStyle?.family })}</div>
+        <div>🌍 {t('app.generating.region')} {t(`db.regions.${selectedStyle?.region}`, { defaultValue: selectedStyle?.region })}</div>
       </div>
     </div>
   );
@@ -696,7 +696,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
   // Render result view with before/after comparison
   const renderResult = () => (
     <div style={styles.resultContainer}>
-      <h3 style={styles.resultTitle}>✨ Votre Design Africain</h3>
+      <h3 style={styles.resultTitle}>{t('app.result.title')}</h3>
 
       {error && (
         <div
@@ -711,7 +711,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             color: "#ff6b6b",
           }}
         >
-          <strong>Erreur :</strong> {error}
+          <strong>{t('app.result.error')}</strong> {error}
         </div>
       )}
 
@@ -738,7 +738,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             fontFamily: "inherit",
           }}
         >
-          ↔ Slider
+          ↔ {t('app.result.slider')}
         </button>
         <button
           onClick={() => setComparisonMode("sideBySide")}
@@ -755,7 +755,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             fontFamily: "inherit",
           }}
         >
-          ▥ Côte à côte
+          ▥ {t('app.result.sideBySide')}
         </button>
       </div>
 
@@ -782,7 +782,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
       {comparisonMode === "sideBySide" && (
         <div style={styles.comparisonContainer}>
           <div style={styles.comparisonItem}>
-            <div style={styles.comparisonLabel}>Avant</div>
+            <div style={styles.comparisonLabel}>{t('app.result.before')}</div>
             <div
               style={styles.imageWrapper}
               onClick={() =>
@@ -803,14 +803,14 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                 alt="Original"
                 style={styles.comparisonImage}
               />
-              <div style={styles.zoomHint}>🔍 Cliquer pour zoomer</div>
+              <div style={styles.zoomHint}>{t('app.result.zoomHint')}</div>
             </div>
           </div>
 
           <div style={styles.arrow}>→</div>
 
           <div style={styles.comparisonItem}>
-            <div style={styles.comparisonLabel}>Après</div>
+            <div style={styles.comparisonLabel}>{t('app.result.after')}</div>
             <div
               style={styles.imageWrapper}
               onClick={() =>
@@ -831,7 +831,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
                 alt="Generated"
                 style={styles.comparisonImage}
               />
-              <div style={styles.zoomHint}>🔍 Cliquer pour zoomer</div>
+              <div style={styles.zoomHint}>{t('app.result.zoomHint')}</div>
             </div>
           </div>
         </div>
@@ -869,7 +869,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
         <p style={styles.styleInfoDesc}>{selectedStyle?.description}</p>
 
         <div style={styles.materialsList}>
-          <strong>Matériaux:</strong> {selectedStyle?.materials?.join(", ")}
+          <strong>{t('app.result.materials')}</strong> {selectedStyle?.materials?.join(", ")}
         </div>
 
         <div
@@ -897,7 +897,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               {isDownloading ? "hourglass_empty" : "download"}
             </span>
             <span style={{ fontSize: "12px", fontWeight: "600", textAlign: "center" }}>
-              {isDownloading ? "Création..." : "Avant/Après"}
+              {isDownloading ? t('app.result.creating') : t('app.result.download')}
             </span>
           </button>
 
@@ -917,7 +917,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               {isPdfGenerating ? "hourglass_empty" : "picture_as_pdf"}
             </span>
             <span style={{ fontSize: "12px", fontWeight: "600", textAlign: "center" }}>
-              {isPdfGenerating ? "Génération..." : "Export PDF"}
+              {isPdfGenerating ? t('app.styleSelection.generating') : t('gallery.actions.pdf')}
             </span>
           </button>
 
@@ -935,7 +935,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               public
             </span>
             <span style={{ fontSize: "12px", fontWeight: "600", textAlign: "center" }}>
-              Monde 3D
+              {t('app.result.world')}
             </span>
           </button>
 
@@ -953,7 +953,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               format_paint
             </span>
             <span style={{ fontSize: "12px", fontWeight: "600", textAlign: "center" }}>
-              Inpainting
+              {t('app.result.inpainting')}
             </span>
           </button>
         </div>
@@ -964,10 +964,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
           onClick={() => setCurrentView("select-style")}
           style={styles.secondaryBtn}
         >
-          ← Essayer un autre style
+          {t('app.result.tryAnother')}
         </button>
         <button onClick={handleReset} style={styles.primaryBtn}>
-          🏠 Nouveau projet
+          {t('app.result.newProject')}
         </button>
       </div>
     </div>
@@ -987,7 +987,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               <span className="material-symbols-outlined text-[18px]">
                 arrow_back
               </span>
-              Retour
+              {t('gallery.back')}
             </button>
           )}
           {onGoToStyles && (
@@ -996,7 +996,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm"
             >
               <span className="text-lg">📚</span>
-              Base de Styles
+              {t('gallery.baseStyles')}
             </button>
           )}
           {onGoToGallery && (
@@ -1005,7 +1005,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm text-slate-800 dark:text-slate-200"
             >
               <span className="text-lg">🖼️</span>
-              Galerie
+              {t('header.gallery')}
             </button>
           )}
         </div>
@@ -1015,10 +1015,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             <span className="material-symbols-outlined text-primary text-4xl">
               temple_hindu
             </span>
-            African Interior Designer
+            {t('designer.title')}
           </h1>
           <p className="text-slate-600 dark:text-slate-400 italic mt-1 font-medium">
-            Transformez votre espace avec l’âme de l’Afrique
+            {t('designer.subtitle')}
           </p>
         </div>
 
@@ -1034,6 +1034,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
               light_mode
             </span>
           </button>
+          <LanguageSwitcher />
           <button
             className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all font-medium text-sm"
             onClick={() => setCurrentView("manage-styles")}
@@ -1041,7 +1042,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             <span className="material-symbols-outlined text-[18px]">
               settings
             </span>
-            Gérer la Base de Styles
+            {t('designer.manageStyles')}
           </button>
         </div>
       </nav>

@@ -51,6 +51,83 @@ app.use(express.json({ limit: '50mb' }));
 app.use('/uploads', express.static('uploads'));
 app.use('/generated', express.static('generated'));
 
+// Whitelist des préfixes de chemins autorisés sur le proxy Marble
+const MARBLE_ALLOWED_PREFIXES = ['/world/', '/_next/', '/static/', '/favicon', '/api/'];
+
+// Route proxy Marble (DÉFINIE AVANT TOUT RATE LIMITER)
+app.use('/api/marble-proxy', async (req, res) => {
+  const isAllowed = MARBLE_ALLOWED_PREFIXES.some(prefix => req.url.startsWith(prefix));
+  if (!isAllowed) {
+    return res.status(403).json({ error: 'Chemin non autorisé via le proxy' });
+  }
+
+  try {
+    const targetUrl = 'https://marble.worldlabs.ai' + req.url;
+
+    // Filtrer les headers sensibles ou conflictuels
+    const proxyHeaders = { ...req.headers };
+    delete proxyHeaders['host'];
+    delete proxyHeaders['connection'];
+    delete proxyHeaders['content-length'];
+
+    // Forcer les bons headers pour Marble
+    proxyHeaders['host'] = 'marble.worldlabs.ai';
+    proxyHeaders['referer'] = 'https://marble.worldlabs.ai' + req.url;
+    proxyHeaders['origin'] = 'https://marble.worldlabs.ai';
+    proxyHeaders['WLT-Api-Key'] = WORLD_API_KEY;
+
+    const axiosRes = await axios({
+      method: req.method,
+      url: targetUrl,
+      headers: proxyHeaders,
+      responseType: 'arraybuffer',
+      timeout: 30000,
+      maxRedirects: 5,
+      validateStatus: () => true
+    });
+
+    // Passer les cookies de Marble vers le client
+    if (axiosRes.headers['set-cookie']) {
+      res.set('set-cookie', axiosRes.headers['set-cookie']);
+    }
+
+    // Copier les headers de réponse, sauf ceux qui bloquent l'iframe
+    const skipHeaders = ['x-frame-options', 'content-security-policy', 'content-security-policy-report-only', 'transfer-encoding', 'connection', 'strict-transport-security'];
+    for (const [key, value] of Object.entries(axiosRes.headers)) {
+      if (!skipHeaders.includes(key.toLowerCase())) {
+        res.set(key, value);
+      }
+    }
+
+    // Pour les pages HTML : réécrire les URLs d'assets pour passer par notre proxy
+    const contentType = (axiosRes.headers['content-type'] || '').toLowerCase();
+    const isHtml = contentType.includes('text/html');
+    const isJs = contentType.includes('application/javascript') || contentType.includes('text/javascript');
+
+    if (isHtml || isJs) {
+      let content = Buffer.from(axiosRes.data).toString('utf-8');
+
+      // Réécrire les chemins absolus /xxx pour qu'ils passent par le proxy
+      if (isHtml) {
+        content = content.replace(/(["'(])\/(?!api\/marble-proxy\/)/g, '$1/api/marble-proxy/');
+      }
+
+      // Réécrire les URLs complètes marble.worldlabs.ai si présentes
+      content = content.replace(/https:\/\/marble\.worldlabs\.ai/g, `${req.protocol}://${req.get('host')}/api/marble-proxy`);
+
+      res.status(axiosRes.status).send(content);
+    } else {
+      res.status(axiosRes.status).send(Buffer.from(axiosRes.data));
+    }
+  } catch (err) {
+    console.error('Marble proxy error:', err.message);
+    res.status(502).json({ error: 'Proxy error', details: err.message });
+  }
+});
+
+
+// ── Rate Limiting ────────────────────────────────────────────────────────────
+
 // ── Rate Limiting ────────────────────────────────────────────────────────────
 
 // Limite sur les endpoints qui appellent des APIs payantes
@@ -694,7 +771,8 @@ app.post('/api/worlds/create', async (req, res) => {
           text_prompt: textPrompt
         },
         permission: {
-          public: true
+          public: true,
+          share_link_enabled: true
         }
       },
       {
@@ -706,6 +784,7 @@ app.post('/api/worlds/create', async (req, res) => {
     );
 
     const operation = generateResponse.data;
+    console.log('World Labs Generation Response:', JSON.stringify(operation, null, 2));
     const operationId = operation?.operation_id || null;
     const worldId = operation?.metadata?.world_id || null;
     const worldUrl = worldId
@@ -765,58 +844,6 @@ app.get('/api/worlds/status/:operationId', async (req, res) => {
 // Marble bloque les iframes via X-Frame-Options / CSP frame-ancestors.
 // Ce proxy relaye marble.worldlabs.ai en supprimant ces headers.
 // On réécrit aussi les URLs d'assets dans le HTML pour qu'ils passent par le proxy.
-// Whitelist des préfixes de chemins autorisés sur le proxy Marble
-const MARBLE_ALLOWED_PREFIXES = ['/world/', '/_next/', '/static/', '/favicon'];
-
-app.use('/api/marble-proxy', async (req, res) => {
-  // Restriction : seuls les chemins whitelistés sont autorisés
-  const isAllowed = MARBLE_ALLOWED_PREFIXES.some(prefix => req.url.startsWith(prefix));
-  if (!isAllowed) {
-    return res.status(403).json({ error: 'Chemin non autorisé via le proxy' });
-  }
-
-  try {
-    const targetUrl = 'https://marble.worldlabs.ai' + req.url;
-    const axiosRes = await axios({
-      method: req.method,
-      url: targetUrl,
-      headers: {
-        'accept': req.headers['accept'] || '*/*',
-        'accept-encoding': 'identity',
-        'accept-language': req.headers['accept-language'] || 'en',
-        'user-agent': req.headers['user-agent'] || 'Mozilla/5.0',
-        'host': 'marble.worldlabs.ai',
-        'referer': 'https://marble.worldlabs.ai/',
-        'origin': 'https://marble.worldlabs.ai'
-      },
-      responseType: 'arraybuffer',
-      timeout: 30000,
-      maxRedirects: 5,
-      validateStatus: () => true
-    });
-
-    // Copier les headers de réponse, sauf ceux qui bloquent l'iframe
-    const skipHeaders = ['x-frame-options', 'content-security-policy', 'content-security-policy-report-only', 'transfer-encoding', 'connection', 'strict-transport-security'];
-    for (const [key, value] of Object.entries(axiosRes.headers)) {
-      if (!skipHeaders.includes(key.toLowerCase())) {
-        res.set(key, value);
-      }
-    }
-
-    // Pour les pages HTML : réécrire les URLs d'assets pour passer par notre proxy
-    const contentType = (axiosRes.headers['content-type'] || '').toLowerCase();
-    if (contentType.includes('text/html')) {
-      let html = Buffer.from(axiosRes.data).toString('utf-8');
-      html = html.replace(/(["'(])\/(?!api\/marble-proxy\/)/g, '$1/api/marble-proxy/');
-      res.status(axiosRes.status).send(html);
-    } else {
-      res.status(axiosRes.status).send(Buffer.from(axiosRes.data));
-    }
-  } catch (err) {
-    console.error('Marble proxy error:', err.message);
-    res.status(502).json({ error: 'Proxy error', ...(isDev && { details: err.message }) });
-  }
-});
 
 // Health check
 app.get('/api/health', (req, res) => {

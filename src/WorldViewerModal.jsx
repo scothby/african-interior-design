@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const API_BASE_URL = 'http://localhost:5000';
 
@@ -21,22 +22,24 @@ export default function WorldViewerModal({
     worldUrl: initialWorldUrl,
     onClose
 }) {
+    const { t } = useTranslation();
     const [phase, setPhase] = useState(mode === 'view' ? 'viewer' : 'init');
     // phases: 'init' → 'uploading' → 'generating' → 'polling' → 'viewer' | 'error'
     const [worldUrl, setWorldUrl] = useState(initialWorldUrl || null);
     const [operationId, setOperationId] = useState(null);
     const [error, setError] = useState(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [iframeLoading, setIframeLoading] = useState(true);
     const [elapsedSecs, setElapsedSecs] = useState(0);
     const pollRef = useRef(null);
     const timerRef = useRef(null);
     const modalRef = useRef(null);
 
     const steps = [
-        { key: 'uploading', label: 'Envoi de l\'image vers World Labs...' },
-        { key: 'generating', label: 'Lancement de la génération 3D...' },
-        { key: 'polling', label: 'Génération du monde en cours... (2-5 min)' },
-        { key: 'viewer', label: 'Monde prêt !' },
+        { key: 'uploading', label: t('world.steps.uploading') },
+        { key: 'generating', label: t('world.steps.generating') },
+        { key: 'polling', label: t('world.steps.polling') },
+        { key: 'viewer', label: t('world.steps.ready') },
     ];
     const currentStepIndex = steps.findIndex(s => s.key === phase);
 
@@ -72,7 +75,7 @@ export default function WorldViewerModal({
                             }).catch(console.error);
                         }
                     } else {
-                        setError('Monde généré mais aucun lien disponible.');
+                        setError(t('world.errors.noUrl'));
                         setPhase('error');
                     }
                 } else if (data.error) {
@@ -82,7 +85,7 @@ export default function WorldViewerModal({
                 }
             } catch (err) {
                 clearInterval(pollRef.current);
-                setError('Impossible de vérifier l\'état du monde : ' + err.message);
+                setError(t('world.errors.statusCheck') + ': ' + err.message);
                 setPhase('error');
             }
         }, 5000);
@@ -102,7 +105,7 @@ export default function WorldViewerModal({
                 });
                 const data = await response.json();
                 if (!response.ok) {
-                    throw new Error(data?.details || data?.error || 'Création échouée');
+                    throw new Error(data?.details || data?.error || t('world.errors.failed'));
                 }
                 setPhase('generating');
                 if (data.worldUrl) {
@@ -168,7 +171,7 @@ export default function WorldViewerModal({
                         <span style={s.headerIcon}>🌍</span>
                         <div>
                             <div style={s.headerTitle}>
-                                {selectedStyle ? `Monde – ${selectedStyle.name}` : 'Monde Virtuel 3D'}
+                                {selectedStyle ? `${t('world.titlePrefix')} – ${selectedStyle.name}` : t('world.title')}
                             </div>
                             {['uploading', 'generating', 'polling'].includes(phase) && (
                                 <div style={s.headerTimer}>⏱ {formatTime(elapsedSecs)}</div>
@@ -177,11 +180,11 @@ export default function WorldViewerModal({
                     </div>
                     <div style={s.headerActions}>
                         {phase === 'viewer' && (
-                            <button onClick={toggleFullscreen} style={s.iconBtn} title={isFullscreen ? 'Quitter plein écran' : 'Plein écran'}>
+                            <button onClick={toggleFullscreen} style={s.iconBtn} title={isFullscreen ? t('world.exitFullscreen') : t('world.fullscreen')}>
                                 {isFullscreen ? '⊡' : '⛶'}
                             </button>
                         )}
-                        <button onClick={onClose} style={s.closeBtn} title="Fermer">✕</button>
+                        <button onClick={onClose} style={s.closeBtn} title={t('world.close')}>✕</button>
                     </div>
                 </div>
 
@@ -228,10 +231,10 @@ export default function WorldViewerModal({
                             {phase === 'polling' && (
                                 <div style={s.infoBox}>
                                     <div style={{ fontSize: '13px', color: '#B8860B', marginBottom: '4px' }}>
-                                        La génération 3D prend généralement 2 à 5 minutes.
+                                        {t('world.pollingInfoLine1')}
                                     </div>
                                     <div style={{ fontSize: '12px', color: '#6B5030' }}>
-                                        Le viewer s'affichera automatiquement une fois prêt. Pas besoin de rester sur cette fenêtre.
+                                        {t('world.pollingInfoLine2')}
                                     </div>
                                 </div>
                             )}
@@ -242,40 +245,44 @@ export default function WorldViewerModal({
                     {phase === 'error' && (
                         <div style={s.errorWrapper}>
                             <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-                            <div style={{ color: '#C41E3A', fontSize: '16px', marginBottom: '8px' }}>Erreur de génération</div>
+                            <div style={{ color: '#C41E3A', fontSize: '16px', marginBottom: '8px' }}>{t('world.errorTitle')}</div>
                             <div style={{ color: '#8B7050', fontSize: '13px', maxWidth: '400px', textAlign: 'center' }}>{error}</div>
-                            <button onClick={onClose} style={s.retryBtn}>Fermer</button>
+                            <button onClick={onClose} style={s.retryBtn}>{t('world.close')}</button>
                         </div>
                     )}
 
-                    {/* Viewer Marble — écran de lancement */}
+                    {/* Viewer Marble — Écran de Lancement (Prêt) */}
                     {phase === 'viewer' && worldUrl && (
                         <div style={s.launchWrapper}>
                             <div style={s.launchGlobeArea}>
                                 <div style={s.launchGlobe}>🌍</div>
                                 <div style={s.launchRing1} />
                                 <div style={s.launchRing2} />
+                                <div style={s.launchRing3} />
                             </div>
 
-                            <div style={s.launchTitle}>Votre monde 3D est prêt !</div>
+                            <div style={s.launchTitle}>{t('world.readyTitle')}</div>
                             <div style={s.launchSub}>
-                                Explorez votre intérieur africain en 3D immersive sur Marble.
+                                {t('world.readyDesc')}
                             </div>
 
                             <button
                                 onClick={() => {
-                                    const w = Math.min(1400, window.screen.width - 100);
-                                    const h = Math.min(900, window.screen.height - 100);
+                                    const w = Math.min(1600, window.screen.width - 40);
+                                    const h = Math.min(1000, window.screen.height - 40);
                                     const left = (window.screen.width - w) / 2;
                                     const top = (window.screen.height - h) / 2;
-                                    window.open(worldUrl, 'marble-world', `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no`);
+                                    // Utilisation de l'URL directe pour contourner les blocages du proxy sur les assets
+                                    window.open(worldUrl, 'marble-viewer', `width=${w},height=${h},left=${left},top=${top},toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes`);
                                 }}
                                 style={s.launchBtn}
                             >
-                                🚀 Explorer le monde 3D
+                                🚀 {t('world.exploreBtn')}
                             </button>
 
-
+                            <button onClick={onClose} style={s.launchClose}>
+                                {t('app.close')}
+                            </button>
                         </div>
                     )}
 
@@ -379,81 +386,61 @@ const s = {
         flex: 1, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center', gap: '12px'
     },
-    retryBtn: {
-        marginTop: '16px', padding: '10px 24px',
-        background: 'transparent', border: '1px solid #C41E3A',
-        borderRadius: '6px', color: '#C41E3A', cursor: 'pointer', fontSize: '14px'
-    },
-
-    // Launch screen
+    // Launch screen styles
     launchWrapper: {
         flex: 1, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
-        gap: '24px', padding: '40px', position: 'relative', overflow: 'hidden'
+        padding: '60px 40px', background: 'radial-gradient(circle at center, #1A120B 0%, #0C0806 100%)',
     },
     launchGlobeArea: {
-        position: 'relative', width: '120px', height: '120px',
-        display: 'flex', alignItems: 'center', justifyContent: 'center'
+        position: 'relative', width: '180px', height: '180px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        marginBottom: '40px',
     },
     launchGlobe: {
-        fontSize: '72px', lineHeight: 1,
-        animation: 'pulse 3s ease-in-out infinite',
-        position: 'relative', zIndex: 1
+        fontSize: '100px', zIndex: 2, filter: 'drop-shadow(0 0 20px rgba(184,134,11,0.4))',
+        animation: 'float 6s ease-in-out infinite',
     },
     launchRing1: {
-        position: 'absolute', inset: '-10px', borderRadius: '50%',
-        border: '2px solid rgba(184,134,11,0.3)',
-        animation: 'pulseRing 2.5s ease-out infinite'
+        position: 'absolute', inset: 0, borderRadius: '50%',
+        border: '2px dashed rgba(184,134,11,0.3)',
+        animation: 'spin 15s linear infinite',
     },
     launchRing2: {
-        position: 'absolute', inset: '-10px', borderRadius: '50%',
-        border: '2px solid rgba(184,134,11,0.2)',
-        animation: 'pulseRing 2.5s ease-out infinite 0.7s'
+        position: 'absolute', inset: '20px', borderRadius: '50%',
+        border: '1px solid rgba(184,134,11,0.2)',
+        animation: 'spin 20s linear reverse infinite',
+    },
+    launchRing3: {
+        position: 'absolute', inset: '-20px', borderRadius: '50%',
+        background: 'radial-gradient(circle, rgba(184,134,11,0.1) 0%, transparent 70%)',
+        animation: 'pulse 4s ease-in-out infinite',
     },
     launchTitle: {
-        color: '#F0E6D3', fontSize: '26px',
-        fontFamily: "'Georgia', serif", fontWeight: 'bold',
-        position: 'relative', zIndex: 1
+        fontSize: '32px', fontWeight: 'bold', color: '#F0E6D3',
+        marginBottom: '16px', textAlign: 'center', fontFamily: "'Georgia', serif",
     },
     launchSub: {
-        color: '#8B7050', fontSize: '14px', textAlign: 'center',
-        maxWidth: '380px', lineHeight: 1.6, position: 'relative', zIndex: 1
+        fontSize: '16px', color: '#8B7050', marginBottom: '48px',
+        textAlign: 'center', maxWidth: '400px', lineHeight: 1.6,
     },
     launchBtn: {
-        display: 'inline-flex', alignItems: 'center', gap: '10px',
-        padding: '16px 36px', borderRadius: '12px',
         background: 'linear-gradient(135deg, #B8860B, #8B6914)',
-        color: '#FFF8E7', fontSize: '17px', fontWeight: 'bold',
-        border: 'none', cursor: 'pointer',
-        boxShadow: '0 4px 24px rgba(184,134,11,0.45)',
-        transition: 'transform 0.2s, box-shadow 0.2s',
-        position: 'relative', zIndex: 1, letterSpacing: '0.3px'
+        color: '#0C0806', border: 'none', padding: '18px 48px',
+        borderRadius: '14px', fontSize: '18px', fontWeight: 'bold',
+        cursor: 'pointer', transition: 'all 0.3s',
+        boxShadow: '0 10px 30px rgba(184, 134, 11, 0.4)',
+        display: 'flex', alignItems: 'center', gap: '12px',
     },
-    launchAlt: {
-        color: '#6B5030', fontSize: '13px', textDecoration: 'underline',
-        cursor: 'pointer', position: 'relative', zIndex: 1
-    },
-    launchUrlBox: {
-        display: 'flex', alignItems: 'center', gap: '8px',
-        padding: '10px 16px', borderRadius: '8px',
-        background: 'rgba(184,134,11,0.05)', border: '1px solid rgba(184,134,11,0.15)',
-        maxWidth: '520px', width: '100%', position: 'relative', zIndex: 1
-    },
-    launchUrlText: {
-        color: '#B8860B', fontSize: '12px', flex: 1,
-        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
-    },
-    copyBtn: {
-        background: 'transparent', border: 'none',
-        cursor: 'pointer', fontSize: '16px', padding: '0 4px',
-        flexShrink: 0
+    launchClose: {
+        marginTop: '32px', background: 'transparent', border: 'none',
+        color: '#6B5030', fontSize: '14px', cursor: 'pointer',
+        textDecoration: 'underline', transition: 'color 0.2s',
     },
 
     // Footer
     footer: {
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '10px 20px', borderTop: '1px solid #1E1208',
-        background: '#110A05', flexShrink: 0
+        display: 'none'
     },
     footerHint: { fontSize: '12px', color: '#6B5030', fontStyle: 'italic' },
     footerLink: {

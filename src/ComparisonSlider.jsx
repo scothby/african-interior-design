@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * ComparisonSlider — Drag a handle to reveal before/after images.
@@ -7,10 +8,13 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 export default function ComparisonSlider({
     beforeImage,
     afterImage,
-    beforeLabel = 'Avant',
-    afterLabel = 'Après',
+    beforeLabel,
+    afterLabel,
     height = 400
 }) {
+    const { t } = useTranslation();
+    const finalBeforeLabel = beforeLabel || t('app.result.before');
+    const finalAfterLabel = afterLabel || t('app.result.after');
     const containerRef = useRef(null);
     const [sliderPos, setSliderPos] = useState(50); // percentage 0-100
     const [isDragging, setIsDragging] = useState(false);
@@ -84,7 +88,7 @@ export default function ComparisonSlider({
             {/* After image (full background) */}
             <img
                 src={afterImage}
-                alt={afterLabel}
+                alt={finalAfterLabel}
                 draggable={false}
                 style={{
                     position: 'absolute',
@@ -107,7 +111,7 @@ export default function ComparisonSlider({
             >
                 <img
                     src={beforeImage}
-                    alt={beforeLabel}
+                    alt={finalBeforeLabel}
                     draggable={false}
                     style={{
                         position: 'absolute',
@@ -177,7 +181,7 @@ export default function ComparisonSlider({
                     zIndex: 5
                 }}
             >
-                {beforeLabel}
+                {finalBeforeLabel}
             </div>
             <div
                 style={{
@@ -195,7 +199,7 @@ export default function ComparisonSlider({
                     zIndex: 5
                 }}
             >
-                {afterLabel}
+                {finalAfterLabel}
             </div>
 
             {/* Hint (bottom center) */}
@@ -215,7 +219,7 @@ export default function ComparisonSlider({
                     whiteSpace: 'nowrap'
                 }}
             >
-                ← Glisser pour comparer →
+                {t('app.result.sliderHint')}
             </div>
         </div>
     );

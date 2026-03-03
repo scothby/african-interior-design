@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import DB from "./african-styles-db.json";
 import InteriorDesignApp from "./InteriorDesignApp";
 import Gallery from "./Gallery";
 import LandingPage from "./LandingPage";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 import "./App.css";
 
 const FAMILY_COLORS = {
@@ -28,6 +30,7 @@ const FAMILY_ICONS = {
 };
 
 export default function App() {
+  const { t } = useTranslation();
   const [currentApp, setCurrentApp] = useState(() => {
     return localStorage.getItem('interior_ai_last_page') || 'landing';
   });
@@ -103,23 +106,27 @@ export default function App() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
           <div>
             <div style={{ fontSize: "10px", letterSpacing: "0.35em", color: "var(--color-primary)", textTransform: "uppercase", marginBottom: "4px" }}>
-              Base de données
+              {t('header.database')}
             </div>
-            <h1 style={{ margin: 0, fontSize: "clamp(20px,3vw,32px)" }}>
-              Styles Africains <span style={{ color: "var(--color-primary)" }}>·</span> <span style={{ color: "var(--color-text-muted)", fontSize: "0.6em" }}>{filtered.length} / {DB.styles.length}</span>
+            <h1 style={{ margin: 0, fontSize: "var(--font-size-xl)" }}>
+              {t('header.africanStyles')} <span style={{ color: "var(--color-primary)" }}>·</span> <span style={{ color: "var(--color-text-muted)", fontSize: "0.6em" }}>{filtered.length} / {DB.styles.length}</span>
             </h1>
           </div>
 
-          {/* Hamburger Menu Button (Mobile Only) */}
-          <button
-            className={`mobile-menu-btn ${isMenuOpen ? 'open' : ''}`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Menu"
-          >
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <LanguageSwitcher />
+
+            {/* Hamburger Menu Button (Mobile Only) */}
+            <button
+              className={`mobile-menu-btn ${isMenuOpen ? 'open' : ''}`}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Menu"
+            >
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+            </button>
+          </div>
 
           {/* Desktop Navigation */}
           <div className="desktop-nav" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -128,27 +135,27 @@ export default function App() {
               onClick={() => setCurrentApp("landing")}
               style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px" }}
             >
-              🏠 Accueil
+              🏠 {t('header.home')}
             </button>
             <button
               className="btn-primary"
               onClick={() => setCurrentApp("designer")}
               style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px" }}
             >
-              🏛️ African Interior Designer
+              🏛️ {t('header.designer')}
             </button>
             <button
               className="btn-secondary"
               onClick={() => setCurrentApp("gallery")}
               style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px" }}
             >
-              🖼️ Galerie
+              🖼️ {t('header.gallery')}
             </button>
             {/* Search */}
             <input
               value={search}
               onChange={e => setSearch(e.target.value)}
-              placeholder="Rechercher un style, pays, famille..."
+              placeholder={t('header.searchPlaceholder')}
               style={{
                 background: "var(--color-bg-dark)", border: "1px solid var(--color-border)", color: "var(--color-text-main)",
                 padding: "10px 16px", borderRadius: "4px", fontSize: "13px",
@@ -164,13 +171,13 @@ export default function App() {
         <div className={`mobile-nav-overlay ${isMenuOpen ? 'open' : ''}`}>
           <div className="mobile-nav-links">
             <button onClick={() => { setCurrentApp("landing"); setIsMenuOpen(false); }}>
-              🏠 Accueil
+              🏠 {t('header.home')}
             </button>
             <button onClick={() => { setCurrentApp("designer"); setIsMenuOpen(false); }}>
-              🏛️ Designer
+              🏛️ {t('header.designer')}
             </button>
             <button onClick={() => { setCurrentApp("gallery"); setIsMenuOpen(false); }}>
-              🖼️ Galerie
+              🖼️ {t('header.gallery')}
             </button>
 
             {/* Mobile Search */}
@@ -178,7 +185,7 @@ export default function App() {
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="Rechercher..."
+                placeholder={t('header.searchMobile')}
                 style={{
                   background: "rgba(0,0,0,0.5)", border: "1px solid var(--color-border)", color: "var(--color-text-main)",
                   padding: "14px 16px", borderRadius: "8px", fontSize: "16px",
@@ -201,7 +208,7 @@ export default function App() {
               color: activeRegion === r ? "#B8860B" : "#6B5030", cursor: "pointer",
               fontSize: "11px", letterSpacing: "0.08em", borderRadius: "2px",
               fontFamily: "Georgia, serif", transition: "all 0.15s"
-            }}>{r}</button>
+            }}>{r === "Tout" ? t('filters.all') : t(`db.regions.${r}`, { defaultValue: r })}</button>
           ))}
         </div>
       </div>
@@ -213,7 +220,7 @@ export default function App() {
           background: activeFamily === "Tout" ? "rgba(184,134,11,0.12)" : "transparent",
           color: activeFamily === "Tout" ? "#B8860B" : "#6B5030", cursor: "pointer",
           fontSize: "11px", borderRadius: "2px", fontFamily: "Georgia, serif"
-        }}>Toutes</button>
+        }}>{t('filters.allFem')}</button>
         {DB.families.map(f => (
           <button key={f} onClick={() => setActiveFamily(f)} style={{
             padding: "5px 12px",
@@ -222,7 +229,7 @@ export default function App() {
             color: activeFamily === f ? FAMILY_COLORS[f] : "#6B5030",
             cursor: "pointer", fontSize: "11px", borderRadius: "2px",
             fontFamily: "Georgia, serif", transition: "all 0.15s"
-          }}>{FAMILY_ICONS[f]} {f}</button>
+          }}>{FAMILY_ICONS[f]} {t(`db.families.${f}`, { defaultValue: f })}</button>
         ))}
       </div>
 
@@ -262,12 +269,12 @@ export default function App() {
                     color: FAMILY_COLORS[style.family] || "#B8860B",
                     padding: "2px 6px", border: `1px solid ${FAMILY_COLORS[style.family]}44`,
                     borderRadius: "2px"
-                  }}>{style.family}</span>
+                  }}>{t(`db.families.${style.family}`, { defaultValue: style.family })}</span>
                 </div>
-                <div style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "2px", color: "#F0E6D3" }}>{style.name}</div>
-                <div style={{ fontSize: "11px", color: "#8B7050", marginBottom: "8px" }}>{style.country}</div>
+                <div style={{ fontSize: "var(--font-size-base)", fontWeight: "bold", marginBottom: "2px", color: "#F0E6D3" }}>{t(`db.styles.${style.id}.name`, { defaultValue: style.name })}</div>
+                <div style={{ fontSize: "var(--font-size-xs)", color: "#8B7050", marginBottom: "8px" }}>{style.country}</div>
                 <p style={{ fontSize: "12px", color: "#7A6040", margin: 0, lineHeight: 1.5, fontStyle: "italic" }}>
-                  {style.description.substring(0, 80)}…
+                  {t(`db.styles.${style.id}.description`, { defaultValue: style.description }).substring(0, 80)}…
                 </p>
               </div>
             </div>
@@ -299,18 +306,18 @@ export default function App() {
             </div>
 
             <div style={{ fontSize: "10px", letterSpacing: "0.25em", color: "#B8860B", textTransform: "uppercase", marginBottom: "6px" }}>
-              {selectedStyle.region}
+              {t(`db.regions.${selectedStyle.region}`, { defaultValue: selectedStyle.region })}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
-              <span style={{ fontSize: "28px" }}>{selectedStyle.flag}</span>
-              <h2 style={{ margin: 0, fontSize: "20px", fontWeight: "normal" }}>{selectedStyle.name}</h2>
+              <span style={{ fontSize: "var(--icon-size-lg)" }}>{selectedStyle.flag}</span>
+              <h2 style={{ margin: 0, fontSize: "var(--font-size-lg)", fontWeight: "normal" }}>{t(`db.styles.${selectedStyle.id}.name`, { defaultValue: selectedStyle.name })}</h2>
             </div>
             <div style={{ fontSize: "12px", color: "#8B7050", marginBottom: "12px" }}>
-              {selectedStyle.country} · <span style={{ color: FAMILY_COLORS[selectedStyle.family] }}>{selectedStyle.family}</span>
+              {selectedStyle.country} · <span style={{ color: FAMILY_COLORS[selectedStyle.family] }}>{t(`db.families.${selectedStyle.family}`, { defaultValue: selectedStyle.family })}</span>
             </div>
 
             <p style={{ fontSize: "13px", color: "#A08060", lineHeight: 1.7, fontStyle: "italic", marginBottom: "20px" }}>
-              {selectedStyle.description}
+              {t(`db.styles.${selectedStyle.id}.description`, { defaultValue: selectedStyle.description })}
             </p>
 
             {/* Colors */}
@@ -426,7 +433,7 @@ export default function App() {
           return (
             <div key={f} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <span style={{ fontSize: "12px" }}>{FAMILY_ICONS[f]}</span>
-              <span style={{ fontSize: "10px", color: "#4A3A25" }}>{f}</span>
+              <span style={{ fontSize: "10px", color: "#4A3A25" }}>{t(`db.families.${f}`, { defaultValue: f })}</span>
               <span style={{ fontSize: "10px", color: FAMILY_COLORS[f], fontWeight: "bold" }}>{count}</span>
             </div>
           );

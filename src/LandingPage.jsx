@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import DB from "./african-styles-db.json";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -25,31 +27,31 @@ const FAMILY_ICONS = {
     "Urbain Contemporain": "🏙",
 };
 
-const STEPS = [
+const getSteps = (t) => [
     {
         icon: "📸",
-        title: "Uploadez votre photo",
-        desc: "Prenez une photo de n'importe quelle pièce. Salon, chambre, cuisine — tout fonctionne.",
+        title: t('landing.howItWorks.steps.1.title'),
+        desc: t('landing.howItWorks.steps.1.desc'),
     },
     {
         icon: "🎨",
-        title: "Choisissez un style africain",
-        desc: "Explorez 50+ styles authentiques : Kente, Touareg, Swahili, Ndebele, Agadez et bien plus.",
+        title: t('landing.howItWorks.steps.2.title'),
+        desc: t('landing.howItWorks.steps.2.desc'),
     },
     {
         icon: "✨",
-        title: "L'IA transforme tout",
-        desc: "Gemini AI applique le style en quelques secondes. Comparez avant/après, exportez en PDF ou explorez en monde 3D.",
+        title: t('landing.howItWorks.steps.3.title'),
+        desc: t('landing.howItWorks.steps.3.desc'),
     },
 ];
 
-const FEATURES = [
-    { icon: "🤖", label: "IA Gemini", desc: "Rendu photoréaliste" },
-    { icon: "🌍", label: "Monde 3D", desc: "Exploration immersive" },
-    { icon: "📄", label: "Export PDF", desc: "Fiche de design complète" },
-    { icon: "🖼️", label: "Galerie", desc: "Toutes vos créations" },
-    { icon: "🎨", label: "50+ styles", desc: "7 régions d'Afrique" },
-    { icon: "🔒", label: "Sécurisé", desc: "Données protégées" },
+const getFeatures = (t) => [
+    { icon: "🤖", label: t('landing.features.gemini_label', { defaultValue: "IA Gemini" }), desc: t('landing.features.gemini_desc', { defaultValue: "Rendu photoréaliste" }) },
+    { icon: "🌍", label: "Monde 3D", desc: t('landing.features.world_desc', { defaultValue: "Exploration immersive" }) },
+    { icon: "📄", label: "Export PDF", desc: t('landing.features.pdf_desc', { defaultValue: "Fiche de design complète" }) },
+    { icon: "🖼️", label: t('header.gallery'), desc: t('landing.features.gallery_desc', { defaultValue: "Toutes vos créations" }) },
+    { icon: "🎨", label: "50+ styles", desc: t('landing.features.styles_desc', { defaultValue: "7 régions d'Afrique" }) },
+    { icon: "🔒", label: t('landing.features.secure_label', { defaultValue: "Sécurisé" }), desc: t('landing.features.secure_desc', { defaultValue: "Données protégées" }) },
 ];
 
 const HERO_IMAGES = [
@@ -67,6 +69,7 @@ const HERO_IMAGES = [
 const MASONRY_COLS = Array.from({ length: 6 }, () => [...HERO_IMAGES].sort(() => 0.5 - Math.random()));
 
 export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDatabase }) {
+    const { t } = useTranslation();
     const [visible, setVisible] = useState(false);
     const [hoveredFamily, setHoveredFamily] = useState(null);
     const [recentDesigns, setRecentDesigns] = useState([]);
@@ -151,6 +154,11 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
             {/* ── Kente top bar ── */}
             <div style={{ height: "5px", background: "linear-gradient(90deg,#8B0000,#B8860B,#228B22,#1A2744,#B8860B,#C41E3A,#B8860B,#228B22,#8B0000)" }} />
 
+            {/* Language Switcher Overlay */}
+            <div style={{ position: "absolute", top: "20px", right: "24px", zIndex: 1000, display: "flex", gap: "10px" }}>
+                <LanguageSwitcher />
+            </div>
+
             {/* ─────────────────────────────────────────────────────────────
           SECTION HÉRO
       ───────────────────────────────────────────────────────────── */}
@@ -204,12 +212,12 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
 
                     {/* Badge */}
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "5px 16px", border: "1px solid rgba(184,134,11,0.4)", borderRadius: "999px", background: "rgba(184,134,11,0.08)", fontSize: "11px", color: "#B8860B", letterSpacing: "0.2em", textTransform: "uppercase", marginBottom: "24px", animation: visible ? "fadeUp 0.5s ease both" : "none", animationDelay: "0.1s" }}>
-                        ✦ Design d'intérieur africain par IA
+                        ✦ {t('landing.badge')}
                     </div>
 
                     {/* Titre */}
                     <h1 style={{ margin: "0 0 20px", fontSize: "clamp(32px, 6vw, 68px)", lineHeight: 1.15, maxWidth: "840px", animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.2s" }}>
-                        Transformez votre espace avec
+                        {t('landing.title1')}
                         <br />
                         <span style={{
                             background: "linear-gradient(90deg, var(--color-primary), #F0C040, var(--color-primary))",
@@ -219,13 +227,13 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                             animation: "shimmer 3s linear infinite",
                             display: "inline-block"
                         }}>
-                            l'âme de l'Afrique
+                            {t('landing.title2')}
                         </span>
                     </h1>
 
                     {/* Sous-titre */}
                     <p style={{ margin: "0 0 40px", fontSize: "clamp(15px, 2vw, 18px)", color: "#8B7050", maxWidth: "560px", lineHeight: 1.7, animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.3s" }}>
-                        Uploadez une photo de votre pièce, choisissez parmi <strong style={{ color: "#B8860B" }}>{totalStyles}+ styles africains authentiques</strong> et laissez l'IA la transformer en quelques secondes.
+                        {t('landing.subtitle', { count: totalStyles })}
                     </p>
 
                     {/* CTA Buttons */}
@@ -233,35 +241,57 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                         <button
                             className="btn-primary"
                             onClick={onEnterDesigner}
-                            style={{ padding: "16px 40px", borderRadius: "8px", fontSize: "16px", animation: "pulseGold 3s ease infinite" }}
+                            style={{
+                                padding: "min(3vw, 16px) min(8vw, 40px)",
+                                borderRadius: "8px",
+                                fontSize: "var(--font-size-sm)",
+                                animation: "pulseGold 3s ease infinite"
+                            }}
                         >
-                            🏛️ Commencer le design
+                            🏛️ {t('landing.startDesign')}
                         </button>
                         <button
                             className="btn-secondary"
                             onClick={onEnterGallery}
-                            style={{ padding: "16px 36px", borderRadius: "8px", fontSize: "16px" }}
+                            style={{
+                                padding: "min(3vw, 16px) min(6vw, 36px)",
+                                borderRadius: "8px",
+                                fontSize: "var(--font-size-sm)"
+                            }}
                         >
-                            🖼️ Voir la galerie
+                            🖼️ {t('landing.viewGallery')}
                         </button>
                         <button
                             className="btn-secondary"
                             onClick={onEnterDatabase}
-                            style={{ padding: "16px 36px", borderRadius: "8px", fontSize: "16px" }}
+                            style={{
+                                padding: "min(3vw, 16px) min(6vw, 36px)",
+                                borderRadius: "8px",
+                                fontSize: "var(--font-size-sm)"
+                            }}
                         >
-                            📚 Parcourir tous les styles
+                            📚 {t('landing.browseStyles')}
                         </button>
                     </div>
 
                     {/* Stats */}
-                    <div style={{ display: "flex", gap: "40px", marginTop: "56px", flexWrap: "wrap", justifyContent: "center", animation: visible ? "fadeUp 0.6s ease both" : "none", animationDelay: "0.55s" }}>
+                    <div style={{
+                        display: "flex",
+                        gap: "min(10vw, 40px)",
+                        marginTop: "56px",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        animation: visible ? "fadeUp 0.6s ease both" : "none",
+                        animationDelay: "0.55s"
+                    }}>
                         {[
-                            { value: `${totalStyles}+`, label: "Styles africains" },
-                            { value: `${totalRegions}`, label: "Régions d'Afrique" },
-                            { value: `${totalFamilies}`, label: "Familles de design" },
+                            { value: `${totalStyles}+`, label: t('landing.stats.styles') },
+                            { value: `${totalRegions}`, label: t('landing.stats.regions') },
+                            { value: `${totalFamilies}`, label: t('landing.stats.families') },
                         ].map((stat) => (
                             <div key={stat.label} style={{ textAlign: "center" }}>
-                                <div style={{ fontSize: "32px", fontWeight: "bold", color: "#B8860B", lineHeight: 1 }}>{stat.value}</div>
+                                <div style={{ fontSize: "var(--font-size-xl)", fontWeight: "bold", color: "#B8860B", lineHeight: 1 }}>{stat.value}</div>
+                                <div style={{ fontSize: "var(--font-size-xs)", color: "#8B7050", textTransform: "uppercase", letterSpacing: "0.1em", marginTop: "4px" }}>{stat.label}</div>
                             </div>
                         ))}
                     </div>
@@ -294,12 +324,12 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
             <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208", background: "#0E0905" }}>
                 <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
                     <div style={{ textAlign: "center", marginBottom: "56px" }}>
-                        <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ Comment ça marche</div>
-                        <h2 style={{ margin: 0, fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>Trois étapes, un résultat spectaculaire</h2>
+                        <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {t('landing.howItWorks.tag')}</div>
+                        <h2 style={{ margin: 0, fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.howItWorks.title')}</h2>
                     </div>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "20px" }}>
-                        {STEPS.map((step, i) => (
+                        {getSteps(t).map((step, i) => (
                             <div
                                 key={i}
                                 className="step-card glass-panel"
@@ -322,9 +352,9 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
             <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208" }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                     <div style={{ textAlign: "center", marginBottom: "56px" }}>
-                        <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ Styles disponibles</div>
-                        <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>8 familles de design africain</h2>
-                        <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>De l'architecture saharienne aux textiles royaux Ashanti, chaque style est authentique et documenté.</p>
+                        <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {t('landing.stylesAvailable.tag')}</div>
+                        <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.stylesAvailable.title')}</h2>
+                        <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>{t('landing.stylesAvailable.desc')}</p>
                     </div>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "14px" }}>
@@ -397,8 +427,8 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                     <div style={{ padding: "16px 20px" }}>
                                         {/* Bande couleur */}
                                         <div style={{ height: "3px", borderRadius: "1.5px", background: color, marginBottom: "12px", width: isHovered ? "100%" : "40%", transition: "width 0.3s" }} />
-                                        <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" }}>{family}</div>
-                                        <div style={{ fontSize: "11px", color: color, fontWeight: "bold" }}>{count} style{count > 1 ? "s" : ""}</div>
+                                        <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" }}>{t(`db.families.${family}`, { defaultValue: family })}</div>
+                                        <div style={{ fontSize: "11px", color: color, fontWeight: "bold" }}>{t('landing.stylesAvailable.count', { count })}</div>
                                     </div>
                                 </div>
                             );
@@ -413,9 +443,9 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
             <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208", background: "#0E0905" }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                     <div style={{ textAlign: "center", marginBottom: "56px" }}>
-                        <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ Géographie du Design</div>
-                        <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{totalRegions} grandes régions culturelles</h2>
-                        <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>Explorez la diversité architecturale et décorative à travers le continent.</p>
+                        <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {t('landing.regions.tag')}</div>
+                        <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.regions.title', { count: totalRegions })}</h2>
+                        <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>{t('landing.regions.desc')}</p>
                     </div>
 
                     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px" }}>
@@ -452,8 +482,8 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                         e.currentTarget.style.boxShadow = "none";
                                     }}
                                 >
-                                    <span>{region}</span>
-                                    <span style={{ fontSize: "12px", color: "#8B7050", fontWeight: "normal" }}>{count} styles</span>
+                                    <span>{t(`db.regions.${region}`, { defaultValue: region })}</span>
+                                    <span style={{ fontSize: "12px", color: "#8B7050", fontWeight: "normal" }}>{t('landing.regions.count', { count })}</span>
                                 </button>
                             );
                         })}
@@ -468,9 +498,9 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208" }}>
                         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
                             <div style={{ textAlign: "center", marginBottom: "48px" }}>
-                                <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ Inspirations</div>
-                                <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>Dernières Créations</h2>
-                                <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>Découvrez les intérieurs générés par la communauté.</p>
+                                <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {t('landing.inspirations.tag')}</div>
+                                <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.inspirations.title')}</h2>
+                                <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>{t('landing.inspirations.desc')}</p>
                             </div>
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "16px" }}>
                                 {recentDesigns.map(entry => (
@@ -497,7 +527,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                     className="cta-secondary"
                                     style={{ padding: "12px 32px", background: "transparent", border: "1px solid rgba(184,134,11,0.5)", borderRadius: "6px", color: "#B8860B", fontSize: "13px", cursor: "pointer", fontFamily: "Georgia, serif", transition: "all 0.2s" }}
                                 >
-                                    Explorer toute la galerie →
+                                    {t('landing.inspirations.exploreGallery')}
                                 </button>
                             </div>
                         </div>
@@ -510,11 +540,11 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
       ───────────────────────────────────────────────────────────── */}
             <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208", background: "#0E0905" }}>
                 <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
-                    <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ Fonctionnalités</div>
-                    <h2 style={{ margin: "0 0 48px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>Tout ce dont vous avez besoin</h2>
+                    <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {t('landing.features.tag')}</div>
+                    <h2 style={{ margin: "0 0 48px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.features.title')}</h2>
 
                     <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", justifyContent: "center" }}>
-                        {FEATURES.map((f) => (
+                        {getFeatures(t).map((f) => (
                             <div
                                 key={f.label}
                                 className="feature-chip"
@@ -536,14 +566,14 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                 <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(#2A1A0E 1px, transparent 1px)", backgroundSize: "28px 28px", opacity: 0.3, pointerEvents: "none" }} />
                 <div style={{ position: "relative" }}>
                     <div style={{ fontSize: "56px", marginBottom: "24px", animation: "floatGlobe 6s ease-in-out infinite" }}>🌍</div>
-                    <h2 style={{ margin: "0 0 16px", fontSize: "clamp(24px, 4vw, 42px)", fontWeight: "normal" }}>Prêt à transformer votre intérieur ?</h2>
-                    <p style={{ margin: "0 0 40px", color: "#8B7050", fontSize: "15px" }}>Gratuit, sans inscription. Résultat en moins d'une minute.</p>
+                    <h2 style={{ margin: "0 0 16px", fontSize: "clamp(24px, 4vw, 42px)", fontWeight: "normal" }}>{t('landing.cta.title')}</h2>
+                    <p style={{ margin: "0 0 40px", color: "#8B7050", fontSize: "15px" }}>{t('landing.cta.desc')}</p>
                     <button
                         className="cta-primary"
                         onClick={onEnterDesigner}
                         style={{ padding: "18px 56px", background: "linear-gradient(135deg, #B8860B, #8B6914)", border: "none", borderRadius: "8px", color: "#FFF8E7", fontSize: "17px", fontWeight: "bold", cursor: "pointer", fontFamily: "Georgia, serif", transition: "all 0.25s" }}
                     >
-                        🏛️ Commencer maintenant
+                        🏛️ {t('landing.cta.btn')}
                     </button>
                 </div>
             </section>
@@ -551,10 +581,10 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
             {/* ── Footer ── */}
             <footer style={{ borderTop: "1px solid #1E1208", padding: "24px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
                 <div style={{ fontSize: "12px", color: "#4A3520" }}>
-                    🏛️ African Interior Designer — {totalStyles} styles · {totalRegions} régions · {totalFamilies} familles
+                    {t('landing.footer.desc', { styles: totalStyles, regions: totalRegions, families: totalFamilies })}
                 </div>
                 <div style={{ display: "flex", gap: "20px" }}>
-                    {[["Designer", onEnterDesigner], ["Galerie", onEnterGallery], ["Styles", onEnterDatabase]].map(([label, fn]) => (
+                    {[[t('landing.footer.designer'), onEnterDesigner], [t('landing.footer.gallery'), onEnterGallery], [t('landing.footer.styles'), onEnterDatabase]].map(([label, fn]) => (
                         <button key={label} onClick={fn} style={{ background: "none", border: "none", color: "#6B5030", fontSize: "12px", cursor: "pointer", fontFamily: "Georgia, serif", padding: 0 }}
                             onMouseEnter={e => e.currentTarget.style.color = "#B8860B"}
                             onMouseLeave={e => e.currentTarget.style.color = "#6B5030"}
