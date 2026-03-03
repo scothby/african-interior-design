@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import ComparisonSlider from './ComparisonSlider';
 import { exportCollage } from './utils/collageGenerator';
@@ -7,19 +7,71 @@ import WorldViewerModal from './WorldViewerModal';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
+// Hook pour suivre la taille de la fenêtre
+function useWindowSize() {
+    const [size, setSize] = useState({ w: window.innerWidth, h: window.innerHeight });
+    useEffect(() => {
+        const handler = () => setSize({ w: window.innerWidth, h: window.innerHeight });
+        window.addEventListener('resize', handler);
+        return () => window.removeEventListener('resize', handler);
+    }, []);
+    return size;
+}
+
 export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
     const { t, i18n } = useTranslation();
+    const { w: winW } = useWindowSize();
+
+    // Breakpoints responsives
+    const isMobileXS = winW < 400;   // petits smartphones (iPhone SE...)
+    const isMobile = winW < 600;   // smartphones standard
+    const isTablet = winW < 900;   // tablettes portrait
+    const isDesktop = winW < 1280;  // laptop / tablette paysage
+    // au-delà = grand écran (> 1280)
+
+    // Colonnes grille
+    const gridCols = isMobileXS
+        ? '1fr'
+        : isMobile
+            ? 'repeat(2, 1fr)'
+            : isTablet
+                ? 'repeat(2, 1fr)'
+                : isDesktop
+                    ? 'repeat(3, 1fr)'
+                    : 'repeat(4, 1fr)';  // grand écran → 4 colonnes
+
+    // Hauteur thumbnail
+    const thumbH = isMobileXS
+        ? '160px'
+        : isMobile
+            ? '180px'
+            : isTablet
+                ? '200px'
+                : isDesktop
+                    ? '240px'
+                    : '280px';  // grand écran
+
+    // Gap de la grille
+    const gridGap = isMobile ? '12px' : isTablet ? '16px' : '24px';
+
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [expandedId, setExpandedId] = useState(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState(null);
-    const [comparisonModes, setComparisonModes] = useState({}); // { [entryId]: 'slider' | 'sideBySide' }
+    const [viewMode, setViewMode] = useState('single'); // 'single' | 'slider' | 'sideBySide'
     const [downloadingId, setDownloadingId] = useState(null);
     const [filter, setFilter] = useState('all');
-    const [zoomModal, setZoomModal] = useState({ open: false, image: null, alt: '', zoom: 1, beforeImage: null, afterImage: null });
     const [worldModal, setWorldModal] = useState({ open: false, entry: null });
     const [pdfDownloadingId, setPdfDownloadingId] = useState(null);
+    // Modal plein écran par entrée
+    const [entryModal, setEntryModal] = useState(null); // entry | null
+
+    const openEntryModal = (entry) => {
+        setEntryModal(entry);
+        setViewMode('single');
+        setConfirmDeleteId(null);
+    };
+    const closeEntryModal = () => setEntryModal(null);
 
     // Fetch gallery entries
     const fetchGallery = useCallback(async () => {
@@ -64,23 +116,6 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
         }
     };
 
-    // Zoom helpers (can accept single image or before/after pair)
-    const openZoom = (image, alt, beforeImage = null, afterImage = null) => {
-        setZoomModal({
-            open: true,
-            image,
-            alt,
-            zoom: 1,
-            beforeImage,
-            afterImage
-        });
-    };
-    const closeZoom = () => setZoomModal({ open: false, image: null, alt: '', zoom: 1, beforeImage: null, afterImage: null });
-    const zoomIn = () => setZoomModal(prev => ({ ...prev, zoom: Math.min(prev.zoom + 0.5, 3) }));
-    const zoomOut = () => setZoomModal(prev => ({ ...prev, zoom: Math.max(prev.zoom - 0.5, 0.5) }));
-    const handleWheelZoom = (e) => { e.preventDefault(); e.deltaY < 0 ? zoomIn() : zoomOut(); };
-
-    // Format date
     const formatDate = (iso) => {
         const d = new Date(iso);
         return d.toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'fr-FR', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -239,24 +274,13 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                 )}
 
                 {!loading && entries.length > 0 && (
-                    <div style={s.grid}>
+                    <div style={{ ...s.grid, gridTemplateColumns: gridCols, gap: gridGap }}>
                         {entries.filter(e => filter === 'all' || e.isFavorite).map(entry => (
                             <div key={entry.id} style={s.card} className="gallery-card">
-                                {/* Thumbnail */}
+                                {/* Thumbnail — click = ouvrir modal */}
                                 <div
-                                    style={s.thumbnailWrapper}
-                                    onClick={() => {
-                                        if (expandedId === entry.id) {
-                                            openZoom(
-                                                null,
-                                                entry.styleName,
-                                                entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
-                                                entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`
-                                            );
-                                        } else {
-                                            setExpandedId(entry.id);
-                                        }
-                                    }}
+                                    style={{ ...s.thumbnailWrapper, height: thumbH }}
+                                    onClick={() => openEntryModal(entry)}
                                 >
                                     <img
                                         src={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`}
@@ -266,7 +290,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                         onError={(e) => { e.target.style.display = 'none'; }}
                                     />
                                     <div style={s.thumbnailOverlay} className="gallery-thumb-overlay">
-                                        <span style={{ fontSize: '18px' }}>{t('gallery.actions.zoom')}</span>
+                                        <span style={{ fontSize: '28px' }}>🔍</span>
                                     </div>
                                 </div>
 
@@ -275,14 +299,10 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <div style={s.cardTitle}>{entry.styleName}</div>
                                         <button
-                                            onClick={(e) => toggleFavorite(entry.id, e)}
+                                            onClick={(ev) => { ev.stopPropagation(); toggleFavorite(entry.id, ev); }}
                                             style={{
-                                                background: 'none',
-                                                border: 'none',
-                                                cursor: 'pointer',
-                                                fontSize: '18px',
-                                                padding: '0 4px',
-                                                marginTop: '-2px',
+                                                background: 'none', border: 'none', cursor: 'pointer',
+                                                fontSize: '18px', padding: '0 4px', marginTop: '-2px',
                                                 opacity: entry.isFavorite ? 1 : 0.6,
                                                 transform: entry.isFavorite ? 'scale(1.1)' : 'scale(1)',
                                                 transition: 'all 0.2s'
@@ -295,192 +315,6 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                     <div style={s.cardFamily}>{entry.styleFamily}</div>
                                     <div style={s.cardDate}>{formatDate(entry.createdAt)}</div>
                                 </div>
-
-                                {/* Expanded View */}
-                                {expandedId === entry.id && (
-                                    <div style={s.expandedPanel}>
-                                        {/* Comparison Mode Toggle */}
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'center',
-                                            gap: '8px',
-                                            marginBottom: '16px'
-                                        }}>
-                                            <button
-                                                onClick={() => setComparisonModes(prev => ({ ...prev, [entry.id]: 'slider' }))}
-                                                style={{
-                                                    padding: '6px 12px',
-                                                    background: (comparisonModes[entry.id] || 'slider') === 'slider' ? '#B8860B' : 'transparent',
-                                                    border: `1px solid ${(comparisonModes[entry.id] || 'slider') === 'slider' ? '#B8860B' : '#2A1A0E'}`,
-                                                    borderRadius: '4px',
-                                                    color: (comparisonModes[entry.id] || 'slider') === 'slider' ? '#0C0806' : '#8B7050',
-                                                    fontSize: '11px',
-                                                    fontWeight: 'bold',
-                                                    cursor: 'pointer',
-                                                    fontFamily: 'inherit'
-                                                }}
-                                            >
-                                                ↔ Slider
-                                            </button>
-                                            <button
-                                                onClick={() => setComparisonModes(prev => ({ ...prev, [entry.id]: 'sideBySide' }))}
-                                                style={{
-                                                    padding: '6px 12px',
-                                                    background: comparisonModes[entry.id] === 'sideBySide' ? '#B8860B' : 'transparent',
-                                                    border: `1px solid ${comparisonModes[entry.id] === 'sideBySide' ? '#B8860B' : '#2A1A0E'}`,
-                                                    borderRadius: '4px',
-                                                    color: comparisonModes[entry.id] === 'sideBySide' ? '#0C0806' : '#8B7050',
-                                                    fontSize: '11px',
-                                                    fontWeight: 'bold',
-                                                    cursor: 'pointer',
-                                                    fontFamily: 'inherit'
-                                                }}
-                                            >
-                                                ▥ Side-by-Side
-                                            </button>
-                                        </div>
-
-                                        {/* Result View */}
-                                        {(comparisonModes[entry.id] || 'slider') === 'slider' ? (
-                                            <div style={{ marginBottom: '16px' }}>
-                                                <ComparisonSlider
-                                                    beforeImage={entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`}
-                                                    afterImage={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`}
-                                                    height={220}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div style={{
-                                                display: 'flex',
-                                                gap: '8px',
-                                                marginBottom: '16px',
-                                                flexDirection: window.innerWidth < 480 ? 'column' : 'row'
-                                            }}>
-                                                <div style={{ flex: 1 }}>
-                                                    <div style={{ fontSize: '10px', color: '#8B7050', marginBottom: '4px', textAlign: 'center' }}>AVANT</div>
-                                                    <img
-                                                        src={entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`}
-                                                        alt="Original"
-                                                        style={{ width: '100%', borderRadius: '4px', aspectRatio: '4/3', objectFit: 'cover', cursor: 'pointer' }}
-                                                        onClick={() => openZoom(null, entry.styleName, entry.originalImage, entry.generatedImage)}
-                                                    />
-                                                </div>
-                                                <div style={{ flex: 1 }}>
-                                                    <div style={{ fontSize: '10px', color: '#B8860B', marginBottom: '4px', textAlign: 'center' }}>APRÈS</div>
-                                                    <img
-                                                        src={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`}
-                                                        alt="Generated"
-                                                        style={{ width: '100%', borderRadius: '4px', aspectRatio: '4/3', objectFit: 'cover', cursor: 'pointer' }}
-                                                        onClick={() => openZoom(null, entry.styleName, entry.originalImage, entry.generatedImage)}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-                                            <button
-                                                onClick={() => openZoom(
-                                                    null,
-                                                    entry.styleName,
-                                                    entry.originalImage.startsWith('http') ? entry.originalImage : `${API_BASE_URL}${entry.originalImage}`,
-                                                    entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`
-                                                )}
-                                                style={{
-                                                    padding: '6px 12px',
-                                                    background: 'transparent',
-                                                    border: '1px solid #8B7050',
-                                                    borderRadius: '4px',
-                                                    color: '#8B7050',
-                                                    fontSize: '11px',
-                                                    cursor: 'pointer',
-                                                    fontFamily: 'inherit'
-                                                }}
-                                            >
-                                                {t('gallery.actions.zoom')}
-                                            </button>
-                                        </div>
-
-                                        {/* Custom Prompt Display */}
-                                        {entry.customPrompt && (
-                                            <div style={{
-                                                marginBottom: '16px',
-                                                padding: '12px',
-                                                background: 'rgba(184,134,11,0.05)',
-                                                border: '1px solid rgba(184,134,11,0.2)',
-                                                borderRadius: '4px',
-                                                fontSize: '12px',
-                                                color: '#D4C3A3',
-                                                fontStyle: 'italic'
-                                            }}>
-                                                <span style={{
-                                                    display: 'block',
-                                                    color: '#B8860B',
-                                                    fontWeight: 'bold',
-                                                    fontStyle: 'normal',
-                                                    marginBottom: '4px',
-                                                    textTransform: 'uppercase',
-                                                    fontSize: '10px',
-                                                    letterSpacing: '0.05em'
-                                                }}>
-                                                    {t('gallery.prompts.instructions')}
-                                                </span>
-                                                "{entry.customPrompt}"
-                                            </div>
-                                        )}
-
-                                        {/* Actions */}
-                                        <div style={s.expandedActions}>
-                                            <button
-                                                onClick={() => handleDownload(entry)}
-                                                disabled={downloadingId === entry.id}
-                                                style={{
-                                                    ...s.downloadBtn,
-                                                    opacity: downloadingId === entry.id ? 0.7 : 1,
-                                                    cursor: downloadingId === entry.id ? 'wait' : 'pointer'
-                                                }}
-                                            >
-                                                {downloadingId === entry.id ? `⏳ ${t('app.result.creating')}` : `📥 ${t('gallery.actions.download')}`}
-                                            </button>
-
-                                            <button
-                                                onClick={() => handleExportPDF(entry)}
-                                                disabled={pdfDownloadingId === entry.id}
-                                                style={{
-                                                    ...s.pdfBtn,
-                                                    opacity: pdfDownloadingId === entry.id ? 0.7 : 1,
-                                                    cursor: pdfDownloadingId === entry.id ? 'wait' : 'pointer'
-                                                }}
-                                            >
-                                                {pdfDownloadingId === entry.id ? `⏳ ${t('gallery.actions.pdf')}...` : `📄 ${t('gallery.actions.pdf')}`}
-                                            </button>
-
-                                            {/* Bouton Monde 3D si worldUrl existe */}
-                                            {entry.worldUrl && (
-                                                <button
-                                                    onClick={() => setWorldModal({ open: true, entry })}
-                                                    style={s.worldBtn}
-                                                >
-                                                    🌍 {t('gallery.actions.world')}
-                                                </button>
-                                            )}
-
-                                            {confirmDeleteId === entry.id ? (
-                                                <div style={{ display: 'flex', gap: '8px' }}>
-                                                    <button onClick={() => handleDelete(entry.id)} style={s.confirmDeleteBtn}>
-                                                        {t('gallery.status.confirm')}
-                                                    </button>
-                                                    <button onClick={() => setConfirmDeleteId(null)} style={s.cancelDeleteBtn}>
-                                                        {t('gallery.status.cancel')}
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <button onClick={() => setConfirmDeleteId(entry.id)} style={s.deleteBtn}>
-                                                    🗑️ {t('gallery.actions.delete')}
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                         ))}
                     </div>
@@ -502,58 +336,111 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                 />
             )}
 
-            {/* Zoom Modal */}
-            {zoomModal.open && (
-                <div style={s.modalOverlay} onClick={closeZoom}>
-                    <div
-                        style={{
-                            ...s.modalContent,
-                            ...(zoomModal.beforeImage && zoomModal.afterImage ? { width: '90vw', height: '90vh' } : {})
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div style={s.modalHeader}>
-                            <span style={s.modalTitle}>{zoomModal.alt} (Zoom: {Math.round(zoomModal.zoom * 100)}%)</span>
-                            <button onClick={closeZoom} style={s.modalClose}>✕</button>
-                        </div>
-                        <div
-                            style={{
-                                ...s.modalImageContainer,
-                                ...(zoomModal.beforeImage && zoomModal.afterImage ? { padding: '40px' } : {})
-                            }}
-                            onWheel={handleWheelZoom}
-                        >
-                            {zoomModal.beforeImage && zoomModal.afterImage ? (
-                                <div style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    flex: 1
-                                }}>
-                                    <ComparisonSlider
-                                        beforeImage={zoomModal.beforeImage}
-                                        afterImage={zoomModal.afterImage}
-                                        height="100%"
-                                    />
+            {/* ——— MODAL ENTRY : vue plein écran avec modes + actions ——— */}
+            {entryModal && (() => {
+                const em = entryModal;
+                const origSrc = em.originalImage.startsWith('http') ? em.originalImage : `${API_BASE_URL}${em.originalImage}`;
+                const genSrc = em.generatedImage.startsWith('http') ? em.generatedImage : `${API_BASE_URL}${em.generatedImage}`;
+                return (
+                    <div style={s.emOverlay} onClick={closeEntryModal}>
+                        <div style={s.emBox} onClick={e => e.stopPropagation()}>
+
+                            {/* Header */}
+                            <div style={s.emHeader}>
+                                <div>
+                                    <div style={s.emTitle}>{em.styleName}</div>
+                                    <div style={s.emSubtitle}>{em.styleFamily} &mdash; {formatDate(em.createdAt)}</div>
                                 </div>
-                            ) : (
-                                <img
-                                    src={zoomModal.image}
-                                    alt={zoomModal.alt}
-                                    style={{ ...s.modalImage, transform: `scale(${zoomModal.zoom})` }}
-                                />
-                            )}
-                        </div>
-                        <div style={s.modalControls}>
-                            <button onClick={zoomOut} style={s.zoomBtn}>-</button>
-                            <button onClick={closeZoom} style={s.closeBtn}>{t('gallery.status.close')}</button>
-                            <button onClick={zoomIn} style={s.zoomBtn}>+</button>
+                                <button onClick={closeEntryModal} style={s.emClose}>✕</button>
+                            </div>
+
+                            {/* Mode tabs */}
+                            <div style={s.emTabs}>
+                                {[
+                                    { id: 'single', label: '🖼️ Image' },
+                                    { id: 'slider', label: '↔️ Avant / Après' },
+                                    { id: 'sideBySide', label: '▥ Côte à côte' },
+                                ].map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setViewMode(tab.id)}
+                                        style={{
+                                            ...s.emTab,
+                                            ...(viewMode === tab.id ? s.emTabActive : {})
+                                        }}
+                                    >{tab.label}</button>
+                                ))}
+                            </div>
+
+                            {/* Viewer */}
+                            <div style={s.emViewer}>
+                                {viewMode === 'single' && (
+                                    <img src={genSrc} alt={em.styleName} style={s.emSingleImg} />
+                                )}
+                                {viewMode === 'slider' && (
+                                    <ComparisonSlider
+                                        beforeImage={origSrc}
+                                        afterImage={genSrc}
+                                        height={500}
+                                    />
+                                )}
+                                {viewMode === 'sideBySide' && (
+                                    <div style={s.emSide}>
+                                        <div style={s.emSideCol}>
+                                            <div style={s.emSideLabel}>← AVANT</div>
+                                            <img src={origSrc} alt="Original" style={s.emSideImg} />
+                                        </div>
+                                        <div style={s.emSideCol}>
+                                            <div style={{ ...s.emSideLabel, color: '#B8860B' }}>APRÈS →</div>
+                                            <img src={genSrc} alt="Généré" style={s.emSideImg} />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Actions */}
+                            <div style={s.emActions}>
+                                <button
+                                    onClick={() => handleDownload(em)}
+                                    disabled={downloadingId === em.id}
+                                    style={{ ...s.emBtn, ...s.emBtnPrimary, opacity: downloadingId === em.id ? 0.7 : 1 }}
+                                >
+                                    {downloadingId === em.id ? `⏳ ${t('app.result.creating')}` : `📥 ${t('gallery.actions.download')}`}
+                                </button>
+
+                                <button
+                                    onClick={() => handleExportPDF(em)}
+                                    disabled={pdfDownloadingId === em.id}
+                                    style={{ ...s.emBtn, ...s.emBtnSecondary, opacity: pdfDownloadingId === em.id ? 0.7 : 1 }}
+                                >
+                                    {pdfDownloadingId === em.id ? `⏳ PDF...` : `📄 PDF`}
+                                </button>
+
+                                {em.worldUrl && (
+                                    <button onClick={() => { closeEntryModal(); setWorldModal({ open: true, entry: em }); }} style={{ ...s.emBtn, ...s.emBtnWorld }}>
+                                        🌍 {t('gallery.actions.world')}
+                                    </button>
+                                )}
+
+                                {confirmDeleteId === em.id ? (
+                                    <>
+                                        <button onClick={() => { handleDelete(em.id); closeEntryModal(); }} style={{ ...s.emBtn, ...s.emBtnDanger }}>
+                                            {t('gallery.status.confirm')}
+                                        </button>
+                                        <button onClick={() => setConfirmDeleteId(null)} style={{ ...s.emBtn, ...s.emBtnSecondary }}>
+                                            {t('gallery.status.cancel')}
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button onClick={() => setConfirmDeleteId(em.id)} style={{ ...s.emBtn, ...s.emBtnDelete }}>
+                                        🗑️ {t('gallery.actions.delete')}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
         </div>
     );
 }
@@ -660,7 +547,8 @@ const s = {
     },
     grid: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+        // NOTE: La valeur réelle est injectée dynamiquement via gridCols/gridGap
+        gridTemplateColumns: 'repeat(3, 1fr)',
         gap: '24px',
     },
     card: {
@@ -673,7 +561,8 @@ const s = {
     },
     thumbnailWrapper: {
         position: 'relative',
-        height: 'min(50vw, 200px)',
+        // La hauteur réelle est injectée dynamiquement via thumbH
+        height: '240px',
         overflow: 'hidden',
     },
     thumbnail: {
@@ -890,5 +779,92 @@ const s = {
         fontSize: '14px',
         fontWeight: 'bold',
         cursor: 'pointer',
-    }
+    },
+
+    // ——— Entry Modal styles ———
+    emOverlay: {
+        position: 'fixed', inset: 0,
+        background: 'rgba(8,5,2,0.92)',
+        backdropFilter: 'blur(6px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: 2000, padding: '16px',
+    },
+    emBox: {
+        background: '#160E07',
+        border: '1px solid #2A1A0E',
+        borderRadius: '20px',
+        width: '100%',
+        maxWidth: '1100px',
+        maxHeight: '95vh',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        boxShadow: '0 30px 80px rgba(0,0,0,0.8)',
+    },
+    emHeader: {
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '16px 24px', borderBottom: '1px solid #2A1A0E', flexShrink: 0,
+    },
+    emTitle: { fontSize: '20px', fontWeight: 'bold', color: '#F0E6D3' },
+    emSubtitle: { fontSize: '12px', color: '#8B7050', marginTop: '2px' },
+    emClose: {
+        background: 'rgba(255,255,255,0.05)', border: '1px solid #2A1A0E',
+        borderRadius: '50%', width: '36px', height: '36px',
+        color: '#8B7050', fontSize: '18px', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        transition: 'all 0.2s',
+    },
+    emTabs: {
+        display: 'flex', gap: '8px', padding: '12px 24px',
+        borderBottom: '1px solid #2A1A0E', flexShrink: 0, flexWrap: 'wrap',
+    },
+    emTab: {
+        padding: '8px 18px', borderRadius: '20px', border: '1px solid #2A1A0E',
+        background: 'transparent', color: '#8B7050',
+        fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+        fontFamily: 'inherit', transition: 'all 0.2s',
+    },
+    emTabActive: {
+        background: '#B8860B', border: '1px solid #B8860B',
+        color: '#0C0806', boxShadow: '0 4px 14px rgba(184,134,11,0.35)',
+    },
+    emViewer: {
+        flex: 1, overflow: 'hidden', minHeight: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '16px',
+    },
+    emSingleImg: {
+        maxWidth: '100%', maxHeight: '100%',
+        objectFit: 'contain', borderRadius: '12px',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.6)',
+    },
+    emSide: {
+        display: 'flex', gap: '12px', width: '100%', height: '100%',
+        flexWrap: 'wrap',
+    },
+    emSideCol: {
+        flex: 1, minWidth: '200px', display: 'flex', flexDirection: 'column', gap: '6px',
+    },
+    emSideLabel: {
+        fontSize: '11px', fontWeight: 'bold', color: '#8B7050',
+        textTransform: 'uppercase', letterSpacing: '0.08em', textAlign: 'center',
+    },
+    emSideImg: {
+        width: '100%', flex: 1, objectFit: 'cover',
+        borderRadius: '10px', boxShadow: '0 6px 20px rgba(0,0,0,0.5)',
+    },
+    emActions: {
+        display: 'flex', gap: '10px', padding: '14px 24px', flexShrink: 0,
+        borderTop: '1px solid #2A1A0E', flexWrap: 'wrap', alignItems: 'center',
+    },
+    emBtn: {
+        padding: '10px 20px', borderRadius: '10px', fontSize: '13px',
+        fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit',
+        border: 'none', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '6px',
+    },
+    emBtnPrimary: { background: '#B8860B', color: '#0C0806', boxShadow: '0 4px 12px rgba(184,134,11,0.35)' },
+    emBtnSecondary: { background: 'rgba(139,112,80,0.15)', border: '1px solid #3A2510', color: '#D4C3A3' },
+    emBtnWorld: { background: 'rgba(184,134,11,0.15)', border: '1px solid rgba(184,134,11,0.4)', color: '#F0E6D3' },
+    emBtnDelete: { background: 'transparent', border: '1px solid rgba(255,107,107,0.35)', color: '#ff6b6b', marginLeft: 'auto' },
+    emBtnDanger: { background: '#ff6b6b', color: '#fff' },
 };
