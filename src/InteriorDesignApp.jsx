@@ -8,7 +8,7 @@ import InpaintingModal from "./InpaintingModal";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-export default function InteriorDesignApp({ onBack, onGoToStyles }) {
+export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery }) {
   const [currentView, setCurrentView] = useState("upload"); // 'upload', 'select-style', 'generating', 'result', 'manage-styles'
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
@@ -997,6 +997,15 @@ export default function InteriorDesignApp({ onBack, onGoToStyles }) {
             >
               <span className="text-lg">📚</span>
               Base de Styles
+            </button>
+          )}
+          {onGoToGallery && (
+            <button
+              onClick={onGoToGallery}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm text-slate-800 dark:text-slate-200"
+            >
+              <span className="text-lg">🖼️</span>
+              Galerie
             </button>
           )}
         </div>

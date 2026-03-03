@@ -6,7 +6,7 @@ import WorldViewerModal from './WorldViewerModal';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
-export default function Gallery({ onBack, onGoToStyles }) {
+export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
     const [entries, setEntries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -151,6 +151,24 @@ export default function Gallery({ onBack, onGoToStyles }) {
                                 }}
                             >
                                 📚 Base de Styles
+                            </button>
+                        )}
+                        {onGoToDesigner && (
+                            <button
+                                onClick={onGoToDesigner}
+                                style={{
+                                    padding: "8px 16px",
+                                    background: "#B8860B",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    color: "#0C0806",
+                                    fontSize: "12px",
+                                    cursor: "pointer",
+                                    fontFamily: "inherit",
+                                    fontWeight: "bold"
+                                }}
+                            >
+                                📸 Créer
                             </button>
                         )}
                         <div>

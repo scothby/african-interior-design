@@ -75,12 +75,20 @@ export default function App() {
 
   // Render Interior Designer App
   if (currentApp === "designer") {
-    return <InteriorDesignApp onBack={() => setCurrentApp("landing")} onGoToStyles={() => setCurrentApp("database")} />;
+    return <InteriorDesignApp
+      onBack={() => setCurrentApp("landing")}
+      onGoToStyles={() => setCurrentApp("database")}
+      onGoToGallery={() => setCurrentApp("gallery")}
+    />;
   }
 
   // Render Gallery
   if (currentApp === "gallery") {
-    return <Gallery onBack={() => setCurrentApp("landing")} onGoToStyles={() => setCurrentApp("database")} />;
+    return <Gallery
+      onBack={() => setCurrentApp("landing")}
+      onGoToStyles={() => setCurrentApp("database")}
+      onGoToDesigner={() => setCurrentApp("designer")}
+    />;
   }
 
   // Render Database View (existing)
