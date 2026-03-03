@@ -860,9 +860,16 @@ app.use((error, req, res, next) => {
   res.status(500).json({ error: error.message });
 });
 
-app.listen(PORT, () => {
-  console.log(`✅ African Interior Design API running on port ${PORT}`);
-  console.log(`🤖 Model: gemini-3.1-flash-image-preview`);
-  console.log(`📁 Uploads: http://localhost:${PORT}/uploads`);
-  console.log(`🎨 Generated: http://localhost:${PORT}/generated`);
-});
+
+// Export app for Vercel serverless
+module.exports = app;
+
+// Start local server only when not running in serverless environment
+if (process.env.VERCEL !== '1' && require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅ African Interior Design API running on port ${PORT}`);
+    console.log(`🤖 Model: gemini-3.1-flash-image-preview`);
+    console.log(`📁 Uploads: http://localhost:${PORT}/uploads`);
+    console.log(`🎨 Generated: http://localhost:${PORT}/generated`);
+  });
+}
