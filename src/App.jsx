@@ -109,7 +109,10 @@ function AppContent() {
 
   // Auth page
   if (currentApp === "auth" || (!user && currentApp !== "landing")) {
-    return <AuthPage onSuccess={() => setCurrentApp(localStorage.getItem('interior_ai_last_page') || 'landing')} />;
+    return <AuthPage onSuccess={() => {
+      const lastPage = localStorage.getItem('interior_ai_last_page');
+      setCurrentApp(lastPage && lastPage !== 'auth' && lastPage !== 'landing' ? lastPage : 'designer');
+    }} />;
   }
 
   // Private pages — require auth
@@ -122,6 +125,7 @@ function AppContent() {
   }
 
   if (currentApp === "gallery") {
+    if (!user) return null; // Prevent rendering if user state is out of sync during redirect
     return <Gallery
       onBack={() => setCurrentApp("landing")}
       onGoToStyles={() => setCurrentApp("database")}

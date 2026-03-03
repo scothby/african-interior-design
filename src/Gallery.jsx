@@ -80,6 +80,9 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
         try {
             setLoading(true);
             const token = await getToken();
+            if (!token) {
+                throw new Error(t('auth.errors.general', 'Session expired or not found. Please log in.'));
+            }
             const res = await fetch(`${API_BASE_URL}/api/gallery`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });

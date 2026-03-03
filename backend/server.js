@@ -42,7 +42,10 @@ app.use(cors({
       return callback(null, true);
     }
     callback(new Error(`Origine non autorisée par CORS : ${origin}`));
-  }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 // Limite la taille du payload JSON à 50 Mo pour autoriser les images base64 (inpainting mask)
@@ -53,6 +56,10 @@ app.use('/generated', express.static('generated'));
 
 // ── Auth Middleware ───────────────────────────────────────────────────────────
 const verifyToken = async (req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
   const authHeader = req.headers['authorization'];
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Token manquant. Connectez-vous.' });
