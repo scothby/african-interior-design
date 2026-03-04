@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 /**
  * WorldViewerModal — Modal plein écran pour la génération et l'exploration d'un monde virtuel 3D

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export default function StyleManager({ onBack }) {
     const { t } = useTranslation();
