@@ -399,18 +399,94 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                         <h2 style={{ margin: 0, fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.howItWorks.title')}</h2>
                     </div>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "20px" }}>
+                    <div style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "space-between",
+                        gap: "16px",
+                        marginTop: "20px"
+                    }}>
                         {getSteps(t).map((step, i) => (
                             <div
                                 key={i}
-                                className="step-card glass-panel"
-                                style={{ position: "relative", padding: "32px 28px", borderRadius: "10px", transition: "all 0.25s" }}
+                                className="step-card"
+                                style={{
+                                    flex: "1 1 calc(25% - 16px)",
+                                    minWidth: "200px",
+                                    position: "relative",
+                                    padding: "40px 24px 32px",
+                                    borderRadius: "16px",
+                                    background: "rgba(184, 134, 11, 0.03)",
+                                    backdropFilter: "blur(12px)",
+                                    border: "1px solid rgba(184, 134, 11, 0.1)",
+                                    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                                    textAlign: "left",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "flex-start",
+                                    overflow: "hidden"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.transform = "translateY(-10px)";
+                                    e.currentTarget.style.borderColor = "rgba(184, 134, 11, 0.3)";
+                                    e.currentTarget.style.background = "rgba(184, 134, 11, 0.08)";
+                                    e.currentTarget.style.boxShadow = "0 20px 40px rgba(0,0,0,0.4), 0 0 15px rgba(184, 134, 11, 0.1)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.transform = "translateY(0)";
+                                    e.currentTarget.style.borderColor = "rgba(184, 134, 11, 0.1)";
+                                    e.currentTarget.style.background = "rgba(184, 134, 11, 0.03)";
+                                    e.currentTarget.style.boxShadow = "0 10px 30px rgba(0,0,0,0.2)";
+                                }}
                             >
-                                {/* Numéro de step */}
-                                <div style={{ position: "absolute", top: "16px", right: "20px", fontSize: "44px", fontWeight: "bold", color: "rgba(184,134,11,0.08)", lineHeight: 1, fontFamily: "var(--font-heading)" }}>0{i + 1}</div>
-                                <div style={{ fontSize: "40px", marginBottom: "16px" }}>{step.icon}</div>
-                                <h3 style={{ margin: "0 0 10px", fontSize: "16px", fontWeight: "bold", color: "var(--color-text-main)" }}>{step.title}</h3>
-                                <p style={{ margin: 0, fontSize: "13px", color: "var(--color-text-muted)", lineHeight: 1.7 }}>{step.desc}</p>
+                                {/* Subtle decorative number */}
+                                <div style={{
+                                    position: "absolute",
+                                    top: "20px",
+                                    right: "24px",
+                                    fontSize: "12px",
+                                    fontWeight: "800",
+                                    color: "#B8860B",
+                                    opacity: 0.4,
+                                    letterSpacing: "0.2em"
+                                }}>
+                                    0{i + 1}
+                                </div>
+
+                                <div style={{
+                                    width: "48px",
+                                    height: "48px",
+                                    borderRadius: "12px",
+                                    background: "rgba(184, 134, 11, 0.1)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    fontSize: "24px",
+                                    marginBottom: "20px",
+                                    border: "1px solid rgba(184, 134, 11, 0.2)"
+                                }}>
+                                    {step.icon}
+                                </div>
+
+                                <h3 style={{
+                                    margin: "0 0 12px",
+                                    fontSize: "17px",
+                                    fontWeight: "bold",
+                                    color: "#F5F5F5",
+                                    fontFamily: "var(--font-heading)"
+                                }}>
+                                    {step.title}
+                                </h3>
+
+                                <p style={{
+                                    margin: 0,
+                                    fontSize: "13px",
+                                    color: "rgba(245, 245, 245, 0.6)",
+                                    lineHeight: 1.6
+                                }}>
+                                    {step.desc}
+                                </p>
                             </div>
                         ))}
                     </div>
