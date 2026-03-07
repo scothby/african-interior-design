@@ -44,6 +44,11 @@ const getSteps = (t) => [
         title: t('landing.howItWorks.steps.3.title'),
         desc: t('landing.howItWorks.steps.3.desc'),
     },
+    {
+        icon: "🖌️",
+        title: t('landing.howItWorks.steps.4.title', { defaultValue: "Retouche Inpainting" }),
+        desc: t('landing.howItWorks.steps.4.desc', { defaultValue: "Retouchez précisément des zones de votre design ou remplacez des meubles avec l'IA." }),
+    },
 ];
 
 const getFeatures = (t) => [

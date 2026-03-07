@@ -135,6 +135,10 @@
                 "3": {
                     "title": "L'IA transforme tout",
                     "desc": "Gemini AI applique le style en quelques secondes. Comparez avant/après, exportez en PDF ou explorez en monde 3D."
+                },
+                "4": {
+                    "title": "Retouche (Inpainting)",
+                    "desc": "Peignez les zones à modifier pour remplacer un canapé, ajouter un tableau ou ajuster un détail précis."
                 }
             }
         },

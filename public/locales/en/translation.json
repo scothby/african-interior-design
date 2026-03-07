@@ -135,6 +135,10 @@
                 "3": {
                     "title": "AI transforms everything",
                     "desc": "Gemini AI applies the style in seconds. Compare before/after, export a PDF, or explore in a 3D world."
+                },
+                "4": {
+                    "title": "Detail Editing (Inpainting)",
+                    "desc": "Paint over areas you want to modify to replace a sofa, add a painting, or adjust any specific detail."
                 }
             }
         },
