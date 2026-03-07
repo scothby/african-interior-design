@@ -35,7 +35,7 @@ const FAMILY_ICONS = {
 
 // Main app content — wrapped inside AuthProvider
 function AppContent() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, loading, signOut } = useAuth();
   const [currentApp, setCurrentApp] = useState(() => {
     return localStorage.getItem('interior_ai_last_page') || 'landing';
