@@ -361,6 +361,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                     <img
                                         src={entry.generatedImage ? (entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`) : ''}
                                         alt={entry.styleName}
+                                        loading="lazy"
                                         style={s.thumbnail}
                                         className="gallery-thumb"
                                         onError={(e) => { e.target.style.display = 'none'; }}

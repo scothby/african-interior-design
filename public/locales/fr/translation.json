@@ -50,7 +50,8 @@
             "chooseStyle": "Choisir un Style Africain",
             "allRegions": "Toutes les régions",
             "allFamilies": "Toutes les familles",
-            "search": "Rechercher..."
+            "search": "Rechercher...",
+            "history": "Héritage Culturel"
         },
         "generating": {
             "title": "Création de votre univers",
@@ -250,6 +251,8 @@
         "desc": "Description complète",
         "prompt": "Prompt IA de Base",
         "promptHint": "Le prompt secret envoyé à l'IA pour générer ce style précis.",
+        "culturalHistory": "Héritage Culturel (FR)",
+        "culturalHistoryEn": "Héritage Culturel (EN)",
         "materials": "Matériaux (séparés par des virgules)",
         "colors": "Couleurs (séparées par des virgules)",
         "save": "Enregistrer le style",

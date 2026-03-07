@@ -278,18 +278,20 @@ async function readImageAsBase64(imageRef) {
   return imageBuffer.toString('base64');
 }
 
-function buildStylePrompt(style, customPrompt, mode) {
+function buildStylePrompt(style, customPrompt, mode, roomType, selectedPalette) {
   const stylePrompt = style.prompt || `${style.name} interior design`;
+  const roomName = roomType ? (roomType.name || roomType) : 'room';
+  const paletteColors = selectedPalette && selectedPalette.colors ? selectedPalette.colors.join(', ') : (style.colors?.join(', ') || 'warm African earth tones');
 
   if (mode === 'background') {
     let prompt = `You are an expert interior design retoucher.
-Transform ONLY the background of this room into ${stylePrompt}.
+Transform ONLY the background of this ${roomName} into ${stylePrompt}.
 CRITICAL INSTRUCTION: You MUST strictly preserve the exact geometric structure, dimensions, and original shapes of the entire room, including all walls, architectural elements, and spatial proportions. Do NOT alter the size or geometry of the space under any circumstances.
 Keep the main subject (any person, main sofa, bed, table or key furniture in the foreground) EXACTLY as in the original image: same shape, position and main colors.
 Do NOT change faces, bodies, skin tone, clothing, or the main furniture piece. You may only make very light global lighting adjustments.
 Change walls, floor, ceiling, windows, secondary furniture and decorative accessories to match the requested African interior style, but they must perfectly fit the original geometry.
 CRITICAL NEGATIVE INSTRUCTION: DO NOT generate, add, or hallucinate any new human figures, people, faces, or animals in the background. The background MUST remain strictly architectural and decorative.
-Use these colors: ${style.colors?.join(', ') || 'warm African earth tones'}.
+Use these colors: ${paletteColors}.
 Materials: ${style.materials?.join(', ') || 'traditional African materials'}.
 Patterns: ${style.patterns?.join(', ') || 'African geometric patterns'}.
 The result must look like high quality architectural interior photography, 4K, photorealistic.`;
@@ -301,10 +303,10 @@ The result must look like high quality architectural interior photography, 4K, p
     return prompt;
   }
 
-  let prompt = `Transform this entire room into ${stylePrompt}. 
+  let prompt = `Transform this entire ${roomName} into ${stylePrompt}. 
 CRITICAL INSTRUCTION: You MUST strictly preserve the exact geometric structure, dimensions, and original shapes of the entire room, including all walls, windows, doors, architectural elements, and spatial proportions. Do NOT alter the size, geometry, or the fundamental layout of the space under any circumstances.
 CRITICAL NEGATIVE INSTRUCTION: DO NOT generate, add, or hallucinate any human figures, people, faces, silhouettes, or animals. The rendered image MUST represent an empty interior room containing only furniture, decor, and architectural elements.
-Use these colors: ${style.colors?.join(', ') || 'warm African earth tones'}.
+Use these colors: ${paletteColors}.
 Materials: ${style.materials?.join(', ') || 'traditional African materials'}.
 Patterns: ${style.patterns?.join(', ') || 'African geometric patterns'}.
 Maintain the room layout and structure perfectly while completely transforming the style into a pristine, unpopulated space.
@@ -320,7 +322,7 @@ High quality architectural interior photography style, 4K, photorealistic.`;
 // Generate styled interior endpoint
 app.post('/api/generate', verifyToken, async (req, res) => {
   try {
-    const { originalImage, style, customPrompt, editMode } = req.body;
+    const { originalImage, style, customPrompt, editMode, roomType, selectedPalette } = req.body;
 
     if (!originalImage || !style) {
       return res.status(400).json({ error: 'Missing required parameters' });
@@ -328,13 +330,13 @@ app.post('/api/generate', verifyToken, async (req, res) => {
 
     const mode = editMode === 'background' ? 'background' : 'full';
 
-    console.log('Generating styled interior for style:', style.name, 'mode:', mode);
+    console.log('Generating styled interior for style:', style.name, 'mode:', mode, 'room:', roomType?.name || 'room');
 
     // Read the original image
     const imageBase64 = await readImageAsBase64(originalImage);
 
     // Construct the prompt based on style data and mode
-    const enhancedPrompt = buildStylePrompt(style, customPrompt, mode);
+    const enhancedPrompt = buildStylePrompt(style, customPrompt, mode, roomType, selectedPalette);
 
     let generatedImageBuffer;
 
@@ -463,7 +465,7 @@ const replicate = new Replicate({
 // Inpainting endpoint (Cultural Inpainting)
 app.post('/api/inpaint', verifyToken, async (req, res) => {
   try {
-    const { originalImage, maskImage, style, customPrompt } = req.body;
+    const { originalImage, maskImage, style, customPrompt, roomType, selectedPalette } = req.body;
 
     if (!originalImage || !maskImage || !style) {
       return res.status(400).json({ error: 'Missing required parameters' });
@@ -492,9 +494,12 @@ app.post('/api/inpaint', verifyToken, async (req, res) => {
       }
     }
 
+    const roomName = roomType ? (roomType.name || roomType) : 'area';
+    const paletteColors = selectedPalette && selectedPalette.colors ? selectedPalette.colors.join(', ') : (style.colors?.join(', ') || 'warm African earth tones');
+
     const stylePrompt = style.prompt || `${style.name} interior design`;
-    let promptText = `Transform the masked area into ${stylePrompt}. 
-Use these colors: ${style.colors?.join(', ') || 'warm African earth tones'}.
+    let promptText = `Transform the masked ${roomName} into ${stylePrompt}. 
+Use these colors: ${paletteColors}.
 Materials: ${style.materials?.join(', ') || 'traditional African materials'}.
 Patterns: ${style.patterns?.join(', ') || 'African geometric patterns'}.
 The result must look photorealistic.`;

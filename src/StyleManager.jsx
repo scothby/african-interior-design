@@ -3,7 +3,7 @@ import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
 import { supabase, invalidateStylesCache } from './supabaseClient';
 
-export default function StyleManager({ onBack }) {
+export default function StyleManager({ onBack, embed = false }) {
     const { t } = useTranslation();
     const { getToken } = useAuth();
     const [styles, setStyles] = useState([]);
@@ -15,15 +15,19 @@ export default function StyleManager({ onBack }) {
     // Form state
     const [formData, setFormData] = useState({
         name: '',
+        name_en: '',
         region: 'Toutes',
         family: 'Moderne',
         description: '',
+        description_en: '',
         prompt: '',
         materials: '',
         colors: '',
         patterns: '',
         flag: '🌍',
-        image_url: ''
+        image_url: '',
+        cultural_history: '',
+        cultural_history_en: ''
     });
 
     const fetchStyles = useCallback(async () => {
@@ -65,15 +69,19 @@ export default function StyleManager({ onBack }) {
         setCurrentStyle(style);
         setFormData({
             name: style.name || '',
+            name_en: style.name_en || '',
             region: style.region || '',
             family: style.family || '',
             description: style.description || '',
+            description_en: style.description_en || '',
             prompt: style.prompt || '',
             materials: style.materials ? style.materials.join(', ') : '',
             colors: style.colors ? style.colors.join(', ') : '',
             patterns: style.patterns ? style.patterns.join(', ') : '',
             flag: style.flag || '🌍',
-            image_url: style.image_url || ''
+            image_url: style.image_url || '',
+            cultural_history: style.cultural_history || '',
+            cultural_history_en: style.cultural_history_en || ''
         });
         setIsEditing(true);
     };
@@ -81,7 +89,7 @@ export default function StyleManager({ onBack }) {
     const handleAddNew = () => {
         setCurrentStyle(null);
         setFormData({
-            name: '', region: 'Ouest', family: 'Traditionnel', description: '', prompt: '', materials: '', colors: '', patterns: '', flag: '🌍', image_url: ''
+            name: '', name_en: '', region: 'Ouest', family: 'Traditionnel', description: '', description_en: '', prompt: '', materials: '', colors: '', patterns: '', flag: '🌍', image_url: '', cultural_history: '', cultural_history_en: ''
         });
         setIsEditing(true);
     };
@@ -92,15 +100,19 @@ export default function StyleManager({ onBack }) {
             // Parse comma separated fields
             const parsedData = {
                 name: formData.name,
+                name_en: formData.name_en,
                 region: formData.region,
                 family: formData.family,
                 description: formData.description,
+                description_en: formData.description_en,
                 prompt: formData.prompt,
                 materials: formData.materials.split(',').map(s => s.trim()).filter(Boolean),
                 colors: formData.colors.split(',').map(s => s.trim()).filter(Boolean),
                 patterns: formData.patterns.split(',').map(s => s.trim()).filter(Boolean),
                 flag: formData.flag,
                 image_url: formData.image_url || null,
+                cultural_history: formData.cultural_history || null,
+                cultural_history_en: formData.cultural_history_en || null,
             };
 
             if (currentStyle) {
@@ -129,14 +141,22 @@ export default function StyleManager({ onBack }) {
     if (isEditing) {
         return (
             <div style={s.container}>
-                <div style={s.header}>
-                    <h2>{currentStyle ? t('admin.edit') : t('admin.createNew')}</h2>
-                    <button onClick={() => setIsEditing(false)} style={s.btnDanger}>{t('admin.cancel')}</button>
-                </div>
+                {!embed && (
+                    <div style={s.header}>
+                        <h2>{currentStyle ? t('admin.edit') : t('admin.createNew')}</h2>
+                        <button onClick={() => setIsEditing(false)} style={s.btnDanger}>{t('admin.cancel')}</button>
+                    </div>
+                )}
                 <form onSubmit={handleSave} style={s.form}>
-                    <div style={s.formGroup}>
-                        <label style={s.label}>{t('admin.name')} *</label>
-                        <input required style={s.input} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Ex: Maison Massaï" />
+                    <div style={s.formRow}>
+                        <div style={s.formGroup}>
+                            <label style={s.label}>{t('admin.name')} (FR) *</label>
+                            <input required style={s.input} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Ex: Maison Massaï" />
+                        </div>
+                        <div style={s.formGroup}>
+                            <label style={s.label}>{t('admin.name')} (EN)</label>
+                            <input style={s.input} value={formData.name_en} onChange={e => setFormData({ ...formData, name_en: e.target.value })} placeholder="Ex: Masai House" />
+                        </div>
                     </div>
                     <div style={s.formRow}>
                         <div style={s.formGroup}>
@@ -157,8 +177,20 @@ export default function StyleManager({ onBack }) {
                         <input style={s.input} value={formData.image_url} onChange={e => setFormData({ ...formData, image_url: e.target.value })} placeholder="/styles/nom-image.png ou https://..." />
                     </div>
                     <div style={s.formGroup}>
-                        <label style={s.label}>{t('admin.desc')}</label>
-                        <textarea style={s.textarea} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Description affichée à l'utilisateur..." />
+                        <label style={s.label}>{t('admin.desc')} (FR)</label>
+                        <textarea style={s.textarea} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} placeholder="Description courte (1-2 phrases)..." />
+                    </div>
+                    <div style={s.formGroup}>
+                        <label style={s.label}>{t('admin.desc')} (EN)</label>
+                        <textarea style={s.textarea} value={formData.description_en} onChange={e => setFormData({ ...formData, description_en: e.target.value })} placeholder="Short description (1-2 sentences)..." />
+                    </div>
+                    <div style={s.formGroup}>
+                        <label style={s.label}>{t('admin.culturalHistory', { defaultValue: 'Héritage Culturel (FR)' })}</label>
+                        <textarea style={{ ...s.textarea, minHeight: '80px' }} value={formData.cultural_history} onChange={e => setFormData({ ...formData, cultural_history: e.target.value })} placeholder="Une histoire culturelle vérifiable (Français)..." />
+                    </div>
+                    <div style={s.formGroup}>
+                        <label style={s.label}>{t('admin.culturalHistoryEn', { defaultValue: 'Cultural Heritage (EN)' })}</label>
+                        <textarea style={{ ...s.textarea, minHeight: '80px' }} value={formData.cultural_history_en} onChange={e => setFormData({ ...formData, cultural_history_en: e.target.value })} placeholder="Verifiable cultural history (English)..." />
                     </div>
                     <div style={s.formGroup}>
                         <label style={s.label}>{t('admin.prompt')} *</label>
@@ -181,13 +213,20 @@ export default function StyleManager({ onBack }) {
 
     return (
         <div style={s.container}>
-            <div style={s.header}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <button onClick={onBack} style={s.btnBack}>← {t('gallery.back')}</button>
-                    <h2>⚙️ {t('admin.title')} ({styles.length})</h2>
+            {!embed && (
+                <div style={s.header}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <button onClick={onBack} style={s.btnBack}>← {t('gallery.back')}</button>
+                        <h2>⚙️ {t('admin.title')} ({styles.length})</h2>
+                    </div>
+                    <button onClick={handleAddNew} style={s.btnPrimary}>+ {t('admin.add')}</button>
                 </div>
-                <button onClick={handleAddNew} style={s.btnPrimary}>+ {t('admin.add')}</button>
-            </div>
+            )}
+            {embed && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+                    <button onClick={handleAddNew} style={s.btnPrimary}>+ {t('admin.add')}</button>
+                </div>
+            )}
 
             {loading ? (
                 <div style={{ padding: '40px', textAlign: 'center', color: '#B8860B' }}>Loading...</div>

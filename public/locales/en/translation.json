@@ -50,7 +50,8 @@
             "chooseStyle": "Choose an African Style",
             "allRegions": "All regions",
             "allFamilies": "All families",
-            "search": "Search..."
+            "search": "Search...",
+            "history": "Cultural Heritage"
         },
         "generating": {
             "title": "Creating your design...",
@@ -250,6 +251,8 @@
         "desc": "Full description",
         "prompt": "Base AI Prompt",
         "promptHint": "The secret prompt sent to the AI to generate this specific style.",
+        "culturalHistory": "Cultural Heritage (FR)",
+        "culturalHistoryEn": "Cultural Heritage (EN)",
         "materials": "Materials (comma separated)",
         "colors": "Colors (comma separated)",
         "save": "Save Style",

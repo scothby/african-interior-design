@@ -136,4 +136,34 @@ export async function fetchTestimonials() {
   return data;
 }
 
+// ── Helper: Fetch Room Types from Supabase ──
+export async function fetchRoomTypes() {
+  const { data, error } = await supabase
+    .from('room_types')
+    .select('*')
+    .eq('is_active', true)
+    .order('name');
+
+  if (error) {
+    console.error('Error fetching room types:', error);
+    throw error;
+  }
+  return data;
+}
+
+// ── Helper: Fetch Color Palettes from Supabase ──
+export async function fetchColorPalettes() {
+  const { data, error } = await supabase
+    .from('color_palettes')
+    .select('*')
+    .eq('is_active', true)
+    .order('name');
+
+  if (error) {
+    console.error('Error fetching color palettes:', error);
+    throw error;
+  }
+  return data;
+}
+
 

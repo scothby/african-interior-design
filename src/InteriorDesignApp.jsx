@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import ComparisonSlider from "./ComparisonSlider";
 import { exportCollage } from "./utils/collageGenerator";
 import { exportDesignPDF } from "./utils/pdfGenerator";
-import StyleManager from "./StyleManager";
+import AdminManager from "./AdminManager";
 import WorldViewerModal from "./WorldViewerModal";
 import InpaintingModal from "./InpaintingModal";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import { useAuth } from "./AuthContext";
-import { fetchStylesFromSupabase } from "./supabaseClient";
+import { fetchStylesFromSupabase, fetchRoomTypes, fetchColorPalettes } from "./supabaseClient";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery, onGoToPalettes }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { getToken, isAdmin } = useAuth();
   const [currentView, setCurrentView] = useState("upload"); // 'upload', 'select-style', 'generating', 'result', 'manage-styles'
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -51,36 +51,49 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
     regions: [],
     families: [],
   });
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [colorPalettes, setColorPalettes] = useState([]);
 
-  // Fetch styles from Supabase directly
-  const fetchStyles = useCallback(async () => {
+  const [selectedRoomType, setSelectedRoomType] = useState(null);
+  const [selectedPalette, setSelectedPalette] = useState(null);
+
+  // Fetch styles, room types, and palettes from Supabase directly
+  const fetchInitialData = useCallback(async () => {
     try {
-      const data = await fetchStylesFromSupabase();
-      setStylesDb({
-        styles: data.styles,
-        regions: data.regions,
-        families: data.families,
-      });
+      const [stylesData, roomsData, palettesData] = await Promise.all([
+        fetchStylesFromSupabase(),
+        fetchRoomTypes(),
+        fetchColorPalettes()
+      ]);
+
+      setStylesDb(stylesData);
+      setRoomTypes(roomsData);
+      setColorPalettes(palettesData);
+
+      // Select defaults if not set
+      if (roomsData.length > 0) setSelectedRoomType(roomsData[0]);
     } catch (err) {
-      console.error("Error fetching styles from Supabase:", err);
+      console.error("Error fetching data from Supabase:", err);
     }
   }, []);
 
   useEffect(() => {
-    fetchStyles();
-  }, [fetchStyles]);
+    fetchInitialData();
+  }, [fetchInitialData]);
 
-  // Filter styles
-  const filteredStyles = stylesDb.styles.filter((s) => {
-    const matchSearch =
-      !search ||
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      (s.country && s.country.toLowerCase().includes(search.toLowerCase())) ||
-      (s.family && s.family.toLowerCase().includes(search.toLowerCase()));
-    const matchRegion = activeRegion === "Tout" || s.region === activeRegion;
-    const matchFamily = activeFamily === "Tout" || s.family === activeFamily;
-    return matchSearch && matchRegion && matchFamily;
-  });
+  // Filter styles using useMemo to avoid re-calculating on every render
+  const filteredStyles = useMemo(() => {
+    return stylesDb.styles.filter((s) => {
+      const matchSearch =
+        !search ||
+        s.name.toLowerCase().includes(search.toLowerCase()) ||
+        (s.country && s.country.toLowerCase().includes(search.toLowerCase())) ||
+        (s.family && s.family.toLowerCase().includes(search.toLowerCase()));
+      const matchRegion = activeRegion === "Tout" || s.region === activeRegion;
+      const matchFamily = activeFamily === "Tout" || s.family === activeFamily;
+      return matchSearch && matchRegion && matchFamily;
+    });
+  }, [stylesDb.styles, search, activeRegion, activeFamily]);
 
   // Handle file upload
   const handleFileUpload = async (file) => {
@@ -150,6 +163,8 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
           style: selectedStyle,
           customPrompt: customPrompt,
           editMode: editMode,
+          roomType: selectedRoomType,
+          selectedPalette: selectedPalette,
         }),
       });
 
@@ -259,6 +274,8 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
           maskImage: maskDataUrl,
           style: selectedStyle,
           customPrompt: prompt,
+          roomType: selectedRoomType,
+          selectedPalette: selectedPalette,
         }),
       });
 
@@ -444,6 +461,70 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
             <div style={styles.selectedStylePreview}>
               <span style={styles.flag}>{selectedStyle.flag}</span>
               <span style={styles.selectedStyleName}>{t(`db.styles.${selectedStyle.id}.name`, { defaultValue: selectedStyle.name })}</span>
+            </div>
+
+            {/* Room Type Selector */}
+            <div style={{ marginBottom: "16px", width: "100%", maxWidth: "300px" }}>
+              <label style={{
+                display: "block", fontSize: "12px", color: "#8B7050", marginBottom: "6px",
+                fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.05em"
+              }}>
+                {t('app.styleSelection.roomType', { defaultValue: "Type de pièce" })}
+              </label>
+              <select
+                value={selectedRoomType?.id || ""}
+                onChange={(e) => {
+                  const rt = roomTypes.find(r => r.id === e.target.value);
+                  setSelectedRoomType(rt);
+                }}
+                style={{
+                  ...styles.select,
+                  width: "100%",
+                  background: "#0E0905",
+                  padding: "10px",
+                  fontSize: "13px"
+                }}
+              >
+                {roomTypes.map(rt => (
+                  <option key={rt.id} value={rt.id}>{rt.icon} {rt.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Color Palette Selector */}
+            <div style={{ marginBottom: "16px", width: "100%", maxWidth: "300px" }}>
+              <label style={{
+                display: "block", fontSize: "12px", color: "#8B7050", marginBottom: "6px",
+                fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.05em"
+              }}>
+                {t('app.styleSelection.colorPalette', { defaultValue: "Palette de couleurs" })}
+              </label>
+              <select
+                value={selectedPalette?.id || ""}
+                onChange={(e) => {
+                  const p = colorPalettes.find(cp => cp.id === e.target.value);
+                  setSelectedPalette(p);
+                }}
+                style={{
+                  ...styles.select,
+                  width: "100%",
+                  background: "#0E0905",
+                  padding: "10px",
+                  fontSize: "13px"
+                }}
+              >
+                <option value="">{t('app.styleSelection.defaultPalette', { defaultValue: "Couleurs du style" })}</option>
+                {colorPalettes.map(p => (
+                  <option key={p.id} value={p.id}>🎨 {p.name}</option>
+                ))}
+              </select>
+              {selectedPalette && (
+                <div style={{ display: "flex", gap: "4px", marginTop: "8px" }}>
+                  {selectedPalette.colors.map((c, i) => (
+                    <div key={i} style={{ width: "20px", height: "10px", background: c, borderRadius: "2px" }} />
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Custom Instructions Input */}
@@ -649,19 +730,23 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
                 overflow: "hidden"
               }}
             >
-              {style.image_url && (
-                <div style={{ width: "100%", height: "120px", borderBottom: selectedStyle?.id === style.id ? "1px solid #B8860B" : "1px solid #2A1A0E" }}>
-                  <img
-                    src={style.image_url}
-                    alt={style.name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                  />
-                </div>
-              )}
+              <div style={{ width: "100%", height: "120px", borderBottom: selectedStyle?.id === style.id ? "1px solid #B8860B" : "1px solid #2A1A0E", overflow: "hidden" }}>
+                <img
+                  src={style.image_url || `/families/${style.family?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "") || "TextilesRoyaux"}.png`}
+                  alt={style.name}
+                  loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
+                  onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
+                  onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                  onError={(e) => {
+                    e.target.src = "/families/TextilesRoyaux.png"; // Ultimate fallback
+                  }}
+                />
+              </div>
               <div style={{ padding: "12px" }}>
                 <div style={styles.styleHeader}>
                   <span style={styles.flag}>{style.flag}</span>
-                  <span style={styles.styleName}>{t(`db.styles.${style.id}.name`, { defaultValue: style.name })}</span>
+                  <span style={styles.styleName}>{t(`db.styles.${style.id}.name`, { defaultValue: style[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || style.name })}</span>
                 </div>
                 <div style={styles.styleCountry}>{style.country}</div>
                 <div style={styles.styleFamily}>{t(`db.families.${style.family}`, { defaultValue: style.family })}</div>
@@ -678,9 +763,15 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
         {selectedStyle && (
           <div style={styles.selectedInfo}>
             <h4 style={styles.selectedTitle}>
-              {selectedStyle.flag} {t(`db.styles.${selectedStyle.id}.name`, { defaultValue: selectedStyle.name })}
+              {selectedStyle.flag} {t(`db.styles.${selectedStyle.id}.name`, { defaultValue: selectedStyle[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.name })}
             </h4>
-            <p style={styles.selectedDesc}>{t(`db.styles.${selectedStyle.id}.description`, { defaultValue: selectedStyle.description })}</p>
+            <p style={styles.selectedDesc}>{t(`db.styles.${selectedStyle.id}.description`, { defaultValue: selectedStyle[`description${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.description })}</p>
+            {selectedStyle[`cultural_history${i18n.language?.startsWith('en') ? '_en' : ''}`] && (
+              <div style={styles.styleHistory}>
+                <strong>📜 {t('app.styleSelection.history', { defaultValue: 'Histoire Culturelle' })} :</strong><br />
+                {selectedStyle[`cultural_history${i18n.language?.startsWith('en') ? '_en' : ''}`]}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -1144,10 +1235,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
         {currentView === "generating" && renderGenerating()}
         {currentView === "result" && renderResult()}
         {currentView === "manage-styles" && (
-          <StyleManager
+          <AdminManager
             onBack={() => {
               setCurrentView("select-style");
-              fetchStyles(); // Refresh styles when returning
+              fetchInitialData(); // Refresh all data when returning
             }}
           />
         )}
@@ -1290,14 +1381,14 @@ const styles = {
     margin: "0 0 4px 0",
     fontSize: "clamp(28px, 5vw, 42px)",
     fontWeight: "900",
-    color: "red", // Darker brown
+    color: "#3A2A1E", // Darker brown
     textShadow: "1px 1px 0px rgba(255,255,255,0.8)",
     fontFamily: "var(--font-heading)",
   },
   subtitle: {
     margin: 0,
     fontSize: "16px",
-    color: "red",
+    color: "#6B5030",
     fontWeight: "500",
     textShadow: "1px 1px 0px rgba(255,255,255,0.5)",
   },
@@ -1483,18 +1574,20 @@ const styles = {
   },
   styleGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-    gap: "12px",
-    maxHeight: "400px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))",
+    gap: "16px",
+    maxHeight: "550px",
     overflowY: "auto",
-    padding: "4px",
+    padding: "8px",
   },
   styleCard: {
-    border: "1px solid #2A1A0E",
-    borderRadius: "6px",
-    padding: "12px",
+    border: "1px solid rgba(184, 134, 11, 0.1)",
+    borderRadius: "12px",
     cursor: "pointer",
-    transition: "all 0.2s",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    background: "#160E07",
+    overflow: "hidden",
+    position: "relative",
   },
   styleHeader: {
     display: "flex",
@@ -1547,6 +1640,15 @@ const styles = {
     fontSize: "13px",
     color: "#8B7050",
     lineHeight: "1.5",
+  },
+  styleHistory: {
+    marginTop: "12px",
+    paddingTop: "12px",
+    borderTop: "1px solid rgba(184, 134, 11, 0.2)",
+    fontSize: "12px",
+    color: "#D4C3A3",
+    lineHeight: "1.6",
+    fontStyle: "italic",
   },
   generateSection: {
     marginTop: "16px",
@@ -1788,6 +1890,10 @@ const styles = {
     fontSize: "12px",
     color: "#6B5030",
     background: "#0C0806",
+  },
+  btnSmall: {
+    padding: "6px 12px",
+    fontSize: "11px",
   },
   styleInfo: {
     background: "var(--glass-bg)",

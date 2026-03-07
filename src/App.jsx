@@ -359,8 +359,7 @@ function AppContent() {
                   onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
                   onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
                   onError={(e) => {
-                    // Fallback to a placeholder or stay empty
-                    e.target.style.display = 'none';
+                    e.target.src = "/families/TextilesRoyaux.png"; // Generic fallback
                   }}
                 />
                 <div style={{ position: "absolute", bottom: "8px", left: "8px", background: "rgba(0,0,0,0.6)", padding: "2px 8px", borderRadius: "99px", fontSize: "10px", color: "white", backdropFilter: "blur(4px)" }}>

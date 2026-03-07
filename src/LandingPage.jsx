@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import DB from "./african-styles-db.json";
 import LanguageSwitcher from "./components/LanguageSwitcher";
-import { fetchStylesFromSupabase, fetchGalleryFromSupabase, fetchLandingAssetsFromSupabase, fetchTestimonials } from "./supabaseClient";
+import { supabase, fetchStylesFromSupabase, fetchGalleryFromSupabase, fetchLandingAssetsFromSupabase, fetchTestimonials } from "./supabaseClient";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -73,7 +73,7 @@ const DEFAULT_HERO_IMAGES = [
 ];
 
 export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDatabase, onEnterPalettes, user, onSignOut }) {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [visible, setVisible] = useState(false);
     const [hoveredFamily, setHoveredFamily] = useState(null);
     const [recentDesigns, setRecentDesigns] = useState([]);
@@ -112,6 +112,22 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     if (comparison) setHeroComparison(comparison.image_url);
                     setFeaturedCreations(featured);
                 }
+
+                // Also fetch actual latest creations from the gallery for the "Latest" feel
+                const { data: latestGallery } = await supabase
+                    .from('gallery')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(8);
+
+                if (latestGallery && latestGallery.length > 0) {
+                    setRecentDesigns(latestGallery.map(g => ({
+                        id: g.id,
+                        image_url: g.generated_image_url,
+                        title: g.style_name,
+                        family: g.style_family
+                    })));
+                }
             } catch (err) {
                 console.error("Failed to fetch initial data from Supabase, using fallbacks", err);
             }
@@ -119,8 +135,13 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
         loadInitialData();
     }, []);
 
+    // Use a smaller set of columns and images to reduce DOM nodes and painting load
     const masonryCols = useState(() =>
-        Array.from({ length: 6 }, () => [...heroImages].sort(() => 0.5 - Math.random()))
+        Array.from({ length: 4 }, (_, i) => {
+            // Pick a subset of images and shuffle them once
+            const pool = [...heroImages].sort(() => 0.5 - Math.random()).slice(0, 6);
+            return pool;
+        })
     )[0];
 
     // Stabilize masonry even when heroImages update (optional: update when heroImages change?)
@@ -184,6 +205,9 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
           border-color: #B8860B !important;
           background: rgba(184,134,11,0.1) !important;
         }
+        .masonry-column {
+          will-change: transform;
+        }
       `}</style>
 
             {/* ── Kente top bar ── */}
@@ -233,17 +257,17 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     zIndex: 0,
                     overflow: "hidden"
                 }}>
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} style={{
+                    {masonryCols.map((col, i) => (
+                        <div key={i} className="masonry-column" style={{
                             display: "flex",
                             flexDirection: "column",
                             gap: "16px",
-                            width: "calc(100vw / 5)",
-                            animation: `${i % 2 === 0 ? 'slideUp' : 'slideDown'} ${40 + (i % 3) * 10}s linear infinite`
+                            width: "25%",
+                            animation: `${i % 2 === 0 ? 'slideUp' : 'slideDown'} ${50 + (i % 4) * 15}s linear infinite`
                         }}>
-                            {/* Stabilize columns based on heroImages */}
-                            {[...heroImages].sort((a, b) => (i * 13 + a.length) % 7 - (i * 7 + b.length) % 13).concat([...heroImages].sort((a, b) => b.length - a.length)).map((img, j) => (
-                                <img key={j} src={img} alt="" style={{ width: "100%", borderRadius: "12px", objectFit: "cover", boxShadow: "0 8px 24px rgba(0,0,0,0.8)" }} />
+                            {/* Double the array for seamless loop */}
+                            {col.concat(col).map((img, j) => (
+                                <img key={j} src={img} alt="" loading="lazy" style={{ width: "100%", borderRadius: "12px", objectFit: "cover", boxShadow: "0 8px 24px rgba(0,0,0,0.8)" }} />
                             ))}
                         </div>
                     ))}
@@ -549,7 +573,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                                 transition: "all 0.4s",
                                                 transform: isHovered ? "scale(1.05)" : "scale(1)"
                                             }}
-                                            onError={(e) => { e.target.style.display = 'none'; }}
+                                            onError={(e) => { e.target.src = "/families/TextilesRoyaux.png"; }}
                                         />
                                         <div style={{
                                             position: "absolute",
@@ -638,54 +662,58 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                 </div>
             </section>
             {/* ─────────────────────────────────────────────────────────────
-          SECTION — GALERIE VITRINE (Gérée par Admin via Database)
+          SECTION — GALERIE VITRINE (Dernières Créations)
       ───────────────────────────────────────────────────────────── */}
-            {
-                featuredCreations.length > 0 && (
-                    <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208" }}>
-                        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-                            <div style={{ textAlign: "center", marginBottom: "48px" }}>
-                                <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {t('landing.inspirations.tag', { defaultValue: "Vitrine" })}</div>
-                                <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.inspirations.title', { defaultValue: "Dernières Créations" })}</h2>
-                                <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>{t('landing.inspirations.desc', { defaultValue: "Découvrez ce que notre communauté et notre IA imaginent pour l'intérieur africain." })}</p>
-                            </div>
-                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "16px" }}>
-                                {featuredCreations.map(c => ({
-                                    id: c.id,
-                                    generatedImage: c.image_url,
-                                    styleName: c.title || 'Design Africain',
-                                    styleFamily: 'Inspiration'
-                                })).map(entry => (
-                                    <div key={entry.id} style={{
-                                        background: "#120B05", border: "1px solid #1E1208", borderRadius: "8px", overflow: "hidden", transition: "all 0.2s"
-                                    }} className="step-card">
-                                        <div style={{ height: "200px", background: "#0A0603" }}>
-                                            <img src={entry.generatedImage.startsWith('/') ? entry.generatedImage : entry.generatedImage} alt={entry.styleName} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; }} />
+            {(featuredCreations.length > 0 || recentDesigns.length > 0) && (
+                <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208" }}>
+                    <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+                        <div style={{ textAlign: "center", marginBottom: "48px" }}>
+                            <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {t('landing.inspirations.tag', { defaultValue: "Vitrine" })}</div>
+                            <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.inspirations.title', { defaultValue: "Dernières Créations" })}</h2>
+                            <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>{t('landing.inspirations.desc', { defaultValue: "Découvrez les derniers intérieurs africains imaginés par notre IA." })}</p>
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "16px" }}>
+                            {/* Merge and keep unique by image URL if necessary, but here we just concat */}
+                            {[
+                                ...featuredCreations.map(c => ({ id: c.id, url: c.image_url, title: c[`title${i18n.language?.startsWith('en') ? '_en' : ''}`] || c.title, family: 'Featured' })),
+                                ...recentDesigns.map(c => ({ id: c.id, url: c.image_url, title: c.title, family: c.family }))
+                            ].slice(0, 8).map((entry, idx) => (
+                                <div key={entry.id || idx} style={{
+                                    background: "#120B05", border: "1px solid #1E1208", borderRadius: "8px", overflow: "hidden", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+                                }} className="step-card">
+                                    <div style={{ height: "200px", background: "#0A0603", overflow: 'hidden' }}>
+                                        <img
+                                            src={entry.url}
+                                            alt={entry.title}
+                                            style={{ width: "100%", height: "100%", objectFit: "cover", transition: 'transform 0.5s' }}
+                                            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+                                            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                                            onError={(e) => { e.target.src = "/families/TextilesRoyaux.png"; }}
+                                        />
+                                    </div>
+                                    <div style={{ padding: "14px" }}>
+                                        <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" }}>
+                                            {entry.title || 'Design Africain'}
                                         </div>
-                                        <div style={{ padding: "14px" }}>
-                                            <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" }}>
-                                                {entry.styleName}
-                                            </div>
-                                            <div style={{ fontSize: "11px", color: "#B8860B", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                                                {entry.styleFamily}
-                                            </div>
+                                        <div style={{ fontSize: "11px", color: "#B8860B", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                            {entry.family}
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                            <div style={{ textAlign: "center", marginTop: "36px" }}>
-                                <button
-                                    onClick={onEnterGallery}
-                                    className="btn-secondary"
-                                    style={{ padding: "12px 32px", borderRadius: "var(--radius-sm)", fontSize: "13px" }}
-                                >
-                                    {t('landing.inspirations.exploreGallery', { defaultValue: "EXPLORE THE FULL GALLERY →" })}
-                                </button>
-                            </div>
+                                </div>
+                            ))}
                         </div>
-                    </section>
-                )
-            }
+                        <div style={{ textAlign: "center", marginTop: "36px" }}>
+                            <button
+                                onClick={onEnterGallery}
+                                className="btn-secondary"
+                                style={{ padding: "12px 32px", borderRadius: "var(--radius-sm)", fontSize: "13px" }}
+                            >
+                                {t('landing.inspirations.exploreGallery', { defaultValue: "EXPLORE THE FULL GALLERY →" })}
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* ─────────────────────────────────────────────────────────────
           SECTION — FONCTIONNALITÉS
@@ -723,17 +751,21 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                         </div>
 
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
-                            {testimonials.map((t, i) => (
+                            {testimonials.map((tst, i) => (
                                 <div key={i} className="glass-panel" style={{ padding: "32px", borderRadius: "12px", border: "1px solid #1E1208", display: "flex", flexDirection: "column", gap: "16px" }}>
-                                    <div style={{ color: "#B8860B", fontSize: "20px" }}>{"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}</div>
-                                    <p style={{ margin: 0, fontSize: "15px", lineHeight: "1.7", color: "#A08060", fontStyle: "italic" }}>"{t.content}"</p>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
-                                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(45deg, #2A1A0E, #B8860B)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>
-                                            {t.user_name[0]}
+                                    <div style={{ color: "#B8860B", fontSize: "20px" }}>{"★".repeat(tst.rating)}{"☆".repeat(5 - tst.rating)}</div>
+                                    <p style={{ margin: "0 0 16px", color: "var(--color-text-muted)", fontStyle: "italic", fontSize: "14px", lineHeight: "1.6" }}>
+                                        "{t(`testimonials.${tst.id}.content`, { defaultValue: tst[`content${i18n.language?.startsWith('en') ? '_en' : ''}`] || tst.content })}"
+                                    </p>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "#1E1208", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>
+                                            {tst.avatar_url ? <img src={tst.avatar_url} alt={tst.user_name} style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} /> : "👤"}
                                         </div>
                                         <div>
-                                            <div style={{ fontSize: "14px", fontWeight: "bold", color: "#F0E6D3" }}>{t.user_name}</div>
-                                            <div style={{ fontSize: "11px", color: "#6B5030" }}>{t.user_role}</div>
+                                            <div style={{ fontWeight: "bold", color: "#B8860B", fontSize: "14px" }}>{tst.user_name}</div>
+                                            <div style={{ fontSize: "11px", color: "#6B5030", textTransform: "uppercase", letterSpacing: "1px" }}>
+                                                {t(`testimonials.${tst.id}.role`, { defaultValue: tst[`user_role${i18n.language?.startsWith('en') ? '_en' : ''}`] || tst.user_role })}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
