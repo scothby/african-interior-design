@@ -69,10 +69,14 @@ function AppContent() {
 
   const filtered = useMemo(() => {
     return stylesData.styles.filter(s => {
+      const searchLower = search.toLowerCase();
       const matchSearch = !search ||
-        s.name.toLowerCase().includes(search.toLowerCase()) ||
-        (s.country && s.country.toLowerCase().includes(search.toLowerCase())) ||
-        (s.family && s.family.toLowerCase().includes(search.toLowerCase()));
+        s.name.toLowerCase().includes(searchLower) ||
+        (s.name_en && s.name_en.toLowerCase().includes(searchLower)) ||
+        (s.description && s.description.toLowerCase().includes(searchLower)) ||
+        (s.description_en && s.description_en.toLowerCase().includes(searchLower)) ||
+        (s.country && s.country.toLowerCase().includes(searchLower)) ||
+        (s.family && s.family.toLowerCase().includes(searchLower));
       const matchRegion = activeRegion === "Tout" || s.region === activeRegion;
       const matchFamily = activeFamily === "Tout" || s.family === activeFamily;
       return matchSearch && matchRegion && matchFamily;
@@ -371,7 +375,7 @@ function AppContent() {
               <div style={{ padding: "16px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
                   <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3" }}>
-                    {t(`db.styles.${style.id}.name`, { defaultValue: style.name })}
+                    {style[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || style.name}
                   </div>
                   <span style={{
                     fontSize: "8px", letterSpacing: "0.1em", textTransform: "uppercase",
@@ -381,7 +385,7 @@ function AppContent() {
                   }}>{t(`db.families.${style.family}`, { defaultValue: style.family })}</span>
                 </div>
                 <p style={{ fontSize: "12px", color: "#8B7050", margin: 0, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                  {t(`db.styles.${style.id}.description`, { defaultValue: style.description })}
+                  {style[`description${i18n.language?.startsWith('en') ? '_en' : ''}`] || style.description}
                 </p>
               </div>
             </div>
@@ -417,14 +421,14 @@ function AppContent() {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
               <span style={{ fontSize: "var(--icon-size-lg)" }}>{selectedStyle.flag}</span>
-              <h2 style={{ margin: 0, fontSize: "var(--font-size-lg)", fontWeight: "normal" }}>{t(`db.styles.${selectedStyle.id}.name`, { defaultValue: selectedStyle.name })}</h2>
+              <h2 style={{ margin: 0, fontSize: "var(--font-size-lg)", fontWeight: "normal" }}>{selectedStyle[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.name}</h2>
             </div>
             <div style={{ fontSize: "12px", color: "#8B7050", marginBottom: "12px" }}>
               {selectedStyle.country} · <span style={{ color: FAMILY_COLORS[selectedStyle.family] }}>{t(`db.families.${selectedStyle.family}`, { defaultValue: selectedStyle.family })}</span>
             </div>
 
             <p style={{ fontSize: "13px", color: "#A08060", lineHeight: 1.7, fontStyle: "italic", marginBottom: "20px" }}>
-              {t(`db.styles.${selectedStyle.id}.description`, { defaultValue: selectedStyle.description })}
+              {selectedStyle[`description${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.description}
             </p>
 
             {/* Colors */}

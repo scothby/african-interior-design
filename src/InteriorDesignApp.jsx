@@ -84,11 +84,15 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
   // Filter styles using useMemo to avoid re-calculating on every render
   const filteredStyles = useMemo(() => {
     return stylesDb.styles.filter((s) => {
+      const searchLower = search.toLowerCase();
       const matchSearch =
         !search ||
-        s.name.toLowerCase().includes(search.toLowerCase()) ||
-        (s.country && s.country.toLowerCase().includes(search.toLowerCase())) ||
-        (s.family && s.family.toLowerCase().includes(search.toLowerCase()));
+        s.name.toLowerCase().includes(searchLower) ||
+        (s.name_en && s.name_en.toLowerCase().includes(searchLower)) ||
+        (s.description && s.description.toLowerCase().includes(searchLower)) ||
+        (s.description_en && s.description_en.toLowerCase().includes(searchLower)) ||
+        (s.country && s.country.toLowerCase().includes(searchLower)) ||
+        (s.family && s.family.toLowerCase().includes(searchLower));
       const matchRegion = activeRegion === "Tout" || s.region === activeRegion;
       const matchFamily = activeFamily === "Tout" || s.family === activeFamily;
       return matchSearch && matchRegion && matchFamily;
@@ -460,7 +464,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
           <div style={styles.generateSection}>
             <div style={styles.selectedStylePreview}>
               <span style={styles.flag}>{selectedStyle.flag}</span>
-              <span style={styles.selectedStyleName}>{t(`db.styles.${selectedStyle.id}.name`, { defaultValue: selectedStyle.name })}</span>
+              <span style={styles.selectedStyleName}>{selectedStyle[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.name}</span>
             </div>
 
             {/* Room Type Selector */}
@@ -746,7 +750,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
               <div style={{ padding: "12px" }}>
                 <div style={styles.styleHeader}>
                   <span style={styles.flag}>{style.flag}</span>
-                  <span style={styles.styleName}>{t(`db.styles.${style.id}.name`, { defaultValue: style[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || style.name })}</span>
+                  <span style={styles.styleName}>{style[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || style.name}</span>
                 </div>
                 <div style={styles.styleCountry}>{style.country}</div>
                 <div style={styles.styleFamily}>{t(`db.families.${style.family}`, { defaultValue: style.family })}</div>
@@ -763,9 +767,9 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
         {selectedStyle && (
           <div style={styles.selectedInfo}>
             <h4 style={styles.selectedTitle}>
-              {selectedStyle.flag} {t(`db.styles.${selectedStyle.id}.name`, { defaultValue: selectedStyle[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.name })}
+              {selectedStyle.flag} {selectedStyle[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.name}
             </h4>
-            <p style={styles.selectedDesc}>{t(`db.styles.${selectedStyle.id}.description`, { defaultValue: selectedStyle[`description${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.description })}</p>
+            <p style={styles.selectedDesc}>{selectedStyle[`description${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.description}</p>
             {selectedStyle[`cultural_history${i18n.language?.startsWith('en') ? '_en' : ''}`] && (
               <div style={styles.styleHistory}>
                 <strong>📜 {t('app.styleSelection.history', { defaultValue: 'Histoire Culturelle' })} :</strong><br />
@@ -817,7 +821,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginTop: '24px', textAlign: 'left' }}>
         <div className="glass-panel" style={{ padding: '12px', background: 'rgba(212, 175, 55, 0.05)' }}>
           <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Style</div>
-          <div style={{ fontSize: '14px', fontWeight: '600' }}>{t(`db.styles.${selectedStyle?.id}.name`, { defaultValue: selectedStyle?.name })}</div>
+          <div style={{ fontSize: '14px', fontWeight: '600' }}>{selectedStyle?.[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle?.name}</div>
         </div>
         <div className="glass-panel" style={{ padding: '12px', background: 'rgba(212, 175, 55, 0.05)' }}>
           <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Mode</div>
