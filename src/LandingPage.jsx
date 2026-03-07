@@ -73,6 +73,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
     const [hoveredFamily, setHoveredFamily] = useState(null);
     const [recentDesigns, setRecentDesigns] = useState([]);
     const [loadingGallery, setLoadingGallery] = useState(true);
+    const [featuredCreations, setFeaturedCreations] = useState([]);
     const [testimonials, setTestimonials] = useState([]);
     const [heroImages, setHeroImages] = useState(DEFAULT_HERO_IMAGES);
     const [heroComparison, setHeroComparison] = useState("/hero-comparison.png");
@@ -100,9 +101,11 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                 if (assets && assets.length > 0) {
                     const masonry = assets.filter(a => a.asset_type === 'hero_masonry').map(a => a.image_url);
                     const comparison = assets.find(a => a.asset_type === 'hero_comparison');
+                    const featured = assets.filter(a => a.asset_type === 'featured_creation');
 
                     if (masonry.length > 0) setHeroImages(masonry);
                     if (comparison) setHeroComparison(comparison.image_url);
+                    setFeaturedCreations(featured);
                 }
             } catch (err) {
                 console.error("Failed to fetch initial data from Supabase, using fallbacks", err);
@@ -572,24 +575,29 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                 </div>
             </section>
             {/* ─────────────────────────────────────────────────────────────
-          SECTION — GALERIE RÉCENTE
+          SECTION — GALERIE RÉCENTE / VITRINE
       ───────────────────────────────────────────────────────────── */}
             {
-                !loadingGallery && recentDesigns.length > 0 && (
+                !loadingGallery && (recentDesigns.length > 0 || featuredCreations.length > 0) && (
                     <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208" }}>
                         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
                             <div style={{ textAlign: "center", marginBottom: "48px" }}>
-                                <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {t('landing.inspirations.tag')}</div>
-                                <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.inspirations.title')}</h2>
-                                <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>{t('landing.inspirations.desc')}</p>
+                                <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {user && recentDesigns.length > 0 ? t('landing.inspirations.tag') : "Vitrine"}</div>
+                                <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{user && recentDesigns.length > 0 ? t('landing.inspirations.title') : "Dernières Créations"}</h2>
+                                <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>{user && recentDesigns.length > 0 ? t('landing.inspirations.desc') : "Découvrez ce que notre communauté et notre IA imaginent pour l'intérieur africain."}</p>
                             </div>
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "16px" }}>
-                                {recentDesigns.map(entry => (
+                                {(user && recentDesigns.length > 0 ? recentDesigns : featuredCreations.map(c => ({
+                                    id: c.id,
+                                    generatedImage: c.image_url,
+                                    styleName: c.title || 'Design Africain',
+                                    styleFamily: 'Inspiration'
+                                }))).map(entry => (
                                     <div key={entry.id} style={{
                                         background: "#120B05", border: "1px solid #1E1208", borderRadius: "8px", overflow: "hidden", transition: "all 0.2s"
                                     }} className="step-card">
                                         <div style={{ height: "200px", background: "#0A0603" }}>
-                                            <img src={entry.generatedImage.startsWith('http') ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`} alt={entry.styleName} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                                            <img src={(entry.generatedImage && entry.generatedImage.startsWith('http')) || (entry.generatedImage && entry.generatedImage.startsWith('/')) ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`} alt={entry.styleName} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; }} />
                                         </div>
                                         <div style={{ padding: "14px" }}>
                                             <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" }}>
