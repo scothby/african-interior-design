@@ -121,25 +121,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
     // Stabilize masonry even when heroImages update (optional: update when heroImages change?)
     // Actually, let's keep it simple: just map them properly.
 
-    // Fetch gallery from Supabase
-    useEffect(() => {
-        const loadGallery = async () => {
-            try {
-                if (!user) {
-                    setLoadingGallery(false);
-                    return;
-                }
-                const data = await fetchGalleryFromSupabase();
-                setRecentDesigns(data.slice(0, 8)); // Top 8 recent
-            } catch (err) {
-                console.error("Failed to fetch gallery for landing page", err);
-            } finally {
-                setLoadingGallery(false);
-            }
-        };
-        loadGallery();
-    }, [user]);
-
+    // We no longer fetch gallery on landing page to keep it as a pure showcase
     useEffect(() => {
         const t = setTimeout(() => setVisible(true), 80);
         return () => clearTimeout(t);
@@ -575,29 +557,29 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                 </div>
             </section>
             {/* ─────────────────────────────────────────────────────────────
-          SECTION — GALERIE RÉCENTE / VITRINE
+          SECTION — GALERIE VITRINE (Gérée par Admin via Database)
       ───────────────────────────────────────────────────────────── */}
             {
-                !loadingGallery && (recentDesigns.length > 0 || featuredCreations.length > 0) && (
+                featuredCreations.length > 0 && (
                     <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208" }}>
                         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
                             <div style={{ textAlign: "center", marginBottom: "48px" }}>
-                                <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {user && recentDesigns.length > 0 ? t('landing.inspirations.tag') : "Vitrine"}</div>
-                                <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{user && recentDesigns.length > 0 ? t('landing.inspirations.title') : "Dernières Créations"}</h2>
-                                <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>{user && recentDesigns.length > 0 ? t('landing.inspirations.desc') : "Découvrez ce que notre communauté et notre IA imaginent pour l'intérieur africain."}</p>
+                                <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ {t('landing.inspirations.tag', { defaultValue: "Vitrine" })}</div>
+                                <h2 style={{ margin: "0 0 12px", fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>{t('landing.inspirations.title', { defaultValue: "Dernières Créations" })}</h2>
+                                <p style={{ margin: 0, color: "#6B5030", fontSize: "14px" }}>{t('landing.inspirations.desc', { defaultValue: "Découvrez ce que notre communauté et notre IA imaginent pour l'intérieur africain." })}</p>
                             </div>
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "16px" }}>
-                                {(user && recentDesigns.length > 0 ? recentDesigns : featuredCreations.map(c => ({
+                                {featuredCreations.map(c => ({
                                     id: c.id,
                                     generatedImage: c.image_url,
                                     styleName: c.title || 'Design Africain',
                                     styleFamily: 'Inspiration'
-                                }))).map(entry => (
+                                })).map(entry => (
                                     <div key={entry.id} style={{
                                         background: "#120B05", border: "1px solid #1E1208", borderRadius: "8px", overflow: "hidden", transition: "all 0.2s"
                                     }} className="step-card">
                                         <div style={{ height: "200px", background: "#0A0603" }}>
-                                            <img src={(entry.generatedImage && entry.generatedImage.startsWith('http')) || (entry.generatedImage && entry.generatedImage.startsWith('/')) ? entry.generatedImage : `${API_BASE_URL}${entry.generatedImage}`} alt={entry.styleName} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; }} />
+                                            <img src={entry.generatedImage.startsWith('/') ? entry.generatedImage : entry.generatedImage} alt={entry.styleName} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = 'none'; }} />
                                         </div>
                                         <div style={{ padding: "14px" }}>
                                             <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3", marginBottom: "4px" }}>
@@ -616,7 +598,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                     className="btn-secondary"
                                     style={{ padding: "12px 32px", borderRadius: "var(--radius-sm)", fontSize: "13px" }}
                                 >
-                                    {t('landing.inspirations.exploreGallery')}
+                                    {t('landing.inspirations.exploreGallery', { defaultValue: "EXPLORE THE FULL GALLERY →" })}
                                 </button>
                             </div>
                         </div>
