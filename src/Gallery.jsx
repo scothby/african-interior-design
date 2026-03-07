@@ -7,6 +7,7 @@ import WorldViewerModal from './WorldViewerModal';
 import InpaintingModal from './InpaintingModal';
 import { useAuth } from './AuthContext';
 import { fetchGalleryFromSupabase, toggleFavoriteInSupabase, deleteGalleryEntryInSupabase } from './supabaseClient';
+import Logo from './components/Logo';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -220,7 +221,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
                             {onBack && (
                                 <button onClick={onBack} style={s.backBtn}>
-                                    <span style={{ marginRight: '6px' }}>🏠</span>
+                                    <Logo size={18} style={{ marginRight: '8px' }} />
                                     {t('nav.home', 'Home')}
                                 </button>
                             )}

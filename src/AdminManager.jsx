@@ -3,6 +3,7 @@ import { supabase, invalidateStylesCache } from './supabaseClient';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import StyleManager from './StyleManager';
+import Logo from './components/Logo';
 
 export default function AdminManager({ onBack }) {
     const { t } = useTranslation();
@@ -22,7 +23,7 @@ export default function AdminManager({ onBack }) {
                     onClick={() => setActiveTab('styles')}
                     style={{ ...s.tab, ...(activeTab === 'styles' ? s.activeTab : {}) }}
                 >
-                    🏺 Styles
+                    <Logo size={14} style={{ marginRight: '6px' }} /> Styles
                 </button>
                 <button
                     onClick={() => setActiveTab('rooms')}

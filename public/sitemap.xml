@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://african-interior-designer.com/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://african-interior-designer.com/fr"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://african-interior-designer.com/en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://african-interior-designer.com/"/>
+    <priority>1.0</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://african-interior-designer.com/styles</loc>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://african-interior-designer.com/gallery</loc>
+    <priority>0.8</priority>
+    <changefreq>daily</changefreq>
+  </url>
+</urlset>

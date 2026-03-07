@@ -9,6 +9,8 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import AuthPage from "./AuthPage";
 import PaletteGenerator from "./PaletteGenerator";
 import { fetchStylesFromSupabase } from "./supabaseClient";
+import SEO from "./components/SEO";
+import Logo from "./components/Logo";
 import "./App.css";
 
 const FAMILY_COLORS = {
@@ -108,17 +110,40 @@ function AppContent() {
 
   const selectedStyle = selected ? stylesData.styles.find(s => s.id === selected) : null;
 
+  const seoProps = useMemo(() => {
+    switch (currentApp) {
+      case 'gallery': return {
+        title: t('header.gallery'),
+        description: t('gallery.seo.description', { defaultValue: "Browse AI-generated African interior designs. Authenticity meets modern creativity." })
+      };
+      case 'database': return {
+        title: t('header.africanStyles'),
+        description: t('database.seo.description', { defaultValue: "Explore 89 authentic African architectural styles with detailed cultural history and AI prompts." })
+      };
+      case 'designer': return {
+        title: t('header.designer'),
+        description: t('designer.seo.description', { defaultValue: "Create your own African-inspired interior using Gemini AI. Upload your photo and choose a style." })
+      };
+      case 'palettes': return {
+        title: "Palettes Africaines",
+        description: "Explorez les couleurs de l'Afrique."
+      };
+      default: return {};
+    }
+  }, [currentApp, t]);
+
   // Auth loading
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', background: '#0C0806', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏺</div>
-          <div style={{ color: '#B8860B', fontSize: '14px', letterSpacing: '0.1em' }}>Chargement...</div>
+          <Logo size={80} style={{ marginBottom: '24px', animation: 'pulse 2s infinite' }} />
+          <div style={{ color: '#B8860B', fontSize: '14px', letterSpacing: '0.1em' }}>{t('app.loading', { defaultValue: 'Chargement...' })}</div>
         </div>
       </div>
     );
   }
+
 
   // Render Landing Page — always public
   if (currentApp === "landing") {
@@ -144,49 +169,62 @@ function AppContent() {
 
   // Private pages — require auth
   if (currentApp === "designer") {
-    return <InteriorDesignApp
-      onBack={() => setCurrentApp("landing")}
-      onGoToStyles={() => setCurrentApp("database")}
-      onGoToGallery={() => setCurrentApp("gallery")}
-      onGoToPalettes={() => setCurrentApp("palettes")}
-    />;
+    return <>
+      <SEO {...seoProps} />
+      <InteriorDesignApp
+        onBack={() => setCurrentApp("landing")}
+        onGoToStyles={() => setCurrentApp("database")}
+        onGoToGallery={() => setCurrentApp("gallery")}
+        onGoToPalettes={() => setCurrentApp("palettes")}
+      />
+    </>;
   }
 
   if (currentApp === "gallery") {
     if (!user) return null; // Prevent rendering if user state is out of sync during redirect
-    return <Gallery
-      onBack={() => setCurrentApp("landing")}
-      onGoToStyles={() => setCurrentApp("database")}
-      onGoToDesigner={() => setCurrentApp("designer")}
-    />;
+    return <>
+      <SEO {...seoProps} />
+      <Gallery
+        onBack={() => setCurrentApp("landing")}
+        onGoToStyles={() => setCurrentApp("database")}
+        onGoToDesigner={() => setCurrentApp("designer")}
+      />
+    </>;
   }
 
   if (currentApp === "palettes") {
     if (!user) return null; // Prevent rendering if user state is out of sync
-    return <PaletteGenerator
-      onBack={() => setCurrentApp("landing")}
-      onGoToDesigner={() => setCurrentApp("designer")}
-      stylesData={stylesData}
-    />;
+    return <>
+      <SEO {...seoProps} />
+      <PaletteGenerator
+        onBack={() => setCurrentApp("landing")}
+        onGoToDesigner={() => setCurrentApp("designer")}
+        stylesData={stylesData}
+      />
+    </>;
   }
 
   // Render Database View (existing)
 
   return (
     <div style={{ background: "var(--color-bg-dark)", minHeight: "100vh", color: "var(--color-text-main)" }}>
+      <SEO {...seoProps} />
       {/* Kente header bar */}
       <div style={{ height: "5px", background: "linear-gradient(90deg,#8B0000,#B8860B,#228B22,#1A2744,#B8860B,#C41E3A,#B8860B,#228B22,#8B0000)" }} />
 
       {/* Header */}
       <header className="glass-panel" style={{ padding: "28px 32px 20px", borderBottom: `1px solid var(--color-border)`, borderTop: "none", borderLeft: "none", borderRight: "none", position: "sticky", top: 0, zIndex: 100 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-          <div>
-            <div style={{ fontSize: "10px", letterSpacing: "0.35em", color: "var(--color-primary)", textTransform: "uppercase", marginBottom: "4px" }}>
-              {t('header.database')}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <Logo size={42} />
+            <div>
+              <div style={{ fontSize: "10px", letterSpacing: "0.35em", color: "var(--color-primary)", textTransform: "uppercase", marginBottom: "4px" }}>
+                {t('header.database')}
+              </div>
+              <h1 style={{ margin: 0, fontSize: "var(--font-size-xl)" }}>
+                {t('header.africanStyles')} <span style={{ color: "var(--color-primary)" }}>·</span> <span style={{ color: "var(--color-text-muted)", fontSize: "0.6em" }}>{filtered.length} / {stylesData.styles.length}</span>
+              </h1>
             </div>
-            <h1 style={{ margin: 0, fontSize: "var(--font-size-xl)" }}>
-              {t('header.africanStyles')} <span style={{ color: "var(--color-primary)" }}>·</span> <span style={{ color: "var(--color-text-muted)", fontSize: "0.6em" }}>{filtered.length} / {stylesData.styles.length}</span>
-            </h1>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -209,30 +247,30 @@ function AppContent() {
             <button
               className="btn-secondary"
               onClick={() => setCurrentApp("landing")}
-              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px" }}
+              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}
             >
-              🏠 {t('header.home')}
+              <Logo size={18} /> {t('header.home')}
             </button>
             <button
               className="btn-primary"
               onClick={() => setCurrentApp("designer")}
-              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px" }}
+              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}
             >
-              🏛️ {t('header.designer')}
+              🎨 {t('header.designer')}
             </button>
             <button
               className="btn-secondary"
               onClick={() => setCurrentApp("gallery")}
-              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px" }}
+              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px", display: "flex", alignItems: "center", gap: "8px" }}
             >
               🖼️ {t('header.gallery')}
             </button>
             <button
               className="btn-secondary"
               onClick={() => setCurrentApp("palettes")}
-              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px", background: "rgba(184,134,11,0.1)", border: "1px solid rgba(184,134,11,0.5)", color: "#F0E6D3" }}
+              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px", background: "rgba(184,134,11,0.1)", border: "1px solid rgba(184,134,11,0.5)", color: "#F0E6D3", display: "flex", alignItems: "center", gap: "8px" }}
             >
-              🎨 Palettes Africaines
+              ✨ Palettes
             </button>
             {/* Search */}
             <input
@@ -253,13 +291,13 @@ function AppContent() {
         {/* Mobile Navigation Overlay */}
         <div className={`mobile-nav-overlay ${isMenuOpen ? 'open' : ''}`}>
           <div className="mobile-nav-links">
-            <button onClick={() => { setCurrentApp("landing"); setIsMenuOpen(false); }}>
-              🏠 {t('header.home')}
+            <button onClick={() => { setCurrentApp("landing"); setIsMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
+              <Logo size={20} /> {t('header.home')}
             </button>
-            <button onClick={() => { setCurrentApp("designer"); setIsMenuOpen(false); }}>
-              🏛️ {t('header.designer')}
+            <button onClick={() => { setCurrentApp("designer"); setIsMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
+              🎨 {t('header.designer')}
             </button>
-            <button onClick={() => { setCurrentApp("gallery"); setIsMenuOpen(false); }}>
+            <button onClick={() => { setCurrentApp("gallery"); setIsMenuOpen(false); }} style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center' }}>
               🖼️ {t('header.gallery')}
             </button>
             <button onClick={() => { setCurrentApp("palettes"); setIsMenuOpen(false); }}>

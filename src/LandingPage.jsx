@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import DB from "./african-styles-db.json";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import { supabase, fetchStylesFromSupabase, fetchGalleryFromSupabase, fetchLandingAssetsFromSupabase, fetchTestimonials } from "./supabaseClient";
+import SEO from "./components/SEO";
+import Logo from "./components/Logo";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -159,6 +161,24 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
 
     return (
         <div style={{ background: "var(--color-bg-dark)", minHeight: "100vh", color: "var(--color-text-main)", overflowX: "hidden" }}>
+            <SEO
+                title={t('landing.seo.title', { defaultValue: "African Interior Design - AI Creator & Styles Database" })}
+                description={t('landing.seo.description', { defaultValue: "Transform your spaces with authentic African interior design powered by AI. Explore our database of 89 architectural styles from the Sahel to the Coast." })}
+            />
+            {/* Structured Data for Google search results */}
+            <script type="application/ld+json">
+                {JSON.stringify({
+                    "@context": "https://schema.org",
+                    "@type": "CollectionPage",
+                    "name": "African Interior Design Catalog",
+                    "description": "Database of 89 authentic African interior design styles.",
+                    "provider": {
+                        "@type": "Organization",
+                        "name": "African Interior Designer",
+                        "url": window.location.origin
+                    }
+                })}
+            </script>
 
             {/* ── Keyframe styles ── */}
             <style>{`
@@ -267,7 +287,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                         }}>
                             {/* Double the array for seamless loop */}
                             {col.concat(col).map((img, j) => (
-                                <img key={j} src={img} alt="" loading="lazy" style={{ width: "100%", borderRadius: "12px", objectFit: "cover", boxShadow: "0 8px 24px rgba(0,0,0,0.8)" }} />
+                                <img key={j} src={img} alt={t('landing.alt.inspiration', { defaultValue: "Inspiration design intérieur africain" })} loading="lazy" style={{ width: "100%", borderRadius: "12px", objectFit: "cover", boxShadow: "0 8px 24px rgba(0,0,0,0.8)" }} />
                             ))}
                         </div>
                     ))}
@@ -286,9 +306,9 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                 {/* Contenu Héro en premier plan */}
                 <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "1200px" }}>
 
-                    {/* Globe animé */}
-                    <div style={{ fontSize: "80px", animation: "floatGlobe 5s ease-in-out infinite", marginBottom: "28px", filter: "drop-shadow(0 0 24px rgba(184,134,11,0.4))", opacity: visible ? 1 : 0, transition: "opacity 0.6s" }}>
-                        🌍
+                    {/* Logo animé */}
+                    <div style={{ animation: "floatGlobe 5s ease-in-out infinite", marginBottom: "28px", filter: "drop-shadow(0 0 24px rgba(184,134,11,0.6))", opacity: visible ? 1 : 0, transition: "opacity 0.6s" }}>
+                        <Logo size={100} />
                     </div>
 
                     {/* Badge */}
@@ -326,10 +346,13 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                 padding: "min(3vw, 16px) min(8vw, 40px)",
                                 borderRadius: "8px",
                                 fontSize: "var(--font-size-sm)",
-                                animation: "pulseGold 3s ease infinite"
+                                animation: "pulseGold 3s ease infinite",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px"
                             }}
                         >
-                            🏛️ {t('landing.startDesign')}
+                            <Logo size={20} /> {t('landing.startDesign')}
                         </button>
                         <button
                             className="btn-secondary"
@@ -337,10 +360,13 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                             style={{
                                 padding: "min(3vw, 16px) min(6vw, 36px)",
                                 borderRadius: "8px",
-                                fontSize: "var(--font-size-sm)"
+                                fontSize: "var(--font-size-sm)",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px"
                             }}
                         >
-                            🖼️ {t('landing.viewGallery')}
+                            <Logo size={18} /> {t('landing.viewGallery')}
                         </button>
                         <button
                             className="btn-secondary"
@@ -348,10 +374,13 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                             style={{
                                 padding: "min(3vw, 16px) min(6vw, 36px)",
                                 borderRadius: "8px",
-                                fontSize: "var(--font-size-sm)"
+                                fontSize: "var(--font-size-sm)",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px"
                             }}
                         >
-                            📚 {t('landing.browseStyles')}
+                            <Logo size={18} /> {t('landing.browseStyles')}
                         </button>
                         <button
                             className="btn-secondary"
@@ -362,10 +391,13 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                 fontSize: "var(--font-size-sm)",
                                 background: "rgba(184,134,11,0.1)",
                                 border: "1px solid rgba(184,134,11,0.5)",
-                                color: "#F0E6D3"
+                                color: "#F0E6D3",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px"
                             }}
                         >
-                            🎨 Palettes Africaines
+                            <Logo size={18} /> {t('landing.browsePalettes', { defaultValue: 'Palettes Africaines' })}
                         </button>
                     </div>
 
@@ -564,7 +596,8 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                                     }}>
                                         <img
                                             src={`/families/${imageName}.png`}
-                                            alt={`Style ${family}`}
+                                            alt={t('landing.alt.family', { family: family, defaultValue: `Style de design : ${family}` })}
+                                            loading="lazy"
                                             style={{
                                                 width: "100%",
                                                 height: "100%",
@@ -787,9 +820,9 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     <button
                         className="btn-primary"
                         onClick={onEnterDesigner}
-                        style={{ padding: "18px 56px", fontSize: "17px" }}
+                        style={{ padding: "18px 56px", fontSize: "17px", display: "flex", alignItems: "center", gap: "16px", margin: "0 auto" }}
                     >
-                        🏛️ {t('landing.cta.btn')}
+                        <Logo size={24} /> {t('landing.cta.btn')}
                     </button>
                 </div>
             </section>

@@ -109,13 +109,18 @@
         }
     },
     "landing": {
+        "seo": {
+            "title": "African Interior Design - Créateur IA & Catalogue de Styles",
+            "description": "Transformez vos espaces avec un design d'intérieur africain authentique propulsé par l'IA. Explorez notre base de données de 89 styles architecturaux, du Sahel à la Côte."
+        },
         "badge": "Design d'intérieur africain par IA",
-        "title1": "Transformez votre espace avec",
+        "title1": "Transformez votre espace with",
         "title2": "l'âme de l'Afrique",
         "subtitle": "Uploadez une photo de votre pièce, choisissez parmi {{count}}+ styles africains authentiques et laissez l'IA la transformer en quelques secondes.",
         "startDesign": "Commencer le design",
         "viewGallery": "Voir la galerie",
         "browseStyles": "Parcourir tous les styles",
+        "browsePalettes": "Palettes Africaines",
         "stats": {
             "styles": "Styles africains",
             "regions": "Régions d'Afrique",
@@ -178,6 +183,9 @@
         }
     },
     "gallery": {
+        "seo": {
+            "description": "Parcourez les designs d'intérieur africains générés par IA. L'authenticité alliée à la créativité moderne."
+        },
         "title": "Galerie des Réalisations",
         "subtitle": "Galerie · {{count}} réalisation",
         "subtitle_plural": "Galerie · {{count}} réalisations",
@@ -209,6 +217,9 @@
         "customPrompt": "Instructions particulières :"
     },
     "designer": {
+        "seo": {
+            "description": "Créez votre propre intérieur d'inspiration africaine avec l'IA Gemini. Uploadez votre photo et choisissez votre style."
+        },
         "title": "African Interior Designer",
         "subtitle": "Transformez votre espace avec l'âme de l'Afrique",
         "manageStyles": "Gérer la Base de Styles"
@@ -309,6 +320,11 @@
         "googleBtn": "Continuer avec Google",
         "secureText": "Vos créations sont sécurisées et privées 🔒"
     },
+    "database": {
+        "seo": {
+            "description": "Explorez 89 styles architecturaux africains authentiques avec leur histoire culturelle et des prompts IA détaillés."
+        }
+    },
     "db": {
         "families": {
             "Terres & Banco": "Terres & Banco",
@@ -408,6 +424,18 @@
                 "name": "Ndebele Mural",
                 "description": "Graphismes géométriques aux couleurs vives, perles et symétrie — l'identité visuelle d'Esther Mahlangu"
             }
+        }
+    },
+    "palette": {
+        "title": "Couleurs d'Afrique",
+        "subtitle": "Explorez et copiez les palettes de {{count}} styles africains authentiques",
+        "searchPlaceholder": "Rechercher un style, un pays...",
+        "newTag": "✦ NOUVEAU",
+        "empty": "Aucune palette trouvée pour cette recherche.",
+        "copied": "Copié !",
+        "nav": {
+            "home": "Accueil",
+            "create": "Créer"
         }
     }
 }

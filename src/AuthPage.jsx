@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
+import Logo from './components/Logo';
 
 
 export default function AuthPage({ onSuccess }) {
@@ -68,7 +69,7 @@ export default function AuthPage({ onSuccess }) {
             <div style={s.card}>
                 {/* Logo / Title */}
                 <div style={s.logoArea}>
-                    <div style={s.logoIcon}>🏺</div>
+                    <Logo size={60} style={{ marginBottom: '16px' }} />
                     <div style={s.logoTitle}>{t('auth.tagline')}</div>
                     <div style={s.logoSubtitle}>{t('auth.title')}</div>
                 </div>
@@ -222,8 +223,7 @@ const s = {
         boxShadow: '0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(184,134,11,0.1)',
         backdropFilter: 'blur(20px)',
     },
-    logoArea: { textAlign: 'center', marginBottom: '32px' },
-    logoIcon: { fontSize: '48px', marginBottom: '12px', lineHeight: 1 },
+    logoArea: { textAlign: 'center', marginBottom: '32px', display: 'flex', flexDirection: 'column', alignItems: 'center' },
     logoTitle: {
         fontSize: '24px', fontWeight: 'bold', color: '#F0E6D3',
         letterSpacing: '0.05em', marginBottom: '4px',

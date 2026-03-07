@@ -8,6 +8,7 @@ import WorldViewerModal from "./WorldViewerModal";
 import InpaintingModal from "./InpaintingModal";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import { useAuth } from "./AuthContext";
+import Logo from "./components/Logo";
 import { fetchStylesFromSupabase, fetchRoomTypes, fetchColorPalettes } from "./supabaseClient";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
@@ -737,7 +738,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
               <div style={{ width: "100%", height: "120px", borderBottom: selectedStyle?.id === style.id ? "1px solid #B8860B" : "1px solid #2A1A0E", overflow: "hidden" }}>
                 <img
                   src={style.image_url || `/families/${style.family?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "") || "TextilesRoyaux"}.png`}
-                  alt={style.name}
+                  alt={style[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || style.name}
                   loading="lazy"
                   style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
                   onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
@@ -1151,9 +1152,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
               className="btn-secondary"
               style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}
             >
-              <span className="material-symbols-outlined text-[18px]">
-                arrow_back
-              </span>
+              <Logo size={18} />
               {t('gallery.back')}
             </button>
           )}
@@ -1191,9 +1190,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
 
         <div className="text-center hidden lg:block">
           <h1 className="flex items-center justify-center gap-3 text-3xl font-display font-bold" style={{ color: "var(--color-text-main)", margin: 0 }}>
-            <span className="material-symbols-outlined text-4xl" style={{ color: "var(--color-primary)" }}>
-              temple_hindu
-            </span>
+            <Logo size={40} />
             {t('designer.title')}
           </h1>
           <p className="italic mt-1 font-medium" style={{ color: "#8B7050" }}>

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import Logo from './components/Logo';
 import DB from './african-styles-db.json';
 
 const FAMILY_COLORS = {
@@ -16,14 +17,14 @@ const FAMILY_COLORS = {
 export default function PaletteGenerator({ onBack, onGoToDesigner, stylesData = DB }) {
     const { t } = useTranslation();
     const [searchTerm, setSearchTerm] = useState("");
-    const [activeFamily, setActiveFamily] = useState("Tout");
+    const [activeFamily, setActiveFamily] = useState("all");
     const [copiedColor, setCopiedColor] = useState(null);
 
     const filteredStyles = useMemo(() => {
         return stylesData.styles.filter(style => {
             const matchSearch = (style.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
                 (style.country || "").toLowerCase().includes(searchTerm.toLowerCase());
-            const matchFamily = activeFamily === "Tout" || style.family === activeFamily;
+            const matchFamily = activeFamily === "all" || style.family === activeFamily;
             return matchSearch && matchFamily;
         });
     }, [searchTerm, activeFamily, stylesData.styles]);
@@ -42,18 +43,21 @@ export default function PaletteGenerator({ onBack, onGoToDesigner, stylesData = 
                 <div style={s.headerContent}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
                         <div style={{ display: 'flex', gap: '12px' }}>
-                            <button onClick={onBack} className="btn-secondary" style={s.navBtn}>
-                                🏠 Accueil
+                            <button onClick={onBack} className="btn-secondary" style={{ ...s.navBtn, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Logo size={16} /> {t('palette.nav.home')}
                             </button>
-                            <button onClick={onGoToDesigner} className="btn-primary" style={s.navBtn}>
-                                🏛️ Créer
+                            <button onClick={onGoToDesigner} className="btn-primary" style={{ ...s.navBtn, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Logo size={16} /> {t('palette.nav.create')}
                             </button>
                         </div>
 
                         <div style={{ textAlign: 'right', flex: 1 }}>
-                            <div style={s.tag}>✦ NOUVEAU</div>
-                            <h1 style={s.title}>Couleurs d'Afrique</h1>
-                            <p style={s.subtitle}>Explorez et copiez les palettes de {filteredStyles.length} styles africains authentiques</p>
+                            <div style={s.tag}>{t('palette.newTag')}</div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+                                <Logo size={24} />
+                                <h1 style={s.title}>{t('palette.title')}</h1>
+                            </div>
+                            <p style={s.subtitle}>{t('palette.subtitle', { count: stylesData.styles.length })}</p>
                         </div>
                     </div>
 
@@ -62,7 +66,7 @@ export default function PaletteGenerator({ onBack, onGoToDesigner, stylesData = 
                         <div style={{ flex: 1 }}>
                             <input
                                 type="text"
-                                placeholder="Rechercher un style, un pays..."
+                                placeholder={t('palette.searchPlaceholder')}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 style={s.searchInput}
@@ -70,10 +74,10 @@ export default function PaletteGenerator({ onBack, onGoToDesigner, stylesData = 
                         </div>
                         <div style={s.pillFilters}>
                             <button
-                                onClick={() => setActiveFamily("Tout")}
-                                style={{ ...s.pill, ...(activeFamily === "Tout" ? s.pillActive : {}) }}
+                                onClick={() => setActiveFamily("all")}
+                                style={{ ...s.pill, ...(activeFamily === "all" ? s.pillActive : {}) }}
                             >
-                                Toutes
+                                {t('filters.allFem')}
                             </button>
                             {stylesData.families.map(f => (
                                 <button
@@ -95,7 +99,7 @@ export default function PaletteGenerator({ onBack, onGoToDesigner, stylesData = 
             {/* Grid */}
             <main style={s.main}>
                 {filteredStyles.length === 0 ? (
-                    <div style={s.empty}>Aucune palette trouvée pour cette recherche.</div>
+                    <div style={s.empty}>{t('palette.empty')}</div>
                 ) : (
                     <div style={s.grid}>
                         {filteredStyles.map(style => (
@@ -113,7 +117,7 @@ export default function PaletteGenerator({ onBack, onGoToDesigner, stylesData = 
                                 {/* Palette */}
                                 <div style={s.paletteWrapper}>
                                     {style.colors.map((color, index) => {
-                                        const cName = style.colorNames?.[index] || `Couleur ${index + 1}`;
+                                        const cName = style.colorNames?.[index] || `${t('app.color')} ${index + 1}`;
                                         const isCopied = copiedColor === `${color}-${cName}`;
 
                                         return (
@@ -125,7 +129,7 @@ export default function PaletteGenerator({ onBack, onGoToDesigner, stylesData = 
                                                 className="color-strap"
                                             >
                                                 <div style={{ ...s.colorInfo, opacity: isCopied ? 1 : '' }} className="color-info">
-                                                    <span style={s.colorHex}>{isCopied ? 'Copié !' : color}</span>
+                                                    <span style={s.colorHex}>{isCopied ? t('palette.copied') : color}</span>
                                                     <span style={s.colorName}>{cName}</span>
                                                 </div>
                                             </div>

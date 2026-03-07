@@ -109,6 +109,10 @@
         }
     },
     "landing": {
+        "seo": {
+            "title": "African Interior Design - AI Creator & Styles Catalog",
+            "description": "Transform your spaces with authentic African interior design powered by AI. Explore our database of 89 architectural styles from the Sahel to the Coast."
+        },
         "badge": "AI African Interior Design",
         "title1": "Transform your space with",
         "title2": "the soul of Africa",
@@ -116,6 +120,7 @@
         "startDesign": "Start designing",
         "viewGallery": "View the gallery",
         "browseStyles": "Browse all styles",
+        "browsePalettes": "African Palettes",
         "stats": {
             "styles": "African styles",
             "regions": "African regions",
@@ -178,6 +183,9 @@
         }
     },
     "gallery": {
+        "seo": {
+            "description": "Browse AI-generated African interior designs. Authenticity meets modern creativity."
+        },
         "title": "Gallery of Creations",
         "subtitle": "Gallery · {{count}} creation",
         "subtitle_plural": "Gallery · {{count}} creations",
@@ -209,6 +217,9 @@
         "customPrompt": "Special instructions:"
     },
     "designer": {
+        "seo": {
+            "description": "Create your own African-inspired interior using Gemini AI. Upload your photo and choose a style."
+        },
         "title": "African Interior Designer",
         "subtitle": "Transform your space with the soul of Africa",
         "manageStyles": "Manage Style Database"
@@ -308,6 +319,11 @@
         "googleRedirect": "Redirecting...",
         "googleBtn": "Continue with Google",
         "secureText": "Your creations are secure and private 🔒"
+    },
+    "database": {
+        "seo": {
+            "description": "Explore 89 authentic African architectural styles with detailed cultural history and AI prompts."
+        }
     },
     "db": {
         "styles": {
@@ -411,6 +427,18 @@
             "Islamique Africain": "African Islamic",
             "Tropical Équatorial": "Equatorial Tropical",
             "Urbain Contemporain": "Urban Contemporary"
+        }
+    },
+    "palette": {
+        "title": "Colors of Africa",
+        "subtitle": "Explore and copy palettes from {{count}} authentic African styles",
+        "searchPlaceholder": "Search a style, country...",
+        "newTag": "✦ NEW",
+        "empty": "No palette found for this search.",
+        "copied": "Copied!",
+        "nav": {
+            "home": "Home",
+            "create": "Create"
         }
     }
 }

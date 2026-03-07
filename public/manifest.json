@@ -1,0 +1,21 @@
+{
+    "short_name": "African Interior",
+    "name": "African Interior Designer",
+    "icons": [
+        {
+            "src": "favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "og-image.png",
+            "sizes": "1200x630",
+            "type": "image/png"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#0C0806",
+    "background_color": "#0C0806"
+}
