@@ -25,7 +25,7 @@ async function migrateData() {
                 console.log(`Found ${stylesData.styles.length} styles to migrate.`);
                 const { error } = await supabase.from('styles').upsert(
                     stylesData.styles.map(s => ({
-                        id: s.id,
+                        id: s.id, // Ensure id is mapped so it updates if exists
                         name: s.name,
                         region: s.region || 'Other',
                         family: s.family || 'Other',
@@ -35,7 +35,7 @@ async function migrateData() {
                         colors: s.colors || [],
                         patterns: s.patterns || [],
                         flag: s.flag || '🌍',
-                        image_url: s.image_url || null
+                        image_url: s.image_url || null,
                     }))
                 );
                 if (error) throw error;

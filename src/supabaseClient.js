@@ -105,3 +105,35 @@ export async function deleteGalleryEntryInSupabase(id) {
     throw error;
   }
 }
+
+// ── Helper: Fetch landing assets from Supabase ──
+export async function fetchLandingAssetsFromSupabase() {
+  const { data, error } = await supabase
+    .from('landing_assets')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching landing assets:', error);
+    throw error;
+  }
+  return data;
+}
+
+// ── Helper: Fetch testimonials from Supabase ──
+export async function fetchTestimonials() {
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching testimonials:', error);
+    throw error;
+  }
+  return data;
+}
+
+

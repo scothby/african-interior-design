@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import DB from "./african-styles-db.json";
 import LanguageSwitcher from "./components/LanguageSwitcher";
-import { fetchStylesFromSupabase, fetchGalleryFromSupabase } from "./supabaseClient";
+import { fetchStylesFromSupabase, fetchGalleryFromSupabase, fetchLandingAssetsFromSupabase, fetchTestimonials } from "./supabaseClient";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -55,7 +55,8 @@ const getFeatures = (t) => [
     { icon: "🔒", label: t('landing.features.secure_label', { defaultValue: "Sécurisé" }), desc: t('landing.features.secure_desc', { defaultValue: "Données protégées" }) },
 ];
 
-const HERO_IMAGES = [
+// We will move this inside the component to use Supabase data
+const DEFAULT_HERO_IMAGES = [
     "/families/TerresBanco.png",
     "/families/TextilesRoyaux.png",
     "/families/CotierSwahili.png",
@@ -66,15 +67,15 @@ const HERO_IMAGES = [
     "/families/UrbainContemporain.png"
 ];
 
-// Create stable random columns for the masonry outside the component to avoid reshuffling on re-render
-const MASONRY_COLS = Array.from({ length: 6 }, () => [...HERO_IMAGES].sort(() => 0.5 - Math.random()));
-
 export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDatabase, onEnterPalettes, user, onSignOut }) {
     const { t } = useTranslation();
     const [visible, setVisible] = useState(false);
     const [hoveredFamily, setHoveredFamily] = useState(null);
     const [recentDesigns, setRecentDesigns] = useState([]);
     const [loadingGallery, setLoadingGallery] = useState(true);
+    const [testimonials, setTestimonials] = useState([]);
+    const [heroImages, setHeroImages] = useState(DEFAULT_HERO_IMAGES);
+    const [heroComparison, setHeroComparison] = useState("/hero-comparison.png");
 
     // Supabase-sourced data (with fallback to local JSON)
     const [stylesData, setStylesData] = useState({
@@ -83,19 +84,39 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
         families: DB.families,
     });
 
-    // Fetch styles from Supabase on mount
+    // Fetch styles and assets from Supabase on mount
     useEffect(() => {
-        const loadStyles = async () => {
+        const loadInitialData = async () => {
             try {
-                const data = await fetchStylesFromSupabase();
-                setStylesData(data);
+                const [styles, assets, tests] = await Promise.all([
+                    fetchStylesFromSupabase(),
+                    fetchLandingAssetsFromSupabase(),
+                    fetchTestimonials()
+                ]);
+
+                setStylesData(styles);
+                setTestimonials(tests);
+
+                if (assets && assets.length > 0) {
+                    const masonry = assets.filter(a => a.asset_type === 'hero_masonry').map(a => a.image_url);
+                    const comparison = assets.find(a => a.asset_type === 'hero_comparison');
+
+                    if (masonry.length > 0) setHeroImages(masonry);
+                    if (comparison) setHeroComparison(comparison.image_url);
+                }
             } catch (err) {
-                console.error("Failed to fetch styles from Supabase, using local JSON fallback", err);
-                // Keep the fallback local JSON data
+                console.error("Failed to fetch initial data from Supabase, using fallbacks", err);
             }
         };
-        loadStyles();
+        loadInitialData();
     }, []);
+
+    const masonryCols = useState(() =>
+        Array.from({ length: 6 }, () => [...heroImages].sort(() => 0.5 - Math.random()))
+    )[0];
+
+    // Stabilize masonry even when heroImages update (optional: update when heroImages change?)
+    // Actually, let's keep it simple: just map them properly.
 
     // Fetch gallery from Supabase
     useEffect(() => {
@@ -222,7 +243,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     zIndex: 0,
                     overflow: "hidden"
                 }}>
-                    {MASONRY_COLS.map((col, i) => (
+                    {Array.from({ length: 6 }).map((_, i) => (
                         <div key={i} style={{
                             display: "flex",
                             flexDirection: "column",
@@ -230,8 +251,8 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                             width: "calc(100vw / 5)",
                             animation: `${i % 2 === 0 ? 'slideUp' : 'slideDown'} ${40 + (i % 3) * 10}s linear infinite`
                         }}>
-                            {/* Double the images to loop seamlessly */}
-                            {[...col, ...col].map((img, j) => (
+                            {/* Stabilize columns based on heroImages */}
+                            {[...heroImages].sort((a, b) => (i * 13 + a.length) % 7 - (i * 7 + b.length) % 13).concat([...heroImages].sort((a, b) => b.length - a.length)).map((img, j) => (
                                 <img key={j} src={img} alt="" style={{ width: "100%", borderRadius: "12px", objectFit: "cover", boxShadow: "0 8px 24px rgba(0,0,0,0.8)" }} />
                             ))}
                         </div>
@@ -370,7 +391,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                         animationDelay: "0.7s"
                     }}>
                         <img
-                            src="/hero-comparison.png"
+                            src={heroComparison}
                             alt="Avant et Après Design Africain par IA"
                             style={{ width: "100%", height: "auto", display: "block" }}
                         />
@@ -618,6 +639,38 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     </div>
                 </div>
             </section>
+
+            {/* ─────────────────────────────────────────────────────────────
+          SECTION — TÉMOIGNAGES
+      ───────────────────────────────────────────────────────────── */}
+            {testimonials.length > 0 && (
+                <section style={{ padding: "80px 24px", borderTop: "1px solid #1E1208" }}>
+                    <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+                        <div style={{ textAlign: "center", marginBottom: "56px" }}>
+                            <div style={{ fontSize: "10px", letterSpacing: "0.3em", textTransform: "uppercase", color: "#B8860B", marginBottom: "12px" }}>✦ Témoignages</div>
+                            <h2 style={{ margin: 0, fontSize: "clamp(22px, 4vw, 36px)", fontWeight: "normal" }}>Ils réinventent l'Afrique avec nous</h2>
+                        </div>
+
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "24px" }}>
+                            {testimonials.map((t, i) => (
+                                <div key={i} className="glass-panel" style={{ padding: "32px", borderRadius: "12px", border: "1px solid #1E1208", display: "flex", flexDirection: "column", gap: "16px" }}>
+                                    <div style={{ color: "#B8860B", fontSize: "20px" }}>{"★".repeat(t.rating)}{"☆".repeat(5 - t.rating)}</div>
+                                    <p style={{ margin: 0, fontSize: "15px", lineHeight: "1.7", color: "#A08060", fontStyle: "italic" }}>"{t.content}"</p>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
+                                        <div style={{ width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(45deg, #2A1A0E, #B8860B)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>
+                                            {t.user_name[0]}
+                                        </div>
+                                        <div>
+                                            <div style={{ fontSize: "14px", fontWeight: "bold", color: "#F0E6D3" }}>{t.user_name}</div>
+                                            <div style={{ fontSize: "11px", color: "#6B5030" }}>{t.user_role}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* ─────────────────────────────────────────────────────────────
           SECTION — CTA FINAL
