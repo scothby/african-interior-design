@@ -242,16 +242,20 @@ function LandingAssetManager() {
 
     return (
         <div>
-            <form onSubmit={handleSave} style={s.inlineForm}>
-                <select value={formData.asset_type} onChange={e => setFormData({ ...formData, asset_type: e.target.value })} style={s.input}>
-                    <option value="hero_masonry">Hero Gallery (Grid)</option>
-                    <option value="hero_comparison">Hero Comparison (Before/After)</option>
-                    <option value="featured_creation">Latest Creations (Showcase)</option>
-                </select>
-                <input placeholder="URL de l'image" value={formData.image_url} onChange={e => setFormData({ ...formData, image_url: e.target.value })} style={{ ...s.input, flex: 2 }} required />
-                <input placeholder="Titre (FR)" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} style={s.input} />
-                <input placeholder="Titre (EN)" value={formData.title_en} onChange={e => setFormData({ ...formData, title_en: e.target.value })} style={s.input} />
-                <button type="submit" style={s.btnPrimary}>Ajouter</button>
+            <form onSubmit={handleSave} style={{ ...s.inlineForm, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '8px', flex: '1 1 100%', minWidth: '280px' }}>
+                    <select value={formData.asset_type} onChange={e => setFormData({ ...formData, asset_type: e.target.value })} style={{ ...s.input, flex: '1' }}>
+                        <option value="hero_masonry">Hero Gallery (Grid)</option>
+                        <option value="hero_comparison">Hero Comparison (Before/After)</option>
+                        <option value="featured_creation">Latest Creations (Showcase)</option>
+                    </select>
+                    <input placeholder="URL de l'image" value={formData.image_url} onChange={e => setFormData({ ...formData, image_url: e.target.value })} style={{ ...s.input, flex: '2' }} required />
+                </div>
+                <div style={{ display: 'flex', gap: '8px', flex: '1 1 auto' }}>
+                    <input placeholder="Titre (FR)" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} style={s.input} />
+                    <input placeholder="Titre (EN)" value={formData.title_en} onChange={e => setFormData({ ...formData, title_en: e.target.value })} style={s.input} />
+                    <button type="submit" style={{ ...s.btnPrimary, whiteSpace: 'nowrap' }}>Ajouter</button>
+                </div>
             </form>
 
             <div style={s.grid}>
