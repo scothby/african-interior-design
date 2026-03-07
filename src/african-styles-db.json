@@ -457,6 +457,7 @@
       "flag": "🇲🇱",
       "region": "Afrique de l'Ouest",
       "family": "Terres & Banco",
+      "image_url": "/styles/ml-dogon.png",
       "colors": [
         "#8B6914",
         "#D2691E",
@@ -586,6 +587,7 @@
       "flag": "🇬🇭",
       "region": "Afrique de l'Ouest",
       "family": "Textiles Royaux",
+      "image_url": "/styles/gh-ashanti.png",
       "colors": [
         "#8B6914",
         "#000000",
@@ -1622,6 +1624,7 @@
       "flag": "🇰🇪",
       "region": "Afrique de l'Est",
       "family": "Côtier Swahili",
+      "image_url": "/styles/ke-swahili-lamu.png",
       "colors": [
         "#DEB887",
         "#FFFFFF",
@@ -1837,6 +1840,7 @@
       "flag": "🇿🇦",
       "region": "Afrique Australe",
       "family": "Géométrique Peint",
+      "image_url": "/styles/za-ndebele.png",
       "colors": [
         "#FFFFFF",
         "#000000",
@@ -3600,6 +3604,7 @@
       "flag": "🇨🇲",
       "region": "Afrique Centrale",
       "family": "Terres & Banco",
+      "image_url": "/styles/cm-musgum-obus.png",
       "colors": [
         "#8B5A2B",
         "#D2B48C",
@@ -3643,6 +3648,7 @@
       "flag": "🇨🇲",
       "region": "Afrique Centrale",
       "family": "Tropical Équatorial",
+      "image_url": "/styles/cm-baka-forest.png",
       "colors": [
         "#2E7D32",
         "#5D4037",
@@ -3686,6 +3692,7 @@
       "flag": "🇨🇲",
       "region": "Afrique Centrale",
       "family": "Terres & Banco",
+      "image_url": "/styles/cm-mandara-mafa.png",
       "colors": [
         "#696969",
         "#424242",
@@ -3729,6 +3736,7 @@
       "flag": "🇨🇲",
       "region": "Afrique Centrale",
       "family": "Textiles Royaux",
+      "image_url": "/styles/cm-grassfields-royal.png",
       "colors": [
         "#B71C1C",
         "#1A237E",
@@ -3772,6 +3780,7 @@
       "flag": "🇨🇲",
       "region": "Afrique Centrale",
       "family": "Côtier Swahili",
+      "image_url": "/styles/cm-bakweri-volcan.png",
       "colors": [
         "#455A64",
         "#FFFFFF",
@@ -3815,6 +3824,7 @@
       "flag": "🇨🇲",
       "region": "Afrique Centrale",
       "family": "Géométrique Peint",
+      "image_url": "/styles/cm-massa-tupuri.png",
       "colors": [
         "#FFFFFF",
         "#000000",
