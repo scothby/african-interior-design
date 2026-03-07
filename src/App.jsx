@@ -343,25 +343,46 @@ function AppContent() {
               onMouseEnter={e => { if (selected !== style.id) e.currentTarget.style.borderColor = "#3A2A15"; }}
               onMouseLeave={e => { if (selected !== style.id) e.currentTarget.style.borderColor = "#1E1208"; }}
             >
-              {/* Color strip */}
-              <div style={{ display: "flex", height: "6px" }}>
-                {style.colors.map((c, i) => <div key={i} style={{ flex: 1, background: c }} />)}
+              {/* 1. Palette (More prominent) */}
+              <div style={{ display: "flex", height: "30px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                {style.colors.map((c, i) => (
+                  <div key={i} style={{ flex: 1, background: c }} title={style.colorNames?.[i] || c} />
+                ))}
               </div>
 
-              <div style={{ padding: "14px" }}>
+              {/* 2. Illustrative Photo */}
+              <div style={{ height: "180px", background: "#0A0603", position: "relative", overflow: "hidden" }}>
+                <img
+                  src={style.image_url || `/families/${style.family.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "")}.png`}
+                  alt={style.name}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s" }}
+                  onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
+                  onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                  onError={(e) => {
+                    // Fallback to a placeholder or stay empty
+                    e.target.style.display = 'none';
+                  }}
+                />
+                <div style={{ position: "absolute", bottom: "8px", left: "8px", background: "rgba(0,0,0,0.6)", padding: "2px 8px", borderRadius: "99px", fontSize: "10px", color: "white", backdropFilter: "blur(4px)" }}>
+                  {style.flag} {style.country}
+                </div>
+              </div>
+
+              {/* 3. Text & Metadata */}
+              <div style={{ padding: "16px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
-                  <span style={{ fontSize: "18px" }}>{style.flag}</span>
+                  <div style={{ fontSize: "15px", fontWeight: "bold", color: "#F0E6D3" }}>
+                    {t(`db.styles.${style.id}.name`, { defaultValue: style.name })}
+                  </div>
                   <span style={{
-                    fontSize: "9px", letterSpacing: "0.1em", textTransform: "uppercase",
+                    fontSize: "8px", letterSpacing: "0.1em", textTransform: "uppercase",
                     color: FAMILY_COLORS[style.family] || "#B8860B",
                     padding: "2px 6px", border: `1px solid ${FAMILY_COLORS[style.family]}44`,
-                    borderRadius: "2px"
+                    borderRadius: "2px", whiteSpace: "nowrap"
                   }}>{t(`db.families.${style.family}`, { defaultValue: style.family })}</span>
                 </div>
-                <div style={{ fontSize: "var(--font-size-base)", fontWeight: "bold", marginBottom: "2px", color: "#F0E6D3" }}>{t(`db.styles.${style.id}.name`, { defaultValue: style.name })}</div>
-                <div style={{ fontSize: "var(--font-size-xs)", color: "#8B7050", marginBottom: "8px" }}>{style.country}</div>
-                <p style={{ fontSize: "12px", color: "#7A6040", margin: 0, lineHeight: 1.5, fontStyle: "italic" }}>
-                  {t(`db.styles.${style.id}.description`, { defaultValue: style.description }).substring(0, 80)}…
+                <p style={{ fontSize: "12px", color: "#8B7050", margin: 0, lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                  {t(`db.styles.${style.id}.description`, { defaultValue: style.description })}
                 </p>
               </div>
             </div>
