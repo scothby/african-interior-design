@@ -8,12 +8,13 @@ import WorldViewerModal from "./WorldViewerModal";
 import InpaintingModal from "./InpaintingModal";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import { useAuth } from "./AuthContext";
+import { fetchStylesFromSupabase } from "./supabaseClient";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery }) {
+export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery, onGoToPalettes }) {
   const { t } = useTranslation();
-  const { getToken } = useAuth();
+  const { getToken, isAdmin } = useAuth();
   const [currentView, setCurrentView] = useState("upload"); // 'upload', 'select-style', 'generating', 'result', 'manage-styles'
   const [uploadedImage, setUploadedImage] = useState(null);
   const [selectedStyle, setSelectedStyle] = useState(null);
@@ -51,33 +52,17 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
     families: [],
   });
 
-  // Fetch styles from backend
+  // Fetch styles from Supabase directly
   const fetchStyles = useCallback(async () => {
     try {
-      const token = await getToken();
-      const res = await fetch(`${API_BASE_URL}/api/styles`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!res.ok) throw new Error("Failed to fetch styles");
-      const data = await res.json();
-
-      // Extract unique regions and families for filters
-      const regions = [...new Set(data.styles.map((s) => s.region))].filter(
-        Boolean,
-      );
-      const families = [...new Set(data.styles.map((s) => s.family))].filter(
-        Boolean,
-      );
-
+      const data = await fetchStylesFromSupabase();
       setStylesDb({
         styles: data.styles,
-        regions: regions,
-        families: families,
+        regions: data.regions,
+        families: data.families,
       });
     } catch (err) {
-      console.error("Error fetching styles:", err);
+      console.error("Error fetching styles from Supabase:", err);
     }
   }, []);
 
@@ -187,9 +172,13 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
   const toggleFavorite = async () => {
     if (!generatedId) return;
     try {
+      const token = await getToken();
       const res = await fetch(
         `${API_BASE_URL}/api/gallery/${generatedId}/favorite`,
-        { method: "PATCH" },
+        {
+          method: "PATCH",
+          headers: { "Authorization": `Bearer ${token}` }
+        },
       );
       if (!res.ok) throw new Error("Failed to update favorite");
       const data = await res.json();
@@ -258,9 +247,13 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
     setCurrentView("generating"); // Show loading screen
 
     try {
+      const token = await getToken();
       const response = await fetch(`${API_BASE_URL}/api/inpaint`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify({
           originalImage: generatedImage, // Edit the result image
           maskImage: maskDataUrl,
@@ -329,16 +322,17 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
 
   const renderUploadContent = () => (
     <div className="w-full max-w-5xl">
-      <div className="glass-panel-tw rounded-[2.5rem] p-8 md:p-14 overflow-hidden relative">
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-ochre/5 rounded-full blur-3xl"></div>
+      <div className="glass-panel rounded-[2.5rem] p-8 md:p-14 overflow-hidden relative" style={{ background: "var(--glass-bg)", border: "1px solid var(--color-border)" }}>
+        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl" style={{ background: "var(--color-primary-dark)", opacity: 0.2 }}></div>
+        <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full blur-3xl" style={{ background: "#8B4513", opacity: 0.1 }}></div>
 
         <div
           className="relative group cursor-pointer"
           onClick={() => document.getElementById("file-upload").click()}
         >
           <div
-            className={`upload-zone-glass-tw rounded-3xl p-12 md:p-20 transition-all duration-500 flex flex-col items-center justify-center text-center ${dragActive ? "bg-white/60 border-primary scale-[1.01]" : "group-hover:bg-white/40 dark:group-hover:bg-slate-800/40"}`}
+            className={`rounded-3xl p-12 md:p-20 transition-all duration-500 flex flex-col items-center justify-center text-center ${dragActive ? "scale-[1.01]" : ""}`}
+            style={{ background: dragActive ? "rgba(212, 175, 55, 0.1)" : "rgba(22, 14, 7, 0.6)", border: dragActive ? "2px dashed var(--color-primary)" : "1px dashed #2A1A0E" }}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
@@ -346,28 +340,28 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
           >
             <div className="mb-8 relative pointer-events-none">
               <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 group-hover:scale-[2.5] transition-transform duration-700"></div>
-              <div className="relative w-24 h-24 bg-white dark:bg-slate-800 rounded-3xl flex items-center justify-center shadow-xl border border-white/50 dark:border-slate-700/50 transform group-hover:-translate-y-3 transition-transform duration-500">
-                <span className="material-symbols-outlined text-5xl text-primary">
+              <div className="relative w-24 h-24 rounded-3xl flex items-center justify-center shadow-xl transform group-hover:-translate-y-3 transition-transform duration-500" style={{ background: "#0A0806", border: "1px solid #2A1A0E" }}>
+                <span className="material-symbols-outlined text-5xl" style={{ color: "var(--color-primary)" }}>
                   photo_camera
                 </span>
               </div>
             </div>
 
-            <h2 style={{ fontSize: "var(--font-size-xl)" }} className="font-display font-bold mb-6 text-slate-900 dark:text-slate-50 leading-tight pointer-events-none">
+            <h2 style={{ fontSize: "var(--font-size-xl)", color: "var(--color-text-main)" }} className="font-display font-bold mb-6 leading-tight pointer-events-none">
               {t('app.upload.dragText')} <br className="hidden md:block" />
-              <span className="text-primary underline decoration-primary/30 decoration-4 underline-offset-8 cursor-pointer hover:text-primary/80 transition-colors pointer-events-auto">
+              <span className="transition-colors pointer-events-auto" style={{ color: "var(--color-primary)", textDecoration: "underline", textUnderlineOffset: "8px", textDecorationColor: "rgba(212, 175, 55, 0.3)" }}>
                 {t('app.upload.clickText')}
               </span>
             </h2>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 text-slate-600 dark:text-slate-400 font-semibold uppercase tracking-widest pointer-events-none" style={{ fontSize: "var(--font-size-xs)" }}>
-              <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">
+            <div className="flex flex-wrap items-center justify-center gap-4 font-semibold uppercase tracking-widest pointer-events-none" style={{ fontSize: "var(--font-size-xs)", color: "#8B7050" }}>
+              <span style={{ background: "#1A1008", padding: "4px 12px", borderRadius: "6px", border: "1px solid #2A1A0E" }}>
                 JPG
               </span>
-              <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">
+              <span style={{ background: "#1A1008", padding: "4px 12px", borderRadius: "6px", border: "1px solid #2A1A0E" }}>
                 PNG
               </span>
-              <span className="bg-white/40 dark:bg-slate-800/40 px-3 py-1 rounded-md">
+              <span style={{ background: "#1A1008", padding: "4px 12px", borderRadius: "6px", border: "1px solid #2A1A0E" }}>
                 WebP
               </span>
               <span className="ml-2 font-normal lowercase italic opacity-70">
@@ -398,10 +392,10 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
           </div>
         )}
 
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-10 text-slate-700 dark:text-slate-300">
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-10" style={{ color: "#A08060" }}>
           <div className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-              <span className="material-symbols-outlined text-primary text-xl">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-colors" style={{ background: "rgba(212, 175, 55, 0.1)" }}>
+              <span className="material-symbols-outlined text-xl" style={{ color: "var(--color-primary)" }}>
                 verified
               </span>
             </div>
@@ -410,8 +404,8 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
             </span>
           </div>
           <div className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
-              <span className="material-symbols-outlined text-secondary dark:text-indigo-300 text-xl">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-colors" style={{ background: "rgba(139, 101, 8, 0.1)" }}>
+              <span className="material-symbols-outlined text-xl" style={{ color: "#8B6508" }}>
                 security
               </span>
             </div>
@@ -682,22 +676,61 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
 
   // Render generating view
   const renderGenerating = () => (
-    <div style={styles.generatingContainer} className="glass-panel">
-      <div style={styles.spinnerLarge} />
-      <h3 style={styles.generatingTitle}>{t('app.generating.title')}</h3>
-      <p style={styles.generatingText}>
-        {t('app.generating.desc', { style: t(`db.styles.${selectedStyle?.id}.name`, { defaultValue: selectedStyle?.name }) })}
-      </p>
-      <p style={styles.generatingText}>
-        {t('app.generating.mode')}{" "}
-        {editMode === "background"
-          ? t('app.generating.background')
-          : t('app.generating.full')}
-      </p>
-      <div style={styles.generatingDetails}>
-        <div>🎨 {t('app.generating.palette')} {selectedStyle?.colors?.slice(0, 3).join(", ")}</div>
-        <div>🏛️ {t('app.generating.style')} {t(`db.families.${selectedStyle?.family}`, { defaultValue: selectedStyle?.family })}</div>
-        <div>🌍 {t('app.generating.region')} {t(`db.regions.${selectedStyle?.region}`, { defaultValue: selectedStyle?.region })}</div>
+    <div style={{ ...styles.generatingContainer, maxWidth: '600px', margin: '0 auto' }} className="glass-panel">
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: '400px',
+        aspectRatio: '16/9',
+        margin: '0 auto 32px',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        border: '2px solid var(--color-primary)',
+        boxShadow: '0 0 30px rgba(212, 175, 55, 0.2)'
+      }}>
+        <img
+          src={uploadedImage.startsWith("http") ? uploadedImage : `${API_BASE_URL}${uploadedImage}`}
+          alt="Scanning"
+          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5, filter: 'grayscale(50%)' }}
+        />
+        <div className="ai-scanner"></div>
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          zIndex: 10
+        }}>
+          <div style={styles.spinnerLarge} />
+        </div>
+      </div>
+
+      <h3 style={{ ...styles.generatingTitle, color: 'var(--color-primary)' }}>{t('app.generating.title')}</h3>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginTop: '24px', textAlign: 'left' }}>
+        <div className="glass-panel" style={{ padding: '12px', background: 'rgba(212, 175, 55, 0.05)' }}>
+          <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Style</div>
+          <div style={{ fontSize: '14px', fontWeight: '600' }}>{t(`db.styles.${selectedStyle?.id}.name`, { defaultValue: selectedStyle?.name })}</div>
+        </div>
+        <div className="glass-panel" style={{ padding: '12px', background: 'rgba(212, 175, 55, 0.05)' }}>
+          <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Mode</div>
+          <div style={{ fontSize: '14px', fontWeight: '600' }}>{editMode === "background" ? t('app.generating.background') : t('app.generating.full')}</div>
+        </div>
+      </div>
+
+      <div style={{ ...styles.generatingDetails, marginTop: '24px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ color: 'var(--color-primary)' }}>🎨</span> {selectedStyle?.colors?.slice(0, 3).join(", ")}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ color: 'var(--color-primary)' }}>🏛️</span> {t(`db.families.${selectedStyle?.family}`, { defaultValue: selectedStyle?.family })}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ color: 'var(--color-primary)' }}>🌍</span> {t(`db.regions.${selectedStyle?.region}`, { defaultValue: selectedStyle?.region })}
+        </div>
       </div>
     </div>
   );
@@ -730,41 +763,56 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
           display: "flex",
           justifyContent: "center",
           gap: "8px",
-          marginBottom: "20px",
+          marginBottom: "32px",
+          background: "rgba(20, 16, 13, 0.4)",
+          padding: "6px",
+          borderRadius: "12px",
+          width: "fit-content",
+          margin: "0 auto 32px",
+          border: "1px solid var(--color-border)"
         }}
       >
         <button
           onClick={() => setComparisonMode("slider")}
           style={{
-            padding: "8px 16px",
-            background: comparisonMode === "slider" ? "#B8860B" : "transparent",
-            border: `1px solid ${comparisonMode === "slider" ? "#B8860B" : "#2A1A0E"}`,
-            borderRadius: "4px",
-            color: comparisonMode === "slider" ? "#0C0806" : "#8B7050",
-            fontSize: "12px",
-            fontWeight: comparisonMode === "slider" ? "bold" : "normal",
+            padding: "8px 20px",
+            background: comparisonMode === "slider" ? "var(--color-primary)" : "transparent",
+            border: "none",
+            borderRadius: "8px",
+            color: comparisonMode === "slider" ? "#0C0806" : "var(--color-text-muted)",
+            fontSize: "13px",
+            fontWeight: "bold",
             cursor: "pointer",
             fontFamily: "inherit",
+            transition: "all 0.3s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px"
           }}
         >
-          ↔ {t('app.result.slider')}
+          <span className="material-symbols-outlined text-[18px]">split_screen</span>
+          {t('app.result.slider')}
         </button>
         <button
           onClick={() => setComparisonMode("sideBySide")}
           style={{
-            padding: "8px 16px",
-            background:
-              comparisonMode === "sideBySide" ? "#B8860B" : "transparent",
-            border: `1px solid ${comparisonMode === "sideBySide" ? "#B8860B" : "#2A1A0E"}`,
-            borderRadius: "4px",
-            color: comparisonMode === "sideBySide" ? "#0C0806" : "#8B7050",
-            fontSize: "12px",
-            fontWeight: comparisonMode === "sideBySide" ? "bold" : "normal",
+            padding: "8px 20px",
+            background: comparisonMode === "sideBySide" ? "var(--color-primary)" : "transparent",
+            border: "none",
+            borderRadius: "8px",
+            color: comparisonMode === "sideBySide" ? "#0C0806" : "var(--color-text-muted)",
+            fontSize: "13px",
+            fontWeight: "bold",
             cursor: "pointer",
             fontFamily: "inherit",
+            transition: "all 0.3s ease",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px"
           }}
         >
-          ▥ {t('app.result.sideBySide')}
+          <span className="material-symbols-outlined text-[18px]">view_agenda</span>
+          {t('app.result.sideBySide')}
         </button>
       </div>
 
@@ -983,15 +1031,17 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
   );
 
   return (
-    <div className="bg-background-light dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300 flex flex-col relative overflow-x-hidden">
-      <div className="kente-pattern"></div>
+    <div className="font-sans min-h-screen transition-colors duration-300 flex flex-col relative overflow-x-hidden" style={{ background: "var(--color-bg-dark)", color: "var(--color-text-main)" }}>
+      {/* Kente header bar */}
+      <div style={{ height: "5px", background: "linear-gradient(90deg,#8B0000,#B8860B,#228B22,#1A2744,#B8860B,#C41E3A,#B8860B,#228B22,#8B0000)", width: "100%", position: "absolute", top: 0, zIndex: 50 }} />
 
-      <nav className="container mx-auto px-6 py-8 flex items-center justify-between relative z-10 w-full">
+      <nav className="container mx-auto px-6 py-8 flex items-center justify-between relative z-10 w-full mt-2">
         <div className="flex items-center gap-4">
           {onBack && (
             <button
               onClick={onBack}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm"
+              className="btn-secondary"
+              style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}
             >
               <span className="material-symbols-outlined text-[18px]">
                 arrow_back
@@ -1002,7 +1052,8 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
           {onGoToStyles && (
             <button
               onClick={onGoToStyles}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm"
+              className="btn-secondary"
+              style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}
             >
               <span className="text-lg">📚</span>
               {t('gallery.baseStyles')}
@@ -1011,59 +1062,62 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
           {onGoToGallery && (
             <button
               onClick={onGoToGallery}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 hover:bg-white/80 transition-all font-medium text-sm text-slate-800 dark:text-slate-200"
+              className="btn-secondary"
+              style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}
             >
               <span className="text-lg">🖼️</span>
               {t('header.gallery')}
             </button>
           )}
+          {onGoToPalettes && (
+            <button
+              onClick={onGoToPalettes}
+              className="btn-secondary"
+              style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", background: "rgba(184,134,11,0.1)", border: "1px solid rgba(184,134,11,0.5)", color: "#F0E6D3" }}
+            >
+              <span className="text-lg">🎨</span>
+              Palettes
+            </button>
+          )}
         </div>
 
         <div className="text-center hidden lg:block">
-          <h1 className="flex items-center justify-center gap-3 text-3xl font-display font-bold text-slate-900 dark:text-white">
-            <span className="material-symbols-outlined text-primary text-4xl">
+          <h1 className="flex items-center justify-center gap-3 text-3xl font-display font-bold" style={{ color: "var(--color-text-main)", margin: 0 }}>
+            <span className="material-symbols-outlined text-4xl" style={{ color: "var(--color-primary)" }}>
               temple_hindu
             </span>
             {t('designer.title')}
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 italic mt-1 font-medium">
+          <p className="italic mt-1 font-medium" style={{ color: "#8B7050" }}>
             {t('designer.subtitle')}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            className="p-2.5 rounded-full bg-white/60 dark:bg-slate-800/60 backdrop-blur-md shadow-sm border border-white/40 dark:border-slate-700/50 text-slate-600 dark:text-slate-300 hover:scale-110 transition-transform"
-            onClick={() => document.documentElement.classList.toggle("dark")}
-          >
-            <span className="material-symbols-outlined dark:hidden">
-              dark_mode
-            </span>
-            <span className="material-symbols-outlined hidden dark:block">
-              light_mode
-            </span>
-          </button>
           <LanguageSwitcher />
-          <button
-            className="flex items-center gap-2 px-5 py-2.5 rounded-button bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90 hover:scale-[1.02] transition-all font-medium text-sm"
-            onClick={() => setCurrentView("manage-styles")}
-          >
-            <span className="material-symbols-outlined text-[18px]">
-              settings
-            </span>
-            {t('designer.manageStyles')}
-          </button>
+          {isAdmin && (
+            <button
+              className="btn-primary"
+              style={{ padding: "8px 16px", display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}
+              onClick={() => setCurrentView("manage-styles")}
+            >
+              <span className="material-symbols-outlined text-[18px]">
+                settings
+              </span>
+              {t('designer.manageStyles')}
+            </button>
+          )}
         </div>
       </nav>
 
       <div className="lg:hidden text-center px-6 mb-8 relative z-10">
-        <h1 className="flex items-center justify-center gap-2 text-2xl font-display font-bold text-slate-900 dark:text-white">
-          <span className="material-symbols-outlined text-primary text-3xl">
+        <h1 className="flex items-center justify-center gap-2 text-2xl font-display font-bold" style={{ color: "var(--color-text-main)", margin: 0 }}>
+          <span className="material-symbols-outlined text-3xl" style={{ color: "var(--color-primary)" }}>
             temple_hindu
           </span>
           {t('designer.title')}
         </h1>
-        <p className="text-slate-600 dark:text-slate-400 italic text-sm mt-1">
+        <p className="italic text-sm mt-1" style={{ color: "#8B7050" }}>
           {t('designer.subtitle')}
         </p>
       </div>
@@ -1086,42 +1140,42 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery 
         )}
       </main>
 
-      <footer className="mt-auto py-12 relative z-10 w-full">
+      <footer className="mt-auto py-8 relative z-10 w-full border-t border-t-[#1E1208]" style={{ borderTop: "1px solid #1E1208" }}>
         <div className="container mx-auto px-6 text-center">
           <div
-            className="inline-flex flex-wrap items-center justify-center gap-4 md:gap-8 px-8 py-4 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md rounded-full border border-white/40 dark:border-slate-700/40 shadow-lg"
+            className="inline-flex flex-wrap items-center justify-center gap-4 md:gap-8 px-8 py-3"
             style={{ boxSizing: "border-box" }}
           >
-            <span className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] w-full md:w-auto mb-2 md:mb-0">
+            <span style={{ color: "#6B5030", fontSize: "10px", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.2em" }}>
               {t('footerStats.database')}
             </span>
             <div
-              className="flex items-center gap-6 text-sm font-semibold text-slate-800 dark:text-slate-200"
-              style={{ flexWrap: "wrap", justifyContent: "center" }}
+              className="flex items-center gap-6 text-sm font-semibold"
+              style={{ flexWrap: "wrap", justifyContent: "center", color: "#A08060" }}
             >
               <div className="flex flex-col items-center md:flex-row md:gap-2">
-                <span className="text-primary text-lg">
+                <span style={{ fontSize: "16px", color: "var(--color-primary)" }}>
                   {stylesDb.styles.length}
                 </span>
-                <span className="text-xs opacity-70 uppercase tracking-tighter">
+                <span className="text-[10px] opacity-70 uppercase tracking-tighter">
                   {t('footerStats.styles')}
                 </span>
               </div>
-              <span className="hidden md:block w-px h-6 bg-slate-400/30"></span>
+              <span className="hidden md:block w-px h-4" style={{ background: "#2A1A0E" }}></span>
               <div className="flex flex-col items-center md:flex-row md:gap-2">
-                <span className="text-ochre text-lg">
+                <span style={{ fontSize: "16px", color: "#8B4513" }}>
                   {stylesDb.regions.length}
                 </span>
-                <span className="text-xs opacity-70 uppercase tracking-tighter">
+                <span className="text-[10px] opacity-70 uppercase tracking-tighter">
                   {t('footerStats.regions')}
                 </span>
               </div>
-              <span className="hidden md:block w-px h-6 bg-slate-400/30"></span>
+              <span className="hidden md:block w-px h-4" style={{ background: "#2A1A0E" }}></span>
               <div className="flex flex-col items-center md:flex-row md:gap-2">
-                <span className="text-secondary dark:text-indigo-400 text-lg">
+                <span style={{ fontSize: "16px", color: "var(--color-primary-dark)" }}>
                   {stylesDb.families.length}
                 </span>
-                <span className="text-xs opacity-70 uppercase tracking-tighter">
+                <span className="text-[10px] opacity-70 uppercase tracking-tighter">
                   {t('footerStats.families')}
                 </span>
               </div>

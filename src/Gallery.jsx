@@ -4,7 +4,9 @@ import ComparisonSlider from './ComparisonSlider';
 import { exportCollage } from './utils/collageGenerator';
 import { exportDesignPDF } from './utils/pdfGenerator';
 import WorldViewerModal from './WorldViewerModal';
+import InpaintingModal from './InpaintingModal';
 import { useAuth } from './AuthContext';
+import { fetchGalleryFromSupabase, toggleFavoriteInSupabase, deleteGalleryEntryInSupabase } from './supabaseClient';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -67,10 +69,13 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
     const [pdfDownloadingId, setPdfDownloadingId] = useState(null);
     // Modal plein écran par entrée
     const [entryModal, setEntryModal] = useState(null); // entry | null
+    const [showInpaintModal, setShowInpaintModal] = useState(false);
+    const [inpaintingEntry, setInpaintingEntry] = useState(null);
+    const [isInpainting, setIsInpainting] = useState(false);
 
     const openEntryModal = (entry) => {
         setEntryModal(entry);
-        setViewMode('single');
+        setViewMode(entry.originalImage ? 'slider' : 'single');
         setConfirmDeleteId(null);
     };
     const closeEntryModal = () => setEntryModal(null);
@@ -79,34 +84,21 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
     const fetchGallery = useCallback(async () => {
         try {
             setLoading(true);
-            const token = await getToken();
-            if (!token) {
-                throw new Error(t('auth.errors.general', 'Session expired or not found. Please log in.'));
-            }
-            const res = await fetch(`${API_BASE_URL}/api/gallery`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Failed to load gallery');
-            const data = await res.json();
+            const data = await fetchGalleryFromSupabase();
             setEntries(data);
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
         }
-    }, [getToken]);
+    }, []);
 
     useEffect(() => { fetchGallery(); }, [fetchGallery]);
 
-    // Delete entry
+    // Delete entry via Supabase
     const handleDelete = async (id) => {
         try {
-            const token = await getToken();
-            const res = await fetch(`${API_BASE_URL}/api/gallery/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Delete failed');
+            await deleteGalleryEntryInSupabase(id);
             setEntries(prev => prev.filter(e => e.id !== id));
             setConfirmDeleteId(null);
             closeEntryModal();
@@ -115,18 +107,13 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
         }
     };
 
-    // Toggle favorite
+    // Toggle favorite via Supabase
     const toggleFavorite = async (id, e) => {
         if (e) e.stopPropagation();
         try {
-            const token = await getToken();
-            const res = await fetch(`${API_BASE_URL}/api/gallery/${id}/favorite`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Failed to update favorite');
-            const data = await res.json();
-            setEntries(prev => prev.map(entry => entry.id === id ? { ...entry, isFavorite: data.isFavorite } : entry));
+            const currentEntry = entries.find(entry => entry.id === id);
+            const result = await toggleFavoriteInSupabase(id, currentEntry?.isFavorite || false);
+            setEntries(prev => prev.map(entry => entry.id === id ? { ...entry, isFavorite: result.isFavorite } : entry));
         } catch (err) {
             setError(err.message);
         }
@@ -170,6 +157,55 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
             setError('Échec de la génération du PDF');
         } finally {
             setPdfDownloadingId(null);
+        }
+    };
+
+    const handleInpaintSubmit = async (maskDataUrl, prompt) => {
+        try {
+            setIsInpainting(true);
+            const token = await getToken();
+            const config = {
+                headers: { Authorization: `Bearer ${token}` }
+            };
+
+            const response = await fetch(`${API_BASE_URL}/api/inpaint`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...config.headers
+                },
+                body: JSON.stringify({
+                    originalImage: inpaintingEntry.generatedImage,
+                    maskImage: maskDataUrl,
+                    customPrompt: prompt,
+                    style: {
+                        id: inpaintingEntry.styleId,
+                        name: inpaintingEntry.styleName,
+                        family: inpaintingEntry.styleFamily
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errData = await response.json();
+                throw new Error(errData.error || 'Failed to generate inpainting');
+            }
+
+            const data = await response.json();
+            // Refresh gallery after inpainting
+            await fetchGallery();
+            setShowInpaintModal(false);
+            setInpaintingEntry(null);
+
+            // Si le modal actuel est toujours ouvert, le fermer (retour à la vue galerie)
+            closeEntryModal();
+
+        } catch (err) {
+            console.error('Inpainting error:', err);
+            setError(err.message || 'Error occurred during inpainting');
+            setShowInpaintModal(false);
+        } finally {
+            setIsInpainting(false);
         }
     };
 
@@ -284,6 +320,19 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                 )}
 
                 {error && <div style={s.error}>{error}</div>}
+
+                {isInpainting && (
+                    <div style={{
+                        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+                        background: 'rgba(12, 8, 6, 0.8)', zIndex: 3000,
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                        gap: '20px'
+                    }}>
+                        <div style={s.spinner} />
+                        <h3 style={{ color: '#B8860B' }}>{t('app.generating.title')}...</h3>
+                        <p style={{ color: '#8B7050' }}>{t('app.generating.desc_inpainting', { defaultValue: 'Patientez pendant que l\'IA retouche votre design' })}</p>
+                    </div>
+                )}
 
                 {!loading && entries.length === 0 && (
                     <div style={s.emptyState}>
@@ -453,6 +502,12 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                                     </button>
                                 )}
 
+                                {em.generatedImage && (
+                                    <button onClick={() => { setInpaintingEntry(em); setShowInpaintModal(true); }} style={{ ...s.emBtn, ...s.emBtnPrimary, background: 'rgba(184, 134, 11, 0.15)', color: '#B8860B', border: '1px solid #B8860B' }}>
+                                        🖌️ {t('app.result.inpainting')}
+                                    </button>
+                                )}
+
                                 {confirmDeleteId === em.id ? (
                                     <>
                                         <button onClick={() => { handleDelete(em.id); closeEntryModal(); }} style={{ ...s.emBtn, ...s.emBtnDanger }}>
@@ -472,6 +527,18 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                     </div>
                 );
             })()}
+
+            {showInpaintModal && inpaintingEntry && (
+                <InpaintingModal
+                    imageUrl={
+                        inpaintingEntry.generatedImage.startsWith("http")
+                            ? inpaintingEntry.generatedImage
+                            : `${API_BASE_URL}${inpaintingEntry.generatedImage}`
+                    }
+                    onClose={() => { setShowInpaintModal(false); setInpaintingEntry(null); }}
+                    onSubmit={handleInpaintSubmit}
+                />
+            )}
         </div>
     );
 }

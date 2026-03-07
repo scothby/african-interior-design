@@ -19,12 +19,12 @@ for /f "tokens=5" %%a in ('netstat -ano 2^>nul ^| findstr ":3000 " ^| findstr "L
 echo     OK
 
 echo [2/3] Demarrage du Backend (port 5000)...
-start "Backend - African Interior" cmd /k "cd /d "e:\African Interior Design\backend" && node server.js"
+start "Backend - African Interior" cmd /k "cd /d "e:\Africa Interior design\backend" && node server.js"
 timeout /t 2 /nobreak >nul
 echo     OK
 
 echo [3/3] Demarrage du Frontend React (port 3000)...
-start "Frontend - African Interior" cmd /k "cd /d "e:\African Interior Design" && npm start"
+start "Frontend - African Interior" cmd /k "cd /d "e:\Africa Interior design" && npm start"
 echo     OK
 
 echo.

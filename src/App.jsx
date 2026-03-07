@@ -7,6 +7,8 @@ import LandingPage from "./LandingPage";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import { AuthProvider, useAuth } from "./AuthContext";
 import AuthPage from "./AuthPage";
+import PaletteGenerator from "./PaletteGenerator";
+import { fetchStylesFromSupabase } from "./supabaseClient";
 import "./App.css";
 
 const FAMILY_COLORS = {
@@ -45,17 +47,37 @@ function AppContent() {
   const [copied, setCopied] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Supabase-sourced styles data (with fallback to local JSON)
+  const [stylesData, setStylesData] = useState({
+    styles: DB.styles,
+    regions: DB.regions,
+    families: DB.families,
+  });
+
+  // Fetch styles from Supabase on mount
+  useEffect(() => {
+    const loadStyles = async () => {
+      try {
+        const data = await fetchStylesFromSupabase();
+        setStylesData(data);
+      } catch (err) {
+        console.error("Failed to fetch styles from Supabase, using local JSON fallback", err);
+      }
+    };
+    loadStyles();
+  }, []);
+
   const filtered = useMemo(() => {
-    return DB.styles.filter(s => {
+    return stylesData.styles.filter(s => {
       const matchSearch = !search ||
         s.name.toLowerCase().includes(search.toLowerCase()) ||
-        s.country.toLowerCase().includes(search.toLowerCase()) ||
-        s.family.toLowerCase().includes(search.toLowerCase());
+        (s.country && s.country.toLowerCase().includes(search.toLowerCase())) ||
+        (s.family && s.family.toLowerCase().includes(search.toLowerCase()));
       const matchRegion = activeRegion === "Tout" || s.region === activeRegion;
       const matchFamily = activeFamily === "Tout" || s.family === activeFamily;
       return matchSearch && matchRegion && matchFamily;
     });
-  }, [search, activeRegion, activeFamily]);
+  }, [search, activeRegion, activeFamily, stylesData.styles]);
 
   useEffect(() => {
     localStorage.setItem('interior_ai_last_page', currentApp);
@@ -80,7 +102,7 @@ function AppContent() {
     setTimeout(() => setCopied(null), 2000);
   };
 
-  const selectedStyle = selected ? DB.styles.find(s => s.id === selected) : null;
+  const selectedStyle = selected ? stylesData.styles.find(s => s.id === selected) : null;
 
   // Auth loading
   if (loading) {
@@ -101,6 +123,7 @@ function AppContent() {
         onEnterDesigner={() => user ? setCurrentApp("designer") : setCurrentApp("auth")}
         onEnterGallery={() => user ? setCurrentApp("gallery") : setCurrentApp("auth")}
         onEnterDatabase={() => user ? setCurrentApp("database") : setCurrentApp("auth")}
+        onEnterPalettes={() => user ? setCurrentApp("palettes") : setCurrentApp("auth")}
         user={user}
         onSignOut={async () => { await signOut(); setCurrentApp('landing'); }}
       />
@@ -121,6 +144,7 @@ function AppContent() {
       onBack={() => setCurrentApp("landing")}
       onGoToStyles={() => setCurrentApp("database")}
       onGoToGallery={() => setCurrentApp("gallery")}
+      onGoToPalettes={() => setCurrentApp("palettes")}
     />;
   }
 
@@ -130,6 +154,15 @@ function AppContent() {
       onBack={() => setCurrentApp("landing")}
       onGoToStyles={() => setCurrentApp("database")}
       onGoToDesigner={() => setCurrentApp("designer")}
+    />;
+  }
+
+  if (currentApp === "palettes") {
+    if (!user) return null; // Prevent rendering if user state is out of sync
+    return <PaletteGenerator
+      onBack={() => setCurrentApp("landing")}
+      onGoToDesigner={() => setCurrentApp("designer")}
+      stylesData={stylesData}
     />;
   }
 
@@ -148,7 +181,7 @@ function AppContent() {
               {t('header.database')}
             </div>
             <h1 style={{ margin: 0, fontSize: "var(--font-size-xl)" }}>
-              {t('header.africanStyles')} <span style={{ color: "var(--color-primary)" }}>·</span> <span style={{ color: "var(--color-text-muted)", fontSize: "0.6em" }}>{filtered.length} / {DB.styles.length}</span>
+              {t('header.africanStyles')} <span style={{ color: "var(--color-primary)" }}>·</span> <span style={{ color: "var(--color-text-muted)", fontSize: "0.6em" }}>{filtered.length} / {stylesData.styles.length}</span>
             </h1>
           </div>
 
@@ -190,6 +223,13 @@ function AppContent() {
             >
               🖼️ {t('header.gallery')}
             </button>
+            <button
+              className="btn-secondary"
+              onClick={() => setCurrentApp("palettes")}
+              style={{ padding: "10px 20px", borderRadius: "4px", fontSize: "13px", background: "rgba(184,134,11,0.1)", border: "1px solid rgba(184,134,11,0.5)", color: "#F0E6D3" }}
+            >
+              🎨 Palettes Africaines
+            </button>
             {/* Search */}
             <input
               value={search}
@@ -218,6 +258,9 @@ function AppContent() {
             <button onClick={() => { setCurrentApp("gallery"); setIsMenuOpen(false); }}>
               🖼️ {t('header.gallery')}
             </button>
+            <button onClick={() => { setCurrentApp("palettes"); setIsMenuOpen(false); }}>
+              🎨 Palettes Africaines
+            </button>
 
             {/* Mobile Search */}
             <div style={{ padding: "0 20px", width: "100%", boxSizing: "border-box", marginTop: "20px" }}>
@@ -234,43 +277,48 @@ function AppContent() {
             </div>
           </div>
         </div>
-      </header>
+      </header >
 
       {/* Filters */}
-      <div style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "8px 16px" }}>
+      < div style={{ marginTop: "20px", display: "flex", flexWrap: "wrap", gap: "8px 16px" }
+      }>
         {/* Region filter */}
-        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-          {["Tout", ...DB.regions].map(r => (
-            <button key={r} onClick={() => setActiveRegion(r)} style={{
-              padding: "5px 12px", border: `1px solid ${activeRegion === r ? "#B8860B" : "#2A1A0E"}`,
-              background: activeRegion === r ? "rgba(184,134,11,0.12)" : "transparent",
-              color: activeRegion === r ? "#B8860B" : "#6B5030", cursor: "pointer",
-              fontSize: "11px", letterSpacing: "0.08em", borderRadius: "2px",
-              fontFamily: "Georgia, serif", transition: "all 0.15s"
-            }}>{r === "Tout" ? t('filters.all') : t(`db.regions.${r}`, { defaultValue: r })}</button>
-          ))}
-        </div>
-      </div>
+        < div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          {
+            ["Tout", ...stylesData.regions].map(r => (
+              <button key={r} onClick={() => setActiveRegion(r)} style={{
+                padding: "5px 12px", border: `1px solid ${activeRegion === r ? "#B8860B" : "#2A1A0E"}`,
+                background: activeRegion === r ? "rgba(184,134,11,0.12)" : "transparent",
+                color: activeRegion === r ? "#B8860B" : "#6B5030", cursor: "pointer",
+                fontSize: "11px", letterSpacing: "0.08em", borderRadius: "2px",
+                fontFamily: "Georgia, serif", transition: "all 0.15s"
+              }}>{r === "Tout" ? t('filters.all') : t(`db.regions.${r}`, { defaultValue: r })}</button>
+            ))
+          }
+        </div >
+      </div >
 
       {/* Family filter */}
-      <div style={{ marginTop: "10px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
+      < div style={{ marginTop: "10px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
         <button onClick={() => setActiveFamily("Tout")} style={{
           padding: "5px 12px", border: `1px solid ${activeFamily === "Tout" ? "#B8860B" : "#2A1A0E"}`,
           background: activeFamily === "Tout" ? "rgba(184,134,11,0.12)" : "transparent",
           color: activeFamily === "Tout" ? "#B8860B" : "#6B5030", cursor: "pointer",
           fontSize: "11px", borderRadius: "2px", fontFamily: "Georgia, serif"
         }}>{t('filters.allFem')}</button>
-        {DB.families.map(f => (
-          <button key={f} onClick={() => setActiveFamily(f)} style={{
-            padding: "5px 12px",
-            border: `1px solid ${activeFamily === f ? FAMILY_COLORS[f] : "#2A1A0E"}`,
-            background: activeFamily === f ? `${FAMILY_COLORS[f]}22` : "transparent",
-            color: activeFamily === f ? FAMILY_COLORS[f] : "#6B5030",
-            cursor: "pointer", fontSize: "11px", borderRadius: "2px",
-            fontFamily: "Georgia, serif", transition: "all 0.15s"
-          }}>{FAMILY_ICONS[f]} {t(`db.families.${f}`, { defaultValue: f })}</button>
-        ))}
-      </div>
+        {
+          stylesData.families.map(f => (
+            <button key={f} onClick={() => setActiveFamily(f)} style={{
+              padding: "5px 12px",
+              border: `1px solid ${activeFamily === f ? FAMILY_COLORS[f] : "#2A1A0E"}`,
+              background: activeFamily === f ? `${FAMILY_COLORS[f]}22` : "transparent",
+              color: activeFamily === f ? FAMILY_COLORS[f] : "#6B5030",
+              cursor: "pointer", fontSize: "11px", borderRadius: "2px",
+              fontFamily: "Georgia, serif", transition: "all 0.15s"
+            }}>{FAMILY_ICONS[f]} {t(`db.families.${f}`, { defaultValue: f })}</button>
+          ))
+        }
+      </div >
 
       <div style={{ display: "flex", minHeight: "calc(100vh - 200px)" }}>
         {/* Grid */}
@@ -467,8 +515,8 @@ function AppContent() {
         borderTop: "1px solid #1E1208", padding: "16px 32px",
         display: "flex", gap: "24px", flexWrap: "wrap"
       }}>
-        {DB.families.map(f => {
-          const count = DB.styles.filter(s => s.family === f).length;
+        {stylesData.families.map(f => {
+          const count = stylesData.styles.filter(s => s.family === f).length;
           return (
             <div key={f} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
               <span style={{ fontSize: "12px" }}>{FAMILY_ICONS[f]}</span>

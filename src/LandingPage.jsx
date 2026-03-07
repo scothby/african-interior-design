@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import DB from "./african-styles-db.json";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+import { fetchStylesFromSupabase, fetchGalleryFromSupabase } from "./supabaseClient";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -68,45 +69,61 @@ const HERO_IMAGES = [
 // Create stable random columns for the masonry outside the component to avoid reshuffling on re-render
 const MASONRY_COLS = Array.from({ length: 6 }, () => [...HERO_IMAGES].sort(() => 0.5 - Math.random()));
 
-export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDatabase, user, onSignOut }) {
+export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDatabase, onEnterPalettes, user, onSignOut }) {
     const { t } = useTranslation();
     const [visible, setVisible] = useState(false);
     const [hoveredFamily, setHoveredFamily] = useState(null);
     const [recentDesigns, setRecentDesigns] = useState([]);
     const [loadingGallery, setLoadingGallery] = useState(true);
 
+    // Supabase-sourced data (with fallback to local JSON)
+    const [stylesData, setStylesData] = useState({
+        styles: DB.styles,
+        regions: DB.regions,
+        families: DB.families,
+    });
+
+    // Fetch styles from Supabase on mount
     useEffect(() => {
-        const fetchGallery = async () => {
+        const loadStyles = async () => {
             try {
-                // For landing page, we might not have a token yet if unauthenticated
-                // so we only try to fetch if we actually show recent designs
-                // For now, let's keep it simple: if not logged in, we don't show recent designs
+                const data = await fetchStylesFromSupabase();
+                setStylesData(data);
+            } catch (err) {
+                console.error("Failed to fetch styles from Supabase, using local JSON fallback", err);
+                // Keep the fallback local JSON data
+            }
+        };
+        loadStyles();
+    }, []);
+
+    // Fetch gallery from Supabase
+    useEffect(() => {
+        const loadGallery = async () => {
+            try {
                 if (!user) {
                     setLoadingGallery(false);
                     return;
                 }
-                const res = await fetch(`${API_BASE_URL}/api/gallery`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setRecentDesigns(data.slice(0, 8)); // Top 8 recent
-                }
+                const data = await fetchGalleryFromSupabase();
+                setRecentDesigns(data.slice(0, 8)); // Top 8 recent
             } catch (err) {
                 console.error("Failed to fetch gallery for landing page", err);
             } finally {
                 setLoadingGallery(false);
             }
         };
-        fetchGallery();
-    }, []);
+        loadGallery();
+    }, [user]);
 
     useEffect(() => {
         const t = setTimeout(() => setVisible(true), 80);
         return () => clearTimeout(t);
     }, []);
 
-    const totalStyles = DB.styles.length;
-    const totalRegions = DB.regions.length;
-    const totalFamilies = DB.families.length;
+    const totalStyles = stylesData.styles.length;
+    const totalRegions = stylesData.regions.length;
+    const totalFamilies = stylesData.families.length;
 
     return (
         <div style={{ background: "var(--color-bg-dark)", minHeight: "100vh", color: "var(--color-text-main)", overflowX: "hidden" }}>
@@ -159,7 +176,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
       `}</style>
 
             {/* ── Kente top bar ── */}
-            <div style={{ height: "5px", background: "linear-gradient(90deg,#8B0000,#B8860B,#228B22,#1A2744,#B8860B,#C41E3A,#B8860B,#228B22,#8B0000)" }} />
+            <div className="kente-bar" />
 
             {/* Language Switcher Overlay */}
             <div style={{ position: "absolute", top: "20px", right: "24px", zIndex: 1000, display: "flex", gap: "10px", alignItems: "center" }}>
@@ -301,6 +318,20 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                         >
                             📚 {t('landing.browseStyles')}
                         </button>
+                        <button
+                            className="btn-secondary"
+                            onClick={onEnterPalettes}
+                            style={{
+                                padding: "min(3vw, 16px) min(6vw, 36px)",
+                                borderRadius: "8px",
+                                fontSize: "var(--font-size-sm)",
+                                background: "rgba(184,134,11,0.1)",
+                                border: "1px solid rgba(184,134,11,0.5)",
+                                color: "#F0E6D3"
+                            }}
+                        >
+                            🎨 Palettes Africaines
+                        </button>
                     </div>
 
                     {/* Stats */}
@@ -387,10 +418,10 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     </div>
 
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "14px" }}>
-                        {DB.families.map((family) => {
+                        {stylesData.families.map((family) => {
                             const color = FAMILY_COLORS[family] || "#B8860B";
                             const icon = FAMILY_ICONS[family] || "🌍";
-                            const count = DB.styles.filter(s => s.family === family).length;
+                            const count = stylesData.styles.filter(s => s.family === family).length;
                             const isHovered = hoveredFamily === family;
 
                             // Terres & Banco -> TerresBanco
@@ -478,8 +509,8 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     </div>
 
                     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px" }}>
-                        {DB.regions.map((region) => {
-                            const count = DB.styles.filter(s => s.region === region).length;
+                        {stylesData.regions.map((region) => {
+                            const count = stylesData.styles.filter(s => s.region === region).length;
                             return (
                                 <button
                                     key={region}
@@ -553,8 +584,8 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                             <div style={{ textAlign: "center", marginTop: "36px" }}>
                                 <button
                                     onClick={onEnterGallery}
-                                    className="cta-secondary"
-                                    style={{ padding: "12px 32px", background: "transparent", border: "1px solid rgba(184,134,11,0.5)", borderRadius: "6px", color: "#B8860B", fontSize: "13px", cursor: "pointer", fontFamily: "Georgia, serif", transition: "all 0.2s" }}
+                                    className="btn-secondary"
+                                    style={{ padding: "12px 32px", borderRadius: "var(--radius-sm)", fontSize: "13px" }}
                                 >
                                     {t('landing.inspirations.exploreGallery')}
                                 </button>
@@ -598,9 +629,9 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     <h2 style={{ margin: "0 0 16px", fontSize: "clamp(24px, 4vw, 42px)", fontWeight: "normal" }}>{t('landing.cta.title')}</h2>
                     <p style={{ margin: "0 0 40px", color: "#8B7050", fontSize: "15px" }}>{t('landing.cta.desc')}</p>
                     <button
-                        className="cta-primary"
+                        className="btn-primary"
                         onClick={onEnterDesigner}
-                        style={{ padding: "18px 56px", background: "linear-gradient(135deg, #B8860B, #8B6914)", border: "none", borderRadius: "8px", color: "#FFF8E7", fontSize: "17px", fontWeight: "bold", cursor: "pointer", fontFamily: "Georgia, serif", transition: "all 0.25s" }}
+                        style={{ padding: "18px 56px", fontSize: "17px" }}
                     >
                         🏛️ {t('landing.cta.btn')}
                     </button>
@@ -614,16 +645,16 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                 </div>
                 <div style={{ display: "flex", gap: "20px" }}>
                     {[[t('landing.footer.designer'), onEnterDesigner], [t('landing.footer.gallery'), onEnterGallery], [t('landing.footer.styles'), onEnterDatabase]].map(([label, fn]) => (
-                        <button key={label} onClick={fn} style={{ background: "none", border: "none", color: "#6B5030", fontSize: "12px", cursor: "pointer", fontFamily: "Georgia, serif", padding: 0 }}
-                            onMouseEnter={e => e.currentTarget.style.color = "#B8860B"}
-                            onMouseLeave={e => e.currentTarget.style.color = "#6B5030"}
+                        <button key={label} onClick={fn} style={{ background: "none", border: "none", color: "var(--color-text-muted)", fontSize: "12px", cursor: "pointer", fontFamily: "var(--font-heading)", padding: 0 }}
+                            onMouseEnter={e => e.currentTarget.style.color = "var(--color-primary)"}
+                            onMouseLeave={e => e.currentTarget.style.color = "var(--color-text-muted)"}
                         >
                             {label}
                         </button>
                     ))}
                 </div>
             </footer>
-            <div style={{ height: "4px", background: "linear-gradient(90deg,#8B0000,#B8860B,#228B22,#1A2744,#B8860B,#C41E3A)" }} />
+            <div className="kente-bar" />
         </div >
     );
 }

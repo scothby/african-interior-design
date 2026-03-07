@@ -1,0 +1,406 @@
+{
+    "header": {
+        "database": "Base de données",
+        "africanStyles": "Styles Africains",
+        "home": "Accueil",
+        "designer": "African Interior Designer",
+        "gallery": "Galerie",
+        "searchPlaceholder": "Rechercher un style, pays, famille...",
+        "searchMobile": "Rechercher..."
+    },
+    "filters": {
+        "all": "Tout",
+        "allFem": "Toutes"
+    },
+    "app": {
+        "noStyleFound": "Aucun style trouvé pour cette recherche.",
+        "close": "Fermer",
+        "copyPrompt": "Copier le prompt",
+        "copied": "Copié !",
+        "promptTitle": "Prompt Replicate / FLUX",
+        "rooms": "Pièces adaptées",
+        "patterns": "Motifs & Patterns",
+        "materials": "Matières & Matériaux",
+        "palette": "Palette",
+        "color": "Couleur",
+        "upload": {
+            "dragText": "Glissez votre photo ici ou",
+            "clickText": "cliquez pour parcourir",
+            "maxSize": "— Jusqu'à 10MB",
+            "loading": "Téléchargement en cours...",
+            "feature1": "IA optimisée pour les motifs africains",
+            "feature2": "Traitement sécurisé et privé"
+        },
+        "styleSelection": {
+            "title": "Choisissez votre style",
+            "subtitle": "Explorez nos {{count}} styles authentiques",
+            "selection": "Style sélectionné",
+            "generate": "Générer mon design africain",
+            "customInstructions": "Ajouter des instructions particulières (ex: 'plus de plantes', 'murs jaunes')",
+            "yourPhoto": "Votre Photo",
+            "changePhoto": "Changer de photo",
+            "transformationMode": {
+                "title": "Mode de transformation",
+                "full": "Transformer toute la pièce",
+                "fullDesc": "(mode actuel : la personne et les meubles peuvent aussi changer)",
+                "background": "Ne modifier que l’arrière‑plan",
+                "backgroundDesc": "(la personne ou le meuble principal est conservé, seul le décor change)"
+            },
+            "generating": "Génération...",
+            "chooseStyle": "Choisir un Style Africain",
+            "allRegions": "Toutes les régions",
+            "allFamilies": "Toutes les familles",
+            "search": "Rechercher..."
+        },
+        "generating": {
+            "title": "Création de votre univers",
+            "desc": "Notre IA fusionne votre pièce avec le style {{style}}. Merci de patienter quelques secondes.",
+            "mode": "Mode :",
+            "full": "Transformation complète",
+            "background": "Arrière‑plan uniquement",
+            "palette": "Palette:",
+            "style": "Style:",
+            "region": "Région:"
+        },
+        "result": {
+            "title": "✨ Votre Design Africain",
+            "before": "Avant",
+            "after": "Après",
+            "regenerate": "Réessayer",
+            "sideBySide": "Côte à côte",
+            "slider": "Slider",
+            "inpainting": "Inpainting",
+            "download": "Avant/Après",
+            "world": "Monde 3D",
+            "tryAnother": "← Essayer un autre style",
+            "newProject": "🏠 Nouveau projet",
+            "zoomHint": "🔍 Cliquer pour zoomer",
+            "error": "Erreur :",
+            "materials": "Matériaux:",
+            "creating": "Création...",
+            "sliderHint": "← Glisser pour comparer →"
+        }
+    },
+    "world": {
+        "title": "Monde Virtuel 3D",
+        "titlePrefix": "Monde",
+        "fullscreen": "Plein écran",
+        "exitFullscreen": "Quitter plein écran",
+        "close": "Fermer",
+        "steps": {
+            "uploading": "Envoi de l'image vers World Labs...",
+            "generating": "Lancement de la génération 3D...",
+            "polling": "Génération du monde en cours... (2-5 min)",
+            "ready": "Monde prêt !"
+        },
+        "readyTitle": "Votre monde 3D est prêt !",
+        "readyDesc": "Explorez votre intérieur africain en 3D immersive sur Marble.",
+        "exploreBtn": "Explorer le monde 3D",
+        "errorTitle": "Erreur de génération",
+        "pollingInfoLine1": "La génération 3D prend généralement 2 à 5 minutes.",
+        "pollingInfoLine2": "Le viewer s'affichera automatiquement une fois prêt. Pas besoin de rester sur cette fenêtre.",
+        "directLink": "Lien direct vers World Labs (si le proxy échoue)",
+        "errors": {
+            "noOpId": "Aucun operationId reçu de World Labs",
+            "noUrl": "Monde généré mais aucun lien disponible.",
+            "statusCheck": "Impossible de vérifier l'état du monde",
+            "failed": "Création échouée"
+        }
+    },
+    "landing": {
+        "badge": "Design d'intérieur africain par IA",
+        "title1": "Transformez votre espace avec",
+        "title2": "l'âme de l'Afrique",
+        "subtitle": "Uploadez une photo de votre pièce, choisissez parmi {{count}}+ styles africains authentiques et laissez l'IA la transformer en quelques secondes.",
+        "startDesign": "Commencer le design",
+        "viewGallery": "Voir la galerie",
+        "browseStyles": "Parcourir tous les styles",
+        "stats": {
+            "styles": "Styles africains",
+            "regions": "Régions d'Afrique",
+            "families": "Familles de design"
+        },
+        "howItWorks": {
+            "tag": "Comment ça marche",
+            "title": "Trois étapes, un résultat spectaculaire",
+            "steps": {
+                "1": {
+                    "title": "Uploadez votre photo",
+                    "desc": "Prenez une photo de n'importe quelle pièce. Salon, chambre, cuisine — tout fonctionne."
+                },
+                "2": {
+                    "title": "Choisissez un style africain",
+                    "desc": "Explorez 50+ styles authentiques : Kente, Touareg, Swahili, Ndebele, Agadez et bien plus."
+                },
+                "3": {
+                    "title": "L'IA transforme tout",
+                    "desc": "Gemini AI applique le style en quelques secondes. Comparez avant/après, exportez en PDF ou explorez en monde 3D."
+                }
+            }
+        },
+        "stylesAvailable": {
+            "tag": "Styles disponibles",
+            "title": "8 familles de design africain",
+            "desc": "De l'architecture saharienne aux textiles royaux Ashanti, chaque style est authentique et documenté.",
+            "count": "{{count}} styles"
+        },
+        "regions": {
+            "tag": "Géographie du Design",
+            "title": "{{count}} grandes régions culturelles",
+            "desc": "Explorez la diversité architecturale et décorative à travers le continent.",
+            "count": "{{count}} styles"
+        },
+        "inspirations": {
+            "tag": "Inspirations",
+            "title": "Dernières Créations",
+            "desc": "Découvrez les intérieurs générés par la communauté.",
+            "exploreGallery": "Explorer toute la galerie →"
+        },
+        "features": {
+            "tag": "Fonctionnalités",
+            "title": "Tout ce dont vous avez besoin"
+        },
+        "cta": {
+            "title": "Prêt à transformer votre intérieur ?",
+            "desc": "Gratuit, sans inscription. Résultat en moins d'une minute.",
+            "btn": "Commencer maintenant"
+        },
+        "footer": {
+            "desc": "African Interior Designer — {{styles}} styles · {{regions}} régions · {{families}} familles",
+            "designer": "Designer",
+            "gallery": "Galerie",
+            "styles": "Styles"
+        }
+    },
+    "gallery": {
+        "title": "Galerie des Réalisations",
+        "subtitle": "Galerie · {{count}} réalisation",
+        "subtitle_plural": "Galerie · {{count}} réalisations",
+        "subtitle_zero": "Galerie · Aucune réalisation",
+        "back": "Retour",
+        "baseStyles": "Base de Styles",
+        "create": "Créer",
+        "filters": {
+            "all": "Toutes",
+            "favorites": "Favoris"
+        },
+        "loading": "Chargement de la galerie...",
+        "empty": {
+            "title": "Aucune réalisation pour le moment",
+            "desc": "Utilisez le Designer pour transformer vos photos avec des styles africains. Chaque création sera automatiquement sauvegardée ici.",
+            "goto": "Aller au Designer"
+        },
+        "actions": {
+            "zoom": "Voir en plein écran",
+            "download": "Télécharger",
+            "downloading": "Collage...",
+            "pdf": "PDF",
+            "pdfing": "PDF...",
+            "world": "Monde 3D",
+            "delete": "Supprimer",
+            "confirm": "Confirmer",
+            "cancel": "Annuler"
+        },
+        "customPrompt": "Instructions particulières :"
+    },
+    "designer": {
+        "title": "African Interior Designer",
+        "subtitle": "Transformez votre espace avec l'âme de l'Afrique",
+        "manageStyles": "Gérer la Base de Styles"
+    },
+    "inpainting": {
+        "title": "🖌️ Remplacement de meuble (Inpainting)",
+        "desc": "Peignez sur l'objet que vous souhaitez remplacer dans l'image. (Le masque n'a pas besoin d'être parfait)",
+        "brushSize": "Taille du pinceau",
+        "clear": "Effacer le masque",
+        "promptLabel": "Nouveau meuble/objet",
+        "placeholder": "Ex: Canapé en tissu indigo Dogon, Table basse carrée en bois massif...",
+        "generate": "Générer les modifications",
+        "cancel": "Annuler",
+        "alerts": {
+            "mask": "Veuillez peindre la zone à modifier.",
+            "prompt": "Veuillez décrire ce que vous souhaitez générer.",
+            "noStyle": "Aucun style sélectionné"
+        },
+        "mode": "Mode Édition",
+        "tools": {
+            "brush": "Pinceau",
+            "eraser": "Gomme",
+            "clearAll": "Effacer tout"
+        }
+    },
+    "nav": {
+        "home": "Home",
+        "styles": "Styles",
+        "create": "Create"
+    },
+    "admin": {
+        "title": "Gestionnaire de Styles",
+        "add": "Ajouter un style",
+        "edit": "Modifier le Style",
+        "createNew": "Créer un Nouveau Style",
+        "name": "Nom du style",
+        "idHint": "Un identifiant unique sans espace sera généré",
+        "region": "Région (ex: Ouest, Est, Centrale...)",
+        "family": "Famille",
+        "desc": "Description complète",
+        "prompt": "Prompt IA de Base",
+        "promptHint": "Le prompt secret envoyé à l'IA pour générer ce style précis.",
+        "materials": "Matériaux (séparés par des virgules)",
+        "colors": "Couleurs (séparées par des virgules)",
+        "save": "Enregistrer le style",
+        "cancel": "Annuler",
+        "saveSuccess": "Style enregistré avec succès",
+        "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce style ?",
+        "deleteSuccess": "Style supprimé",
+        "table": {
+            "name": "Nom",
+            "region": "Région",
+            "family": "Famille",
+            "actions": "Actions",
+            "empty": "Aucun style configuré.",
+            "edit": "Modifier",
+            "delete": "Supprimer"
+        }
+    },
+    "footerStats": {
+        "database": "Base de données",
+        "styles": "Styles",
+        "regions": "Régions",
+        "families": "Familles"
+    },
+    "zoomModal": {
+        "close": "Fermer",
+        "hint": "Molette souris ou boutons +/- pour zoomer"
+    },
+    "auth": {
+        "tagline": "Styles Africains",
+        "title": "Design d'intérieur IA",
+        "login": "Connexion",
+        "createAccount": "Créer un compte",
+        "email": "Email",
+        "emailPlaceholder": "votre@email.com",
+        "password": "Mot de passe",
+        "passwordPlaceholder": "••••••••",
+        "confirmPassword": "Confirmer le mot de passe",
+        "errors": {
+            "passwordMismatch": "Les mots de passe ne correspondent pas.",
+            "passwordLength": "Le mot de passe doit contenir au moins 6 caractères.",
+            "invalidCredentials": "Email ou mot de passe incorrect.",
+            "emailInUse": "Cet email est déjà utilisé.",
+            "general": "Une erreur est survenue.",
+            "googleExt": "Erreur Google OAuth."
+        },
+        "success": {
+            "created": "Compte créé ! Vérifiez votre email pour confirmer votre inscription."
+        },
+        "loading": "⏳ Chargement...",
+        "btnLogin": "🔓 Se connecter",
+        "btnCreate": "✨ Créer mon compte",
+        "or": "ou",
+        "googleRedirect": "Redirection...",
+        "googleBtn": "Continuer avec Google",
+        "secureText": "Vos créations sont sécurisées et privées 🔒"
+    },
+    "db": {
+        "families": {
+            "Terres & Banco": "Terres & Banco",
+            "Textiles Royaux": "Textiles Royaux",
+            "Côtier Swahili": "Côtier Swahili",
+            "Géométrique Peint": "Géométrique Peint",
+            "Sauvage & Nomade": "Sauvage & Nomade",
+            "Islamique Africain": "Islamique Africain",
+            "Tropical Équatorial": "Tropical Équatorial",
+            "Urbain Contemporain": "Urbain Contemporain"
+        },
+        "regions": {
+            "Afrique du Nord": "Afrique du Nord",
+            "Afrique de l'Ouest": "Afrique de l'Ouest",
+            "Afrique Centrale": "Afrique Centrale",
+            "Afrique de l'Est": "Afrique de l'Est",
+            "Afrique Australe": "Afrique Australe"
+        },
+        "styles": {
+            "ma-riad": {
+                "name": "Riad Traditionnel",
+                "description": "Cours intérieures, zellige coloré, fontaines murmurantes et stuc ciselé — l'art de vivre andalou-berbère"
+            },
+            "ma-berbere": {
+                "name": "Berbère Moderne",
+                "description": "Tapis Beni Ouarain à losanges, laine brute et symboles Amazigh dans un écrin épuré et chaleureux"
+            },
+            "ma-chefchaouen": {
+                "name": "Chefchaouen Bleu",
+                "description": "Dégradés de bleus, chaux blanche et fer forgé — la sérénité des montagnes du Rif"
+            },
+            "tn-sidi": {
+                "name": "Sidi Bou Saïd",
+                "description": "Blanc immaculé, menuiseries bleu azur et moucharabiehs — le charme méditerranéen de la Tunisie"
+            },
+            "eg-nubien": {
+                "name": "Village Nubien",
+                "description": "Coupoles en briques crues, peintures murales colorées et motifs géométriques — les rives du Nil éternel"
+            },
+            "gh-ashanti": {
+                "name": "Ashanti Royal",
+                "description": "Tissu Kente, tabourets sculptés et symboles Adinkra — la grandeur du Royaume Ashanti"
+            },
+            "gh-adinkra": {
+                "name": "Adinkra Minimaliste",
+                "description": "Symboles de sagesse noir sur blanc, bois sombre et lin naturel — la philosophie ghanéenne épurée"
+            },
+            "ng-yoruba": {
+                "name": "Yoruba Adire",
+                "description": "Textiles indigo teints à la main, perles royales et bois de teck — l'élégance du Nigeria"
+            },
+            "ng-benin": {
+                "name": "Bronze du Bénin",
+                "description": "Répliques de bronzes royaux, terre ocre et textiles tissés — le prestige de l'ancien Royaume de Bénin"
+            },
+            "ng-hausa": {
+                "name": "Hausa Zaria",
+                "description": "Architecture en banco sculpté, motifs géométriques complexes et cuirs du Nord — l'héritage sahélien"
+            },
+            "ml-dogon": {
+                "name": "Dogon Falaise",
+                "description": "Bois sculpté de Bandiagara, portes de greniers et pierres sèches — la cosmogonie du pays Dogon"
+            },
+            "ml-bambara": {
+                "name": "Bambara Bogolan",
+                "description": "Tissu de terre, masques Ciwara et bois brut — la force tellurique du Mali"
+            },
+            "ml-djenne": {
+                "name": "Djenné Soudano-Sahélien",
+                "description": "Architecture de terre crue, bois de palmier et douceur du banco — la majesté du delta intérieur"
+            },
+            "ci-baoule": {
+                "name": "Baoulé Tradition",
+                "description": "Pagne Kita, masques Goli et bois d'ébène — le raffinement forestier de Côte d'Ivoire"
+            },
+            "ci-senoufo": {
+                "name": "Sénoufo Poro",
+                "description": "Toiles de Korhogo, oiseaux sacrés et bois sombre — l'initiation et la nature équatoriale"
+            },
+            "bf-fassofani": {
+                "name": "Faso Dan Fani",
+                "description": "Coton tissé à la main, lignes graphiques et bois clair — la fierté textile du Burkina Faso"
+            },
+            "bf-gurunsi": {
+                "name": "Gurunsi Peint",
+                "description": "Fresques murales en noir et blanc de Tiébélé, terre rouge et paille — l'architecture kashina"
+            },
+            "sn-lebou": {
+                "name": "Lébou Côtier",
+                "description": "Bois flotté, filets de pêche, pirogues colorées et coquillages — l'esprit de l'Atlantique"
+            },
+            "sn-bassari": {
+                "name": "Bassari Montagne",
+                "description": "Cases rondes, toits de chaume et bambou — la culture préservée du Sénégal Oriental"
+            },
+            "za-ndebele": {
+                "name": "Ndebele Mural",
+                "description": "Graphismes géométriques aux couleurs vives, perles et symétrie — l'identité visuelle d'Esther Mahlangu"
+            }
+        }
+    }
+}

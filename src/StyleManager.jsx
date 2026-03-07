@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { useTranslation } from 'react-i18next';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+import { supabase, invalidateStylesCache } from './supabaseClient';
 
 export default function StyleManager({ onBack }) {
     const { t } = useTranslation();
@@ -29,15 +28,12 @@ export default function StyleManager({ onBack }) {
     const fetchStyles = useCallback(async () => {
         try {
             setLoading(true);
-            const token = await getToken();
-            const res = await fetch(`${API_BASE_URL}/api/styles`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!res.ok) throw new Error('Erreur chargement des styles');
-            const data = await res.json();
-            setStyles(data.styles || []);
+            const { data, error: fetchError } = await supabase
+                .from('styles')
+                .select('*')
+                .order('name');
+            if (fetchError) throw fetchError;
+            setStyles(data || []);
         } catch (err) {
             setError(err.message);
         } finally {
@@ -52,15 +48,13 @@ export default function StyleManager({ onBack }) {
     const handleDelete = async (id) => {
         if (!window.confirm(t('admin.deleteConfirm'))) return;
         try {
-            const token = await getToken();
-            const res = await fetch(`${API_BASE_URL}/api/styles/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            if (!res.ok) throw new Error('Suppression impossible');
+            const { error: delError } = await supabase
+                .from('styles')
+                .delete()
+                .eq('id', id);
+            if (delError) throw delError;
             setStyles(prev => prev.filter(s => s.id !== id));
+            invalidateStylesCache();
         } catch (err) {
             alert(err.message);
         }
@@ -95,27 +89,33 @@ export default function StyleManager({ onBack }) {
         try {
             // Parse comma separated fields
             const parsedData = {
-                ...formData,
+                name: formData.name,
+                region: formData.region,
+                family: formData.family,
+                description: formData.description,
+                prompt: formData.prompt,
                 materials: formData.materials.split(',').map(s => s.trim()).filter(Boolean),
                 colors: formData.colors.split(',').map(s => s.trim()).filter(Boolean),
                 patterns: formData.patterns.split(',').map(s => s.trim()).filter(Boolean),
+                flag: formData.flag,
             };
 
-            const url = currentStyle ? `${API_BASE_URL}/api/styles/${currentStyle.id}` : `${API_BASE_URL}/api/styles`;
-            const method = currentStyle ? 'PUT' : 'POST';
+            if (currentStyle) {
+                // Update existing
+                const { error: updateError } = await supabase
+                    .from('styles')
+                    .update(parsedData)
+                    .eq('id', currentStyle.id);
+                if (updateError) throw updateError;
+            } else {
+                // Insert new
+                const { error: insertError } = await supabase
+                    .from('styles')
+                    .insert(parsedData);
+                if (insertError) throw insertError;
+            }
 
-            const token = await getToken();
-            const res = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(parsedData)
-            });
-
-            if (!res.ok) throw new Error("Erreur d'enregistrement");
-
+            invalidateStylesCache();
             await fetchStyles();
             setIsEditing(false);
         } catch (err) {

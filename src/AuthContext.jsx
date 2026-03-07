@@ -8,6 +8,9 @@ export function AuthProvider({ children }) {
     const [session, setSession] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // Check admin status from app_metadata
+    const isAdmin = user?.app_metadata?.is_admin === true;
+
     useEffect(() => {
         // Get initial session
         supabase.auth.getSession().then(({ data: { session } }) => {
@@ -60,7 +63,7 @@ export function AuthProvider({ children }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, loading, signInWithEmail, signUpWithEmail, signInWithGoogle, signOut, getToken }}>
+        <AuthContext.Provider value={{ user, session, loading, isAdmin, signInWithEmail, signUpWithEmail, signInWithGoogle, signOut, getToken }}>
             {children}
         </AuthContext.Provider>
     );

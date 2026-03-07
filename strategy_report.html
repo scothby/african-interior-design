@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratégie Africa Interior Design - Rapport d'Étude</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #B8860B; /* Dark Goldenrod */
+            --primary-light: #DAA520;
+            --bg: #0C0806;
+            --bg-accent: #160E07;
+            --text: #F0E6D3;
+            --text-muted: #A38F7A;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --accent-gradient: linear-gradient(135deg, #B8860B 0%, #4B3621 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        header {
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(184, 134, 11, 0.15) 0%, transparent 70%);
+            border-bottom: 1px solid var(--border-glass);
+            padding: 2rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to bottom, #F0E6D3, #B8860B);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: -100px auto 100px;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        h2::after {
+            content: '';
+            height: 1px;
+            flex-grow: 1;
+            background: linear-gradient(to right, var(--primary), transparent);
+            margin-left: 1rem;
+        }
+
+        /* Competitor Table */
+        .table-container {
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-glass);
+            color: var(--primary-light);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+        }
+
+        td {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            vertical-align: top;
+        }
+
+        tr:last-child td { border: none; }
+
+        .strong { color: #fff; font-weight: 600; }
+
+        /* Roadmap Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .phase {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border-glass);
+            padding: 2rem;
+            border-radius: 16px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .phase:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            background: rgba(184, 134, 11, 0.05);
+        }
+
+        .phase-num {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .phase h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .phase p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        /* SWOT */
+        .swot-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .swot-item {
+            padding: 1.5rem;
+            border-radius: 12px;
+        }
+
+        .strengths { border-left: 4px solid #4CAF50; background: rgba(76, 175, 80, 0.05); }
+        .weaknesses { border-left: 4px solid #F44336; background: rgba(244, 67, 54, 0.05); }
+        .opportunities { border-left: 4px solid #2196F3; background: rgba(33, 150, 243, 0.05); }
+        .threats { border-left: 4px solid #FF9800; background: rgba(255, 152, 0, 0.05); }
+
+        .swot-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Improvements */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .card { padding: 1.5rem; }
+            .swot-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.8s ease forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <span class="subtitle">Analyse Stratégique</span>
+        <h1>Africa Interior Design</h1>
+        <p style="color: var(--primary); font-weight: 600;">Édition 2025 • Roadmap & Opportunités</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- Competitive Analysis -->
+        <section class="card">
+            <h2>Analyse Concurrentielle</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Concurrent</th>
+                            <th>Forces</th>
+                            <th>Faiblesses</th>
+                            <th>L'Opportunité Africa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="strong">RoomGPT / InteriorAI</span></td>
+                            <td>Vitesse, simplicité, accessibilité.</td>
+                            <td>Résultats génériques, erreurs spatiales.</td>
+                            <td><strong>Niche Culturelle Profonde</strong> : Précision ethnique (Dogon, Zulu) vs Afrique générique.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="strong">Planner 5D / Homestyler</span></td>
+                            <td>Outils 3D pro, plans précis.</td>
+                            <td>Courbe d'apprentissage élevée, manuel.</td>
+                            <td><strong>Immersif Auto (World Labs)</strong> : Génération 3D instantanée de sanctuaires culturels.</td>
+                        </tr>
+                        <tr>
+                            <td><span class="strong">Decor Copilot / Paintit.ai</span></td>
+                            <td>"Shop the Look" intégré.</td>
+                            <td>Limité aux enseignes occidentales.</td>
+                            <td><strong>Artisanat Connecté</strong> : Liens directs vers des créateurs de mobilier africain.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- SWOT Analysis -->
+        <section class="card">
+            <h2>Diagnostic SWOT</h2>
+            <div class="swot-grid">
+                <div class="swot-item strengths">
+                    <span class="swot-title">Forces</span>
+                    Spécialisation esthétique unique. Intégration World Labs (3D) & Gemini (Vision) déjà fonctionnelle.
+                </div>
+                <div class="swot-item weaknesses">
+                    <span class="swot-title">Faiblesses</span>
+                    Interface UI perfectible. Absence de liens d'achat directs pour le mobilier généré.
+                </div>
+                <div class="swot-item opportunities">
+                    <span class="swot-title">Opportunités</span>
+                    Partenariats avec des marques de design africain. Storytelling culturel assisté par AI.
+                </div>
+                <div class="swot-item threats">
+                    <span class="swot-title">Menaces</span>
+                    Grands acteurs (RoomGPT) ajoutant des sous-styles "Afrique" simplifiés.
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap -->
+        <section class="card">
+            <h2>Feuille de Route Stratégique</h2>
+            <div class="grid">
+                <div class="phase">
+                    <span class="phase-num">Phase 1</span>
+                    <h3>Storytelling Immersif</h3>
+                    <p>Au-delà du design : expliquer l'origine des motifs (ex: Ndebele, Berber) via des "Cartes Histoire" pour justifier un positionnement premium.</p>
+                </div>
+                <div class="phase">
+                    <span class="phase-num">Phase 2</span>
+                    <h3>Shoppable Heritage</h3>
+                    <p>Transformation de l'outil en marketplace : connecter l'utilisateur à de vrais artisans et marques (Eva Sonaike, Jomo Furniture).</p>
+                </div>
+                <div class="phase">
+                    <span class="phase-num">Phase 3</span>
+                    <h3>Professional Staging</h3>
+                    <p>Modes spécialisés pour les AirBnB de luxe et les Safari Lodges. Elargir la base d'utilisateurs vers le B2B.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Improvements -->
+        <section class="card">
+            <h2>Améliorations Immédiates</h2>
+            <ul style="list-style: none; margin-top: 1rem;">
+                <li style="margin-bottom: 1rem; padding-left: 1.5rem; border-left: 2px solid var(--primary);">
+                    <strong>Refinement Gemini</strong> : Optimisation des prompts pour le mode "Arrière-plan uniquement" afin d'éviter les hallucinations sur les personnes.
+                </li>
+                <li style="margin-bottom: 1rem; padding-left: 1.5rem; border-left: 2px solid var(--primary);">
+                    <strong>Diversité Ethnique</strong> : Expansion de la base JSON (5-10 nouveaux styles régionaux comme Swahili Coast).
+                </li>
+                <li style="margin-bottom: 1rem; padding-left: 1.5rem; border-left: 2px solid var(--primary);">
+                    <strong>Système de Design Unifié</strong> : Refonte UI vers un style "Luxe Artisanal" (tons terre profonds, accents or).
+                </li>
+            </ul>
+        </section>
+
+    </div>
+
+    <footer>
+        &copy; 2025 Africa Interior Design Strategy Report • Propulsé par AI Interior Lab
+    </footer>
+
+</body>
+</html>

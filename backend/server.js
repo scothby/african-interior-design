@@ -9,13 +9,13 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const { editBackgroundOnly } = require('./imageEditing');
 const { createClient } = require('@supabase/supabase-js');
 const Replicate = require('replicate');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const isDev = process.env.NODE_ENV !== 'production';
 
 // Initialize Supabase Client
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.REACT_APP_SUPABASE_ANON_KEY;
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('⚠️ Supabase credentials missing in .env');
 }
@@ -70,6 +70,14 @@ const verifyToken = async (req, res, next) => {
     if (error || !user) return res.status(401).json({ error: 'Token invalide ou expiré.' });
     req.userId = user.id;
     req.user = user;
+    req.token = token;
+    req.supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    });
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Erreur de vérification du token.' });
@@ -280,6 +288,7 @@ CRITICAL INSTRUCTION: You MUST strictly preserve the exact geometric structure, 
 Keep the main subject (any person, main sofa, bed, table or key furniture in the foreground) EXACTLY as in the original image: same shape, position and main colors.
 Do NOT change faces, bodies, skin tone, clothing, or the main furniture piece. You may only make very light global lighting adjustments.
 Change walls, floor, ceiling, windows, secondary furniture and decorative accessories to match the requested African interior style, but they must perfectly fit the original geometry.
+CRITICAL NEGATIVE INSTRUCTION: DO NOT generate, add, or hallucinate any new human figures, people, faces, or animals in the background. The background MUST remain strictly architectural and decorative.
 Use these colors: ${style.colors?.join(', ') || 'warm African earth tones'}.
 Materials: ${style.materials?.join(', ') || 'traditional African materials'}.
 Patterns: ${style.patterns?.join(', ') || 'African geometric patterns'}.
@@ -294,10 +303,11 @@ The result must look like high quality architectural interior photography, 4K, p
 
   let prompt = `Transform this entire room into ${stylePrompt}. 
 CRITICAL INSTRUCTION: You MUST strictly preserve the exact geometric structure, dimensions, and original shapes of the entire room, including all walls, windows, doors, architectural elements, and spatial proportions. Do NOT alter the size, geometry, or the fundamental layout of the space under any circumstances.
+CRITICAL NEGATIVE INSTRUCTION: DO NOT generate, add, or hallucinate any human figures, people, faces, silhouettes, or animals. The rendered image MUST represent an empty interior room containing only furniture, decor, and architectural elements.
 Use these colors: ${style.colors?.join(', ') || 'warm African earth tones'}.
 Materials: ${style.materials?.join(', ') || 'traditional African materials'}.
 Patterns: ${style.patterns?.join(', ') || 'African geometric patterns'}.
-Maintain the room layout and structure perfectly while completely transforming the style.
+Maintain the room layout and structure perfectly while completely transforming the style into a pristine, unpopulated space.
 High quality architectural interior photography style, 4K, photorealistic.`;
 
   if (customPrompt && customPrompt.trim() !== '') {
@@ -409,7 +419,7 @@ app.post('/api/generate', verifyToken, async (req, res) => {
     // Save to Supabase DB gallery
     const galleryId = `gallery-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    const { error: dbError } = await supabase.from('gallery').insert([{
+    const { error: dbError } = await req.supabase.from('gallery').insert([{
       id: galleryId,
       original_image_url: originalImage,
       generated_image_url: finalGeneratedUrl,
@@ -532,13 +542,13 @@ The result must look photorealistic.`;
 
     if (uploadError) throw new Error("Supabase Storage error: " + uploadError.message);
 
-    const { data: publicUrlData } = supabase.storage.from('generated').getPublicUrl(`public/${generatedFilename}`);
+    const { data: publicUrlData } = req.supabase.storage.from('generated').getPublicUrl(`public/${generatedFilename}`);
     const finalGeneratedUrl = publicUrlData.publicUrl;
 
     // Save to Supabase DB gallery
     const galleryId = `gallery-inpaint-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    const { error: dbError } = await supabase.from('gallery').insert([{
+    const { error: dbError } = await req.supabase.from('gallery').insert([{
       id: galleryId,
       original_image_url: originalImage,
       generated_image_url: finalGeneratedUrl,
@@ -577,7 +587,7 @@ The result must look photorealistic.`;
 // Get all styles endpoint
 app.get('/api/styles', verifyToken, async (req, res) => {
   try {
-    const { data, error } = await supabase.from('styles').select('*').order('created_at', { ascending: true });
+    const { data, error } = await req.supabase.from('styles').select('*').order('created_at', { ascending: true });
     if (error) throw error;
     res.json({ styles: data });
   } catch (err) {
@@ -604,7 +614,7 @@ app.post('/api/styles', verifyToken, async (req, res) => {
       flag: flag || '🌍'
     };
 
-    const { error } = await supabase.from('styles').insert([newStyle]);
+    const { error } = await req.supabase.from('styles').insert([newStyle]);
     if (error) throw error;
 
     res.status(201).json(newStyle);
@@ -617,14 +627,14 @@ app.post('/api/styles', verifyToken, async (req, res) => {
 // Update style
 app.put('/api/styles/:id', verifyToken, async (req, res) => {
   try {
-    const { error } = await supabase.from('styles')
+    const { error } = await req.supabase.from('styles')
       .update(req.body)
       .eq('id', req.params.id);
 
     if (error) throw error;
 
     // Fetch updated
-    const { data } = await supabase.from('styles').select('*').eq('id', req.params.id).single();
+    const { data } = await req.supabase.from('styles').select('*').eq('id', req.params.id).single();
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -634,7 +644,7 @@ app.put('/api/styles/:id', verifyToken, async (req, res) => {
 // Delete style
 app.delete('/api/styles/:id', verifyToken, async (req, res) => {
   try {
-    const { error } = await supabase.from('styles').delete().eq('id', req.params.id);
+    const { error } = await req.supabase.from('styles').delete().eq('id', req.params.id);
     if (error) throw error;
     res.json({ success: true });
   } catch (err) {
@@ -645,7 +655,7 @@ app.delete('/api/styles/:id', verifyToken, async (req, res) => {
 // Gallery: list all entries (user's own only)
 app.get('/api/gallery', verifyToken, async (req, res) => {
   try {
-    const { data, error } = await supabase.from('gallery').select('*').eq('user_id', req.userId).order('created_at', { ascending: false });
+    const { data, error } = await req.supabase.from('gallery').select('*').eq('user_id', req.userId).order('created_at', { ascending: false });
     if (error) throw error;
 
     // Map snake_case db columns to camelCase expected by frontend
@@ -674,16 +684,16 @@ app.get('/api/gallery', verifyToken, async (req, res) => {
 // Gallery: delete an entry
 app.delete('/api/gallery/:id', verifyToken, async (req, res) => {
   try {
-    const { data: entry } = await supabase.from('gallery').select('*').eq('id', req.params.id).single();
+    const { data: entry } = await req.supabase.from('gallery').select('*').eq('id', req.params.id).single();
     if (!entry) return res.status(404).json({ error: 'Entry not found' });
 
     // Try to delete from storage if it exists on Supabase (optional hygiene)
     if (entry.generated_image_url && entry.generated_image_url.includes('supabase.co')) {
       const filename = entry.generated_image_url.split('/').pop();
-      await supabase.storage.from('generated').remove([`public/${filename}`]);
+      await req.supabase.storage.from('generated').remove([`public/${filename}`]);
     }
 
-    const { error } = await supabase.from('gallery').delete().eq('id', req.params.id);
+    const { error } = await req.supabase.from('gallery').delete().eq('id', req.params.id);
     if (error) throw error;
 
     res.json({ success: true });
@@ -700,7 +710,7 @@ app.patch('/api/gallery/:id/world', verifyToken, async (req, res) => {
     if (worldUrl) updates.world_url = worldUrl;
     if (worldOperationId) updates.world_operation_id = worldOperationId;
 
-    const { error } = await supabase.from('gallery').update(updates).eq('id', req.params.id);
+    const { error } = await req.supabase.from('gallery').update(updates).eq('id', req.params.id);
     if (error) throw error;
 
     res.json({ success: true, worldUrl: worldUrl });
@@ -712,11 +722,11 @@ app.patch('/api/gallery/:id/world', verifyToken, async (req, res) => {
 // Gallery: toggle favorite status
 app.patch('/api/gallery/:id/favorite', verifyToken, async (req, res) => {
   try {
-    const { data: entry } = await supabase.from('gallery').select('is_favorite').eq('id', req.params.id).single();
+    const { data: entry } = await req.supabase.from('gallery').select('is_favorite').eq('id', req.params.id).single();
     if (!entry) return res.status(404).json({ error: 'Entry not found' });
 
     const newValue = !entry.is_favorite;
-    const { error } = await supabase.from('gallery').update({ is_favorite: newValue }).eq('id', req.params.id);
+    const { error } = await req.supabase.from('gallery').update({ is_favorite: newValue }).eq('id', req.params.id);
     if (error) throw error;
 
     res.json({ success: true, isFavorite: newValue });
