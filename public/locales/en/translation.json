@@ -310,23 +310,6 @@
         "secureText": "Your creations are secure and private 🔒"
     },
     "db": {
-        "families": {
-            "Terres & Banco": "Earth & Banco",
-            "Textiles Royaux": "Royal Textiles",
-            "Côtier Swahili": "Swahili Coastal",
-            "Géométrique Peint": "Painted Geometric",
-            "Sauvage & Nomade": "Wild & Nomadic",
-            "Islamique Africain": "African Islamic",
-            "Tropical Équatorial": "Equatorial Tropical",
-            "Urbain Contemporain": "Contemporary Urban"
-        },
-        "regions": {
-            "Afrique du Nord": "North Africa",
-            "Afrique de l'Ouest": "West Africa",
-            "Afrique Centrale": "Central Africa",
-            "Afrique de l'Est": "East Africa",
-            "Afrique Australe": "Southern Africa"
-        },
         "styles": {
             "ma-riad": {
                 "name": "Traditional Riad",
@@ -408,6 +391,26 @@
                 "name": "Mural Ndebele",
                 "description": "Vibrant geometric graphics, beads and symmetry — the visual identity of Esther Mahlangu"
             }
+        },
+        "regions": {
+            "Toutes": "All",
+            "Afrique de l'Ouest": "West Africa",
+            "Afrique de l'Est": "East Africa",
+            "Afrique du Nord": "North Africa",
+            "Afrique Centrale": "Central Africa",
+            "Afrique Australe": "Southern Africa",
+            "Océan Indien": "Indian Ocean",
+            "Diaspora": "Diaspora"
+        },
+        "families": {
+            "Terres & Banco": "Earth & Banco",
+            "Textiles Royaux": "Royal Textiles",
+            "Côtier Swahili": "Swahili Coastal",
+            "Géométrique Peint": "Painted Geometric",
+            "Sauvage & Nomade": "Wild & Nomadic",
+            "Islamique Africain": "African Islamic",
+            "Tropical Équatorial": "Equatorial Tropical",
+            "Urbain Contemporain": "Urban Contemporary"
         }
     }
 }
