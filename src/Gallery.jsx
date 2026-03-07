@@ -343,7 +343,7 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
                         <p style={{ color: '#8B7050', fontSize: '14px', margin: '0 0 24px 0' }}>
                             {t('gallery.empty.desc')}
                         </p>
-                        <button onClick={onBack} style={s.primaryBtn}>
+                        <button onClick={onGoToDesigner} style={s.primaryBtn}>
                             {t('gallery.empty.goto')}
                         </button>
                     </div>
