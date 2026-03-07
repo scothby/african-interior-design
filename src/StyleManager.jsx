@@ -22,7 +22,8 @@ export default function StyleManager({ onBack }) {
         materials: '',
         colors: '',
         patterns: '',
-        flag: '🌍'
+        flag: '🌍',
+        image_url: ''
     });
 
     const fetchStyles = useCallback(async () => {
@@ -71,7 +72,8 @@ export default function StyleManager({ onBack }) {
             materials: style.materials ? style.materials.join(', ') : '',
             colors: style.colors ? style.colors.join(', ') : '',
             patterns: style.patterns ? style.patterns.join(', ') : '',
-            flag: style.flag || '🌍'
+            flag: style.flag || '🌍',
+            image_url: style.image_url || ''
         });
         setIsEditing(true);
     };
@@ -79,7 +81,7 @@ export default function StyleManager({ onBack }) {
     const handleAddNew = () => {
         setCurrentStyle(null);
         setFormData({
-            name: '', region: 'Ouest', family: 'Traditionnel', description: '', prompt: '', materials: '', colors: '', patterns: '', flag: '🌍'
+            name: '', region: 'Ouest', family: 'Traditionnel', description: '', prompt: '', materials: '', colors: '', patterns: '', flag: '🌍', image_url: ''
         });
         setIsEditing(true);
     };
@@ -98,6 +100,7 @@ export default function StyleManager({ onBack }) {
                 colors: formData.colors.split(',').map(s => s.trim()).filter(Boolean),
                 patterns: formData.patterns.split(',').map(s => s.trim()).filter(Boolean),
                 flag: formData.flag,
+                image_url: formData.image_url || null,
             };
 
             if (currentStyle) {
@@ -148,6 +151,10 @@ export default function StyleManager({ onBack }) {
                             <label style={s.label}>Émoji / Drapeau</label>
                             <input style={s.input} value={formData.flag} onChange={e => setFormData({ ...formData, flag: e.target.value })} />
                         </div>
+                    </div>
+                    <div style={s.formGroup}>
+                        <label style={s.label}>URL de l'image (Image URL)</label>
+                        <input style={s.input} value={formData.image_url} onChange={e => setFormData({ ...formData, image_url: e.target.value })} placeholder="/styles/nom-image.png ou https://..." />
                     </div>
                     <div style={s.formGroup}>
                         <label style={s.label}>{t('admin.desc')}</label>

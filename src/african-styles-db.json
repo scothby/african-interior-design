@@ -848,6 +848,7 @@
       "flag": "🇳🇬",
       "region": "Afrique de l'Ouest",
       "family": "Urbain Contemporain",
+      "image_url": "/styles/ng-lagos.png",
       "colors": [
         "#FF4500",
         "#006400",
@@ -1150,6 +1151,7 @@
       "flag": "🇳🇬",
       "region": "Afrique de l'Ouest",
       "family": "Urbain Contemporain",
+      "image_url": "/styles/ng-calabar-colonial.png",
       "colors": [
         "#228B22",
         "#FFFFFF",
@@ -1711,6 +1713,7 @@
       "flag": "🇹🇿",
       "region": "Afrique de l'Est",
       "family": "Urbain Contemporain",
+      "image_url": "/styles/tz-tinga.png",
       "colors": [
         "#FF4500",
         "#FFD700",
@@ -2656,6 +2659,7 @@
       "flag": "🇨🇬",
       "region": "Afrique Centrale",
       "family": "Urbain Contemporain",
+      "image_url": "/styles/cg-brazza.png",
       "colors": [
         "#FF4500",
         "#FFD700",
@@ -3043,6 +3047,7 @@
       "flag": "🇸🇱",
       "region": "Afrique de l'Ouest",
       "family": "Urbain Contemporain",
+      "image_url": "/styles/sl-freetown.png",
       "colors": [
         "#FFD700",
         "#006400",
@@ -3301,6 +3306,7 @@
       "flag": "🇲🇿",
       "region": "Afrique Australe",
       "family": "Urbain Contemporain",
+      "image_url": "/styles/mz-colonial.png",
       "colors": [
         "#FFD700",
         "#006400",
@@ -3387,6 +3393,7 @@
       "flag": "🇱🇷",
       "region": "Afrique de l'Ouest",
       "family": "Urbain Contemporain",
+      "image_url": "/styles/lr-americo.png",
       "colors": [
         "#FFFFFF",
         "#DC143C",

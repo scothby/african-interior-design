@@ -645,18 +645,31 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
                   selectedStyle?.id === style.id
                     ? "rgba(184,134,11,0.15)"
                     : "#160E07",
+                padding: 0,
+                overflow: "hidden"
               }}
             >
-              <div style={styles.styleHeader}>
-                <span style={styles.flag}>{style.flag}</span>
-                <span style={styles.styleName}>{t(`db.styles.${style.id}.name`, { defaultValue: style.name })}</span>
-              </div>
-              <div style={styles.styleCountry}>{style.country}</div>
-              <div style={styles.styleFamily}>{t(`db.families.${style.family}`, { defaultValue: style.family })}</div>
-              <div style={styles.colorPreview}>
-                {style.colors.slice(0, 4).map((c, i) => (
-                  <div key={i} style={{ ...styles.colorDot, background: c }} />
-                ))}
+              {style.image_url && (
+                <div style={{ width: "100%", height: "120px", borderBottom: selectedStyle?.id === style.id ? "1px solid #B8860B" : "1px solid #2A1A0E" }}>
+                  <img
+                    src={style.image_url}
+                    alt={style.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                </div>
+              )}
+              <div style={{ padding: "12px" }}>
+                <div style={styles.styleHeader}>
+                  <span style={styles.flag}>{style.flag}</span>
+                  <span style={styles.styleName}>{t(`db.styles.${style.id}.name`, { defaultValue: style.name })}</span>
+                </div>
+                <div style={styles.styleCountry}>{style.country}</div>
+                <div style={styles.styleFamily}>{t(`db.families.${style.family}`, { defaultValue: style.family })}</div>
+                <div style={styles.colorPreview}>
+                  {style.colors.slice(0, 4).map((c, i) => (
+                    <div key={i} style={{ ...styles.colorDot, background: c }} />
+                  ))}
+                </div>
               </div>
             </div>
           ))}

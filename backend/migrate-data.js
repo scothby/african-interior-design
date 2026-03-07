@@ -34,7 +34,8 @@ async function migrateData() {
                         materials: s.materials || [],
                         colors: s.colors || [],
                         patterns: s.patterns || [],
-                        flag: s.flag || '🌍'
+                        flag: s.flag || '🌍',
+                        image_url: s.image_url || null
                     }))
                 );
                 if (error) throw error;
