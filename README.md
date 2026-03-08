@@ -1,11 +1,11 @@
 # 🏛️ African Interior Designer
 
-Application complète de design d'intérieur africain avec base de données de 169 styles et génération d'images par IA.
+Application complète de design d'intérieur africain avec base de données de 186 styles et génération d'images par IA.
 
 ## ✨ Fonctionnalités
 
 ### 📚 Base de Données des Styles Africains
-- **169 styles** de 5 régions africaines
+- **186 styles** de 5 régions africaines
 - 8 familles de styles (Terres & Banco, Textiles Royaux, Côtier Swahili, etc.)
 - Palettes de couleurs, matériaux, motifs et prompts prêts à l'emploi
 

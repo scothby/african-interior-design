@@ -206,10 +206,23 @@ h4 {
 }
 
 @keyframes scanner {
-  0% { transform: translateY(-100%); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(100%); opacity: 0; }
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
 }
 
 .ai-scanner {
@@ -411,6 +424,26 @@ button:focus {
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
   border-radius: var(--radius-sm);
+  display: block;
+}
+
+.skeleton-text {
+  height: 0.8em;
+  width: 100%;
+  margin-bottom: 0.5em;
+  border-radius: 4px;
+}
+
+.skeleton-title {
+  height: 1.5em;
+  width: 60%;
+  margin-bottom: 1em;
+  border-radius: 4px;
+}
+
+.skeleton-circle {
+  border-radius: 50%;
+  aspect-ratio: 1;
 }
 
 /* Gallery and Style Cards specifics */

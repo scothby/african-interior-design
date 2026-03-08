@@ -58,7 +58,7 @@ const getFeatures = (t) => [
     { icon: "🌍", label: "Monde 3D", desc: t('landing.features.world_desc', { defaultValue: "Exploration immersive" }) },
     { icon: "📄", label: "Export PDF", desc: t('landing.features.pdf_desc', { defaultValue: "Fiche de design complète" }) },
     { icon: "🖼️", label: t('header.gallery'), desc: t('landing.features.gallery_desc', { defaultValue: "Toutes vos créations" }) },
-    { icon: "🎨", label: "50+ styles", desc: t('landing.features.styles_desc', { defaultValue: "7 régions d'Afrique" }) },
+    { icon: "🎨", label: t('landing.features.styles_count', { count: 180, defaultValue: "180+ styles" }).replace('180', DB.styles.length), desc: t('landing.features.styles_desc', { defaultValue: "7 régions d'Afrique" }) },
     { icon: "🔒", label: t('landing.features.secure_label', { defaultValue: "Sécurisé" }), desc: t('landing.features.secure_desc', { defaultValue: "Données protégées" }) },
 ];
 
@@ -163,7 +163,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
         <div style={{ background: "var(--color-bg-dark)", minHeight: "100vh", color: "var(--color-text-main)", overflowX: "hidden" }}>
             <SEO
                 title={t('landing.seo.title', { defaultValue: "African Interior Design - AI Creator & Styles Database" })}
-                description={t('landing.seo.description', { defaultValue: "Transform your spaces with authentic African interior design powered by AI. Explore our database of 89 architectural styles from the Sahel to the Coast." })}
+                description={t('landing.seo.description', { count: totalStyles, defaultValue: `Transform your spaces with authentic African interior design powered by AI. Explore our database of ${totalStyles} architectural styles from the Sahel to the Coast.` })}
             />
             {/* Structured Data for Google search results */}
             <script type="application/ld+json">
@@ -171,7 +171,7 @@ export default function LandingPage({ onEnterDesigner, onEnterGallery, onEnterDa
                     "@context": "https://schema.org",
                     "@type": "CollectionPage",
                     "name": "African Interior Design Catalog",
-                    "description": "Database of 89 authentic African interior design styles.",
+                    "description": `Database of ${totalStyles} authentic African interior design styles.`,
                     "provider": {
                         "@type": "Organization",
                         "name": "African Interior Designer",

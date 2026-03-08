@@ -11,6 +11,12 @@ import { useAuth } from "./AuthContext";
 import Logo from "./components/Logo";
 import { fetchStylesFromSupabase, fetchRoomTypes, fetchColorPalettes } from "./supabaseClient";
 
+// New modular components
+import UploadStep from "./components/designer/UploadStep";
+import StyleSelection from "./components/designer/StyleSelection";
+import GeneratingView from "./components/designer/GeneratingView";
+import ResultView from "./components/designer/ResultView";
+
 const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
 export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery, onGoToPalettes }) {
@@ -23,6 +29,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
   const [generatedId, setGeneratedId] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
   const [error, setError] = useState(null);
@@ -60,6 +67,7 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
 
   // Fetch styles, room types, and palettes from Supabase directly
   const fetchInitialData = useCallback(async () => {
+    setIsInitialLoading(true);
     try {
       const [stylesData, roomsData, palettesData] = await Promise.all([
         fetchStylesFromSupabase(),
@@ -75,6 +83,8 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
       if (roomsData.length > 0) setSelectedRoomType(roomsData[0]);
     } catch (err) {
       console.error("Error fetching data from Supabase:", err);
+    } finally {
+      setIsInitialLoading(false);
     }
   }, []);
 
@@ -342,801 +352,90 @@ export default function InteriorDesignApp({ onBack, onGoToStyles, onGoToGallery,
     setError(null);
   };
 
+  // The local render functions are now replaced by external components for better maintainability.
+
   const renderUploadContent = () => (
-    <div className="w-full max-w-5xl">
-      <div className="glass-panel rounded-[2.5rem] p-8 md:p-14 overflow-hidden relative" style={{ background: "var(--glass-bg)", border: "1px solid var(--color-border)" }}>
-        <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl" style={{ background: "var(--color-primary-dark)", opacity: 0.2 }}></div>
-        <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full blur-3xl" style={{ background: "#8B4513", opacity: 0.1 }}></div>
-
-        <div
-          className="relative group cursor-pointer"
-          onClick={() => document.getElementById("file-upload").click()}
-        >
-          <div
-            className={`rounded-3xl p-12 md:p-20 transition-all duration-500 flex flex-col items-center justify-center text-center ${dragActive ? "scale-[1.01]" : ""}`}
-            style={{ background: dragActive ? "rgba(212, 175, 55, 0.1)" : "rgba(22, 14, 7, 0.6)", border: dragActive ? "2px dashed var(--color-primary)" : "1px dashed #2A1A0E" }}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <div className="mb-8 relative pointer-events-none">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 group-hover:scale-[2.5] transition-transform duration-700"></div>
-              <div className="relative w-24 h-24 rounded-3xl flex items-center justify-center shadow-xl transform group-hover:-translate-y-3 transition-transform duration-500" style={{ background: "#0A0806", border: "1px solid #2A1A0E" }}>
-                <span className="material-symbols-outlined text-5xl" style={{ color: "var(--color-primary)" }}>
-                  photo_camera
-                </span>
-              </div>
-            </div>
-
-            <h2 style={{ fontSize: "var(--font-size-xl)", color: "var(--color-text-main)" }} className="font-display font-bold mb-6 leading-tight pointer-events-none">
-              {t('app.upload.dragText')} <br className="hidden md:block" />
-              <span className="transition-colors pointer-events-auto" style={{ color: "var(--color-primary)", textDecoration: "underline", textUnderlineOffset: "8px", textDecorationColor: "rgba(212, 175, 55, 0.3)" }}>
-                {t('app.upload.clickText')}
-              </span>
-            </h2>
-
-            <div className="flex flex-wrap items-center justify-center gap-4 font-semibold uppercase tracking-widest pointer-events-none" style={{ fontSize: "var(--font-size-xs)", color: "#8B7050" }}>
-              <span style={{ background: "#1A1008", padding: "4px 12px", borderRadius: "6px", border: "1px solid #2A1A0E" }}>
-                JPG
-              </span>
-              <span style={{ background: "#1A1008", padding: "4px 12px", borderRadius: "6px", border: "1px solid #2A1A0E" }}>
-                PNG
-              </span>
-              <span style={{ background: "#1A1008", padding: "4px 12px", borderRadius: "6px", border: "1px solid #2A1A0E" }}>
-                WebP
-              </span>
-              <span className="ml-2 font-normal lowercase italic opacity-70">
-                {t('app.upload.maxSize')}
-              </span>
-            </div>
-          </div>
-
-          <input
-            id="file-upload"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => handleFileUpload(e.target.files[0])}
-          />
-        </div>
-
-        {isLoading && (
-          <div style={styles.loading} className="mt-8">
-            <div style={styles.spinner} />
-            <span>{t('app.upload.loading')}</span>
-          </div>
-        )}
-
-        {error && (
-          <div style={styles.error} className="mt-8">
-            {error}
-          </div>
-        )}
-
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-10" style={{ color: "#A08060" }}>
-          <div className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-colors" style={{ background: "rgba(212, 175, 55, 0.1)" }}>
-              <span className="material-symbols-outlined text-xl" style={{ color: "var(--color-primary)" }}>
-                verified
-              </span>
-            </div>
-            <span className="text-sm font-medium">
-              {t('app.upload.feature1')}
-            </span>
-          </div>
-          <div className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center transition-colors" style={{ background: "rgba(139, 101, 8, 0.1)" }}>
-              <span className="material-symbols-outlined text-xl" style={{ color: "#8B6508" }}>
-                security
-              </span>
-            </div>
-            <span className="text-sm font-medium">
-              {t('app.upload.feature2')}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
+    <UploadStep
+      t={t}
+      handleFileUpload={handleFileUpload}
+      dragActive={dragActive}
+      handleDrag={handleDrag}
+      handleDrop={handleDrop}
+      isLoading={isLoading}
+      error={error}
+      styles={styles}
+    />
   );
 
-  // Render style selection view
   const renderStyleSelection = () => (
-    <div style={styles.selectionContainer}>
-      <div style={styles.previewSection}>
-        <h3 style={styles.sectionTitle}>{t('app.styleSelection.yourPhoto')}</h3>
-        <img
-          src={
-            uploadedImage && uploadedImage.startsWith("http")
-              ? uploadedImage
-              : `${API_BASE_URL}${uploadedImage}`
-          }
-          alt="Uploaded"
-          style={styles.previewImage}
-        />
-        <button
-          onClick={() => setCurrentView("upload")}
-          style={styles.changePhotoBtn}
-        >
-          {t('app.styleSelection.changePhoto')}
-        </button>
-
-        {selectedStyle && (
-          <div style={styles.generateSection}>
-            <div style={styles.selectedStylePreview}>
-              <span style={styles.flag}>{selectedStyle.flag}</span>
-              <span style={styles.selectedStyleName}>{selectedStyle[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.name}</span>
-            </div>
-
-            {/* Room Type Selector */}
-            <div style={{ marginBottom: "16px", width: "100%", maxWidth: "300px" }}>
-              <label style={{
-                display: "block", fontSize: "12px", color: "#8B7050", marginBottom: "6px",
-                fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.05em"
-              }}>
-                {t('app.styleSelection.roomType', { defaultValue: "Type de pièce" })}
-              </label>
-              <select
-                value={selectedRoomType?.id || ""}
-                onChange={(e) => {
-                  const rt = roomTypes.find(r => r.id === e.target.value);
-                  setSelectedRoomType(rt);
-                }}
-                style={{
-                  ...styles.select,
-                  width: "100%",
-                  background: "#0E0905",
-                  padding: "10px",
-                  fontSize: "13px"
-                }}
-              >
-                {roomTypes.map(rt => (
-                  <option key={rt.id} value={rt.id}>{rt.icon} {rt.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Color Palette Selector */}
-            <div style={{ marginBottom: "16px", width: "100%", maxWidth: "300px" }}>
-              <label style={{
-                display: "block", fontSize: "12px", color: "#8B7050", marginBottom: "6px",
-                fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.05em"
-              }}>
-                {t('app.styleSelection.colorPalette', { defaultValue: "Palette de couleurs" })}
-              </label>
-              <select
-                value={selectedPalette?.id || ""}
-                onChange={(e) => {
-                  const p = colorPalettes.find(cp => cp.id === e.target.value);
-                  setSelectedPalette(p);
-                }}
-                style={{
-                  ...styles.select,
-                  width: "100%",
-                  background: "#0E0905",
-                  padding: "10px",
-                  fontSize: "13px"
-                }}
-              >
-                <option value="">{t('app.styleSelection.defaultPalette', { defaultValue: "Couleurs du style" })}</option>
-                {colorPalettes.map(p => (
-                  <option key={p.id} value={p.id}>🎨 {p.name}</option>
-                ))}
-              </select>
-              {selectedPalette && (
-                <div style={{ display: "flex", gap: "4px", marginTop: "8px" }}>
-                  {selectedPalette.colors.map((c, i) => (
-                    <div key={i} style={{ width: "20px", height: "10px", background: c, borderRadius: "2px" }} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Custom Instructions Input */}
-            <div
-              style={{ marginBottom: "16px", width: "100%", maxWidth: "300px" }}
-            >
-              <label
-                htmlFor="customPrompt"
-                style={{
-                  display: "block",
-                  fontSize: "12px",
-                  color: "#8B7050",
-                  marginBottom: "6px",
-                  fontWeight: "bold",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                {t('app.styleSelection.customInstructions')}
-              </label>
-              <textarea
-                id="customPrompt"
-                value={customPrompt}
-                onChange={(e) => setCustomPrompt(e.target.value)}
-                placeholder="Ex: Garde le canapé gris tel quel, ajoute une grande plante verte au fond..."
-                rows="3"
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  background: "#0E0905",
-                  border: "1px solid #2A1A0E",
-                  borderRadius: "6px",
-                  color: "#F0E6D3",
-                  fontFamily: "inherit",
-                  fontSize: "13px",
-                  resize: "vertical",
-                  minHeight: "60px",
-                  outline: "none",
-                  boxSizing: "border-box",
-                }}
-              />
-            </div>
-            {/* Mode de transformation */}
-            <div
-              style={{ marginBottom: "16px", width: "100%", maxWidth: "300px" }}
-            >
-              <div
-                style={{
-                  fontSize: "12px",
-                  color: "#8B7050",
-                  marginBottom: "6px",
-                  fontWeight: "bold",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                }}
-              >
-                {t('app.styleSelection.transformationMode.title')}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "6px",
-                  fontSize: "13px",
-                  color: "#F0E6D3",
-                }}
-              >
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    cursor: "pointer",
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="editMode"
-                    value="full"
-                    checked={editMode === "full"}
-                    onChange={() => setEditMode("full")}
-                    style={{ accentColor: "#B8860B" }}
-                  />
-                  <span>
-                    {t('app.styleSelection.transformationMode.full')}{" "}
-                    <span style={{ color: "#8B7050", fontSize: "12px" }}>
-                      {t('app.styleSelection.transformationMode.fullDesc')}
-                    </span>
-                  </span>
-                </label>
-                <label
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                    cursor: "pointer",
-                  }}
-                >
-                  <input
-                    type="radio"
-                    name="editMode"
-                    value="background"
-                    checked={editMode === "background"}
-                    onChange={() => setEditMode("background")}
-                    style={{ accentColor: "#B8860B" }}
-                  />
-                  <span>
-                    {t('app.styleSelection.transformationMode.background')}{" "}
-                    <span style={{ color: "#8B7050", fontSize: "12px" }}>
-                      {t('app.styleSelection.transformationMode.backgroundDesc')}
-                    </span>
-                  </span>
-                </label>
-              </div>
-            </div>
-            <button
-              onClick={handleGenerate}
-              disabled={isLoading}
-              style={{
-                ...styles.generateBtn,
-                ...(isLoading ? styles.generateBtnLoading : {}),
-              }}
-            >
-              {isLoading ? (
-                <span style={styles.btnContent}>
-                  <span style={styles.btnSpinner}></span>
-                  {t('app.styleSelection.generating')}
-                </span>
-              ) : (
-                `🎨 ${t('app.styleSelection.generate')}`
-              )}
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div style={styles.stylesSection} className="glass-panel">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "20px",
-          }}
-        >
-          <h3 style={{ ...styles.sectionTitle, marginBottom: 0 }}>
-            {t('app.styleSelection.chooseStyle')}
-          </h3>
-        </div>
-
-        {/* Filters */}
-        <div style={styles.filters}>
-          <select
-            value={activeRegion}
-            onChange={(e) => setActiveRegion(e.target.value)}
-            style={styles.select}
-          >
-            <option value="Tout">{t('app.styleSelection.allRegions')}</option>
-            {stylesDb.regions.map((r) => (
-              <option key={r} value={r}>
-                {t(`db.regions.${r}`, { defaultValue: r })}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={activeFamily}
-            onChange={(e) => setActiveFamily(e.target.value)}
-            style={styles.select}
-          >
-            <option value="Tout">{t('app.styleSelection.allFamilies')}</option>
-            {stylesDb.families.map((f) => (
-              <option key={f} value={f}>
-                {t(`db.families.${f}`, { defaultValue: f })}
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="text"
-            placeholder={t('app.styleSelection.search')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={styles.searchInput}
-          />
-        </div>
-
-        {/* Style Grid */}
-        <div style={styles.styleGrid}>
-          {filteredStyles.map((style) => (
-            <div
-              key={style.id}
-              onClick={() => setSelectedStyle(style)}
-              style={{
-                ...styles.styleCard,
-                borderColor:
-                  selectedStyle?.id === style.id ? "#B8860B" : "#2A1A0E",
-                background:
-                  selectedStyle?.id === style.id
-                    ? "rgba(184,134,11,0.15)"
-                    : "#160E07",
-                padding: 0,
-                overflow: "hidden"
-              }}
-            >
-              <div style={{ width: "100%", height: "120px", borderBottom: selectedStyle?.id === style.id ? "1px solid #B8860B" : "1px solid #2A1A0E", overflow: "hidden" }}>
-                <img
-                  src={style.image_url || `/families/${style.family?.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "") || "TextilesRoyaux"}.png`}
-                  alt={style[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || style.name}
-                  loading="lazy"
-                  style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.3s" }}
-                  onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
-                  onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
-                  onError={(e) => {
-                    e.target.src = "/families/TextilesRoyaux.png"; // Ultimate fallback
-                  }}
-                />
-              </div>
-              <div style={{ padding: "12px" }}>
-                <div style={styles.styleHeader}>
-                  <span style={styles.flag}>{style.flag}</span>
-                  <span style={styles.styleName}>{style[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || style.name}</span>
-                </div>
-                <div style={styles.styleCountry}>{style.country}</div>
-                <div style={styles.styleFamily}>{t(`db.families.${style.family}`, { defaultValue: style.family })}</div>
-                <div style={styles.colorPreview}>
-                  {style.colors.slice(0, 4).map((c, i) => (
-                    <div key={i} style={{ ...styles.colorDot, background: c }} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {selectedStyle && (
-          <div style={styles.selectedInfo}>
-            <h4 style={styles.selectedTitle}>
-              {selectedStyle.flag} {selectedStyle[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.name}
-            </h4>
-            <p style={styles.selectedDesc}>{selectedStyle[`description${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle.description}</p>
-            {selectedStyle[`cultural_history${i18n.language?.startsWith('en') ? '_en' : ''}`] && (
-              <div style={styles.styleHistory}>
-                <strong>📜 {t('app.styleSelection.history', { defaultValue: 'Histoire Culturelle' })} :</strong><br />
-                {selectedStyle[`cultural_history${i18n.language?.startsWith('en') ? '_en' : ''}`]}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+    <StyleSelection
+      t={t}
+      i18n={i18n}
+      uploadedImage={uploadedImage}
+      API_BASE_URL={API_BASE_URL}
+      setCurrentView={setCurrentView}
+      selectedStyle={selectedStyle}
+      setSelectedStyle={setSelectedStyle}
+      selectedRoomType={selectedRoomType}
+      setSelectedRoomType={setSelectedRoomType}
+      roomTypes={roomTypes}
+      selectedPalette={selectedPalette}
+      setSelectedPalette={setSelectedPalette}
+      colorPalettes={colorPalettes}
+      customPrompt={customPrompt}
+      setCustomPrompt={setCustomPrompt}
+      editMode={editMode}
+      setEditMode={setEditMode}
+      activeRegion={activeRegion}
+      setActiveRegion={setActiveRegion}
+      activeFamily={activeFamily}
+      setActiveFamily={setActiveFamily}
+      search={search}
+      setSearch={setSearch}
+      stylesDb={stylesDb}
+      filteredStyles={filteredStyles}
+      handleGenerate={handleGenerate}
+      isLoading={isLoading}
+      isInitialLoading={isInitialLoading}
+      styles={styles}
+    />
   );
 
-  // Render generating view
   const renderGenerating = () => (
-    <div style={{ ...styles.generatingContainer, maxWidth: '600px', margin: '0 auto' }} className="glass-panel">
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        maxWidth: '400px',
-        aspectRatio: '16/9',
-        margin: '0 auto 32px',
-        borderRadius: '16px',
-        overflow: 'hidden',
-        border: '2px solid var(--color-primary)',
-        boxShadow: '0 0 30px rgba(212, 175, 55, 0.2)'
-      }}>
-        <img
-          src={uploadedImage.startsWith("http") ? uploadedImage : `${API_BASE_URL}${uploadedImage}`}
-          alt="Scanning"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5, filter: 'grayscale(50%)' }}
-        />
-        <div className="ai-scanner"></div>
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          zIndex: 10
-        }}>
-          <div style={styles.spinnerLarge} />
-        </div>
-      </div>
-
-      <h3 style={{ ...styles.generatingTitle, color: 'var(--color-primary)' }}>{t('app.generating.title')}</h3>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginTop: '24px', textAlign: 'left' }}>
-        <div className="glass-panel" style={{ padding: '12px', background: 'rgba(212, 175, 55, 0.05)' }}>
-          <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Style</div>
-          <div style={{ fontSize: '14px', fontWeight: '600' }}>{selectedStyle?.[`name${i18n.language?.startsWith('en') ? '_en' : ''}`] || selectedStyle?.name}</div>
-        </div>
-        <div className="glass-panel" style={{ padding: '12px', background: 'rgba(212, 175, 55, 0.05)' }}>
-          <div style={{ fontSize: '10px', color: 'var(--color-text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>Mode</div>
-          <div style={{ fontSize: '14px', fontWeight: '600' }}>{editMode === "background" ? t('app.generating.background') : t('app.generating.full')}</div>
-        </div>
-      </div>
-
-      <div style={{ ...styles.generatingDetails, marginTop: '24px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ color: 'var(--color-primary)' }}>🎨</span> {selectedStyle?.colors?.slice(0, 3).join(", ")}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ color: 'var(--color-primary)' }}>🏛️</span> {t(`db.families.${selectedStyle?.family}`, { defaultValue: selectedStyle?.family })}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ color: 'var(--color-primary)' }}>🌍</span> {t(`db.regions.${selectedStyle?.region}`, { defaultValue: selectedStyle?.region })}
-        </div>
-      </div>
-    </div>
+    <GeneratingView
+      t={t}
+      i18n={i18n}
+      uploadedImage={uploadedImage}
+      API_BASE_URL={API_BASE_URL}
+      selectedStyle={selectedStyle}
+      editMode={editMode}
+      styles={styles}
+    />
   );
 
-  // Render result view with before/after comparison
   const renderResult = () => (
-    <div style={styles.resultContainer}>
-      <h3 style={styles.resultTitle}>{t('app.result.title')}</h3>
-
-      {error && (
-        <div
-          style={{
-            ...styles.error,
-            marginTop: "10px",
-            marginBottom: "20px",
-            padding: "15px",
-            background: "rgba(255, 50, 50, 0.1)",
-            border: "1px solid rgba(255, 50, 50, 0.3)",
-            borderRadius: "8px",
-            color: "#ff6b6b",
-          }}
-        >
-          <strong>{t('app.result.error')}</strong> {error}
-        </div>
-      )}
-
-      {/* Comparison mode toggle */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "8px",
-          marginBottom: "32px",
-          background: "rgba(20, 16, 13, 0.4)",
-          padding: "6px",
-          borderRadius: "12px",
-          width: "fit-content",
-          margin: "0 auto 32px",
-          border: "1px solid var(--color-border)"
-        }}
-      >
-        <button
-          onClick={() => setComparisonMode("slider")}
-          style={{
-            padding: "8px 20px",
-            background: comparisonMode === "slider" ? "var(--color-primary)" : "transparent",
-            border: "none",
-            borderRadius: "8px",
-            color: comparisonMode === "slider" ? "#0C0806" : "var(--color-text-muted)",
-            fontSize: "13px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontFamily: "inherit",
-            transition: "all 0.3s ease",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px"
-          }}
-        >
-          <span className="material-symbols-outlined text-[18px]">split_screen</span>
-          {t('app.result.slider')}
-        </button>
-        <button
-          onClick={() => setComparisonMode("sideBySide")}
-          style={{
-            padding: "8px 20px",
-            background: comparisonMode === "sideBySide" ? "var(--color-primary)" : "transparent",
-            border: "none",
-            borderRadius: "8px",
-            color: comparisonMode === "sideBySide" ? "#0C0806" : "var(--color-text-muted)",
-            fontSize: "13px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontFamily: "inherit",
-            transition: "all 0.3s ease",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px"
-          }}
-        >
-          <span className="material-symbols-outlined text-[18px]">view_agenda</span>
-          {t('app.result.sideBySide')}
-        </button>
-      </div>
-
-      {/* Slider mode */}
-      {comparisonMode === "slider" && (
-        <div style={{ marginBottom: "32px" }}>
-          <ComparisonSlider
-            beforeImage={
-              uploadedImage.startsWith("http")
-                ? uploadedImage
-                : `${API_BASE_URL}${uploadedImage}`
-            }
-            afterImage={
-              generatedImage.startsWith("http")
-                ? generatedImage
-                : `${API_BASE_URL}${generatedImage}`
-            }
-            height={450}
-          />
-        </div>
-      )}
-
-      {/* Side by side mode */}
-      {comparisonMode === "sideBySide" && (
-        <div style={styles.comparisonContainer}>
-          <div style={styles.comparisonItem}>
-            <div style={styles.comparisonLabel}>{t('app.result.before')}</div>
-            <div
-              style={styles.imageWrapper}
-              onClick={() =>
-                openZoom(
-                  uploadedImage.startsWith("http")
-                    ? uploadedImage
-                    : `${API_BASE_URL}${uploadedImage}`,
-                  "Original",
-                )
-              }
-            >
-              <img
-                src={
-                  uploadedImage.startsWith("http")
-                    ? uploadedImage
-                    : `${API_BASE_URL}${uploadedImage}`
-                }
-                alt="Original"
-                style={styles.comparisonImage}
-              />
-              <div style={styles.zoomHint}>{t('app.result.zoomHint')}</div>
-            </div>
-          </div>
-
-          <div style={styles.arrow}>→</div>
-
-          <div style={styles.comparisonItem}>
-            <div style={styles.comparisonLabel}>{t('app.result.after')}</div>
-            <div
-              style={styles.imageWrapper}
-              onClick={() =>
-                openZoom(
-                  generatedImage.startsWith("http")
-                    ? generatedImage
-                    : `${API_BASE_URL}${generatedImage}`,
-                  "Généré",
-                )
-              }
-            >
-              <img
-                src={
-                  generatedImage.startsWith("http")
-                    ? generatedImage
-                    : `${API_BASE_URL}${generatedImage}`
-                }
-                alt="Generated"
-                style={styles.comparisonImage}
-              />
-              <div style={styles.zoomHint}>{t('app.result.zoomHint')}</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div style={styles.styleInfo} className="glass-panel">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
-          <h4 style={styles.styleInfoTitle}>
-            {selectedStyle?.flag} {selectedStyle?.name}
-          </h4>
-          <button
-            onClick={toggleFavorite}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "24px",
-              padding: "0 8px",
-              marginTop: "-4px",
-              opacity: isFavorite ? 1 : 0.6,
-              transform: isFavorite ? "scale(1.1)" : "scale(1)",
-              transition: "all 0.2s",
-            }}
-            title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
-          >
-            {isFavorite ? "❤️" : "🤍"}
-          </button>
-        </div>
-        <p style={styles.styleInfoDesc}>{selectedStyle?.description}</p>
-
-        <div style={styles.materialsList}>
-          <strong>{t('app.result.materials')}</strong> {selectedStyle?.materials?.join(", ")}
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))",
-            gap: "12px",
-            width: "100%",
-            marginTop: "24px",
-          }}
-        >
-          <button
-            onClick={handleDownload}
-            disabled={isDownloading}
-            onMouseEnter={(e) => { if (!isDownloading) { e.currentTarget.style.background = "rgba(184, 134, 11, 0.1)"; e.currentTarget.style.borderColor = "#B8860B"; } }}
-            onMouseLeave={(e) => { if (!isDownloading) { e.currentTarget.style.background = "rgba(42, 26, 14, 0.4)"; e.currentTarget.style.borderColor = "#3A2A1E"; } }}
-            style={{
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              padding: "16px 8px", background: "rgba(42, 26, 14, 0.4)", border: "1px solid #3A2A1E",
-              borderRadius: "12px", color: "#F0E6D3", cursor: isDownloading ? "wait" : "pointer",
-              opacity: isDownloading ? 0.7 : 1, transition: "all 0.3s ease", outline: 'none'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: "28px", marginBottom: "8px", color: "#B8860B" }}>
-              {isDownloading ? "hourglass_empty" : "download"}
-            </span>
-            <span style={{ fontSize: "12px", fontWeight: "600", textAlign: "center" }}>
-              {isDownloading ? t('app.result.creating') : t('app.result.download')}
-            </span>
-          </button>
-
-          <button
-            onClick={handleExportPDF}
-            disabled={isPdfGenerating}
-            onMouseEnter={(e) => { if (!isPdfGenerating) { e.currentTarget.style.background = "rgba(184, 134, 11, 0.1)"; e.currentTarget.style.borderColor = "#B8860B"; } }}
-            onMouseLeave={(e) => { if (!isPdfGenerating) { e.currentTarget.style.background = "rgba(42, 26, 14, 0.4)"; e.currentTarget.style.borderColor = "#3A2A1E"; } }}
-            style={{
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              padding: "16px 8px", background: "rgba(42, 26, 14, 0.4)", border: "1px solid #3A2A1E",
-              borderRadius: "12px", color: "#F0E6D3", cursor: isPdfGenerating ? "wait" : "pointer",
-              opacity: isPdfGenerating ? 0.7 : 1, transition: "all 0.3s ease", outline: 'none'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: "28px", marginBottom: "8px", color: "#B8860B" }}>
-              {isPdfGenerating ? "hourglass_empty" : "picture_as_pdf"}
-            </span>
-            <span style={{ fontSize: "12px", fontWeight: "600", textAlign: "center" }}>
-              {isPdfGenerating ? t('app.styleSelection.generating') : t('gallery.actions.pdf')}
-            </span>
-          </button>
-
-          <button
-            onClick={handleCreateWorld}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(184, 134, 11, 0.1)"; e.currentTarget.style.borderColor = "#B8860B"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(42, 26, 14, 0.4)"; e.currentTarget.style.borderColor = "#3A2A1E"; }}
-            style={{
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              padding: "16px 8px", background: "rgba(42, 26, 14, 0.4)", border: "1px solid #3A2A1E",
-              borderRadius: "12px", color: "#F0E6D3", cursor: "pointer", transition: "all 0.3s ease", outline: 'none'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: "28px", marginBottom: "8px", color: "#B8860B" }}>
-              public
-            </span>
-            <span style={{ fontSize: "12px", fontWeight: "600", textAlign: "center" }}>
-              {t('app.result.world')}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setShowInpaintModal(true)}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(184, 134, 11, 0.25)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(184, 134, 11, 0.15)"; e.currentTarget.style.transform = "translateY(0)"; }}
-            style={{
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              padding: "16px 8px", background: "rgba(184, 134, 11, 0.15)", border: "1px solid #B8860B",
-              borderRadius: "12px", color: "#B8860B", cursor: "pointer", transition: "all 0.3s ease", outline: 'none'
-            }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: "28px", marginBottom: "8px" }}>
-              format_paint
-            </span>
-            <span style={{ fontSize: "12px", fontWeight: "600", textAlign: "center" }}>
-              {t('app.result.inpainting')}
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <div style={styles.resultActions}>
-        <button
-          onClick={() => setCurrentView("select-style")}
-          style={styles.secondaryBtn}
-        >
-          {t('app.result.tryAnother')}
-        </button>
-        <button onClick={handleReset} style={styles.primaryBtn}>
-          {t('app.result.newProject')}
-        </button>
-      </div>
-    </div>
+    <ResultView
+      t={t}
+      uploadedImage={uploadedImage}
+      generatedImage={generatedImage}
+      selectedStyle={selectedStyle}
+      error={error}
+      comparisonMode={comparisonMode}
+      setComparisonMode={setComparisonMode}
+      API_BASE_URL={API_BASE_URL}
+      toggleFavorite={toggleFavorite}
+      isFavorite={isFavorite}
+      handleDownload={handleDownload}
+      isDownloading={isDownloading}
+      handleExportPDF={handleExportPDF}
+      isPdfGenerating={isPdfGenerating}
+      handleCreateWorld={handleCreateWorld}
+      setShowInpaintModal={setShowInpaintModal}
+      setCurrentView={setCurrentView}
+      handleReset={handleReset}
+      openZoom={openZoom}
+      styles={styles}
+    />
   );
 
   return (

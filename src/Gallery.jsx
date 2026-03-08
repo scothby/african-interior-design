@@ -8,6 +8,7 @@ import InpaintingModal from './InpaintingModal';
 import { useAuth } from './AuthContext';
 import { fetchGalleryFromSupabase, toggleFavoriteInSupabase, deleteGalleryEntryInSupabase } from './supabaseClient';
 import Logo from './components/Logo';
+import Skeleton from './components/common/Skeleton';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
@@ -314,9 +315,17 @@ export default function Gallery({ onBack, onGoToStyles, onGoToDesigner }) {
             {/* Main */}
             <main style={s.main}>
                 {loading && (
-                    <div style={s.loadingContainer}>
-                        <div style={s.spinner} />
-                        <span style={{ color: '#B8860B' }}>{t('gallery.loading')}</span>
+                    <div style={{ ...s.grid, gridTemplateColumns: gridCols, gap: gridGap }}>
+                        {Array.from({ length: 8 }).map((_, i) => (
+                            <div key={i} style={s.card}>
+                                <Skeleton height={thumbH} width="100%" />
+                                <div style={s.cardBody}>
+                                    <Skeleton type="title" width="70%" />
+                                    <Skeleton type="text" width="40%" />
+                                    <Skeleton type="text" width="60%" />
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
 

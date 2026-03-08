@@ -111,7 +111,7 @@
     "landing": {
         "seo": {
             "title": "African Interior Design - AI Creator & Styles Catalog",
-            "description": "Transform your spaces with authentic African interior design powered by AI. Explore our database of 89 architectural styles from the Sahel to the Coast."
+            "description": "Transform your spaces with authentic African interior design powered by AI. Explore our database of {{count}} architectural styles from the Sahel to the Coast."
         },
         "badge": "AI African Interior Design",
         "title1": "Transform your space with",
@@ -136,7 +136,7 @@
                 },
                 "2": {
                     "title": "Choose an African style",
-                    "desc": "Explore 50+ authentic styles: Kente, Tuareg, Swahili, Ndebele, Agadez, and much more."
+                    "desc": "Explore {{count}}+ authentic styles: Kente, Tuareg, Swahili, Ndebele, Agadez, and much more."
                 },
                 "3": {
                     "title": "AI transforms everything",

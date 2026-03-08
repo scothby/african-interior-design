@@ -111,7 +111,7 @@
     "landing": {
         "seo": {
             "title": "African Interior Design - Créateur IA & Catalogue de Styles",
-            "description": "Transformez vos espaces avec un design d'intérieur africain authentique propulsé par l'IA. Explorez notre base de données de 89 styles architecturaux, du Sahel à la Côte."
+            "description": "Transformez vos espaces avec un design d'intérieur africain authentique propulsé par l'IA. Explorez notre base de données de {{count}} styles architecturaux, du Sahel à la Côte."
         },
         "badge": "Design d'intérieur africain par IA",
         "title1": "Transformez votre espace with",
@@ -136,7 +136,7 @@
                 },
                 "2": {
                     "title": "Choisissez un style africain",
-                    "desc": "Explorez 50+ styles authentiques : Kente, Touareg, Swahili, Ndebele, Agadez et bien plus."
+                    "desc": "Explorez {{count}}+ styles authentiques : Kente, Touareg, Swahili, Ndebele, Agadez et bien plus."
                 },
                 "3": {
                     "title": "L'IA transforme tout",
